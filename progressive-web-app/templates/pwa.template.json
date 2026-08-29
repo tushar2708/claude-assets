@@ -1,0 +1,19 @@
+{
+  "_format": "Canonical shape of ai_skill_anchors/pwa.json. Scaffold this into the project and fill the ALL_CAPS placeholders by ANALYZING the project (see SKILL.md Step 2), then confirm every value with the user via AskUserQuestion. Use ONLY these keys — do not invent others. Code reads: reports_root + app_dir (create-reports-directory / verify-pwa / audit-lighthouse) and routes (audit-responsive); the rest is the skill<->project bridge / documentation.",
+  "project": "YOUR_PROJECT_NAME (the app's package/display name; read package.json)",
+  "skill": "progressive-web-app",
+  "production_url": "PRODUCTION_URL_OR_null (deployed origin to optionally audit; ASK THE USER)",
+  "reports_root": "REPORTS_ROOT_RELATIVE_TO_PROJECT_ROOT (ASK THE USER; reports go to <reports_root>/pwa_scores; NEVER a root-level or cwd folder)",
+  "scripts_dir": "DIR_THAT_HOLDS_THE_SCAFFOLDED_AUDIT_SCRIPTS",
+  "app_dir": "APP_DIR_RELATIVE_TO_PROJECT_ROOT (the Vite app root that holds index.html + package.json; verify-pwa builds it and audit-lighthouse runs from it)",
+  "routes": ["FILL_AFTER_ANALYZING_THE_ROUTER — the PUBLIC routes to audit for responsiveness; DO NOT copy blindly, derive from the app's route table. Example (smritea-cloud-ui): \"/\", \"/product\", \"/examples\", \"/pricing\", \"/auth/login\", \"/auth/register\""],
+  "mobile_nav_check": { "_doc": "OPTIONAL. When the app has a marketing hamburger, audit-responsive asserts it OPENS on mobile. route = the marketing/home route; trigger_label = the hamburger button's accessible name (case-insensitive regex); reveal_link = a nav link name that must appear once open. OMIT this whole key for apps with no mobile hamburger.", "route": "/", "trigger_label": "open navigation menu", "reveal_link": "pricing" },
+  "scripts": {
+    "create-reports-directory.mjs": { "source": "templates/create-reports-directory.template.mjs" },
+    "verify-pwa.mjs": { "source": "templates/verify-pwa.template.mjs" },
+    "audit-responsive.mjs": { "source": "templates/audit-responsive.template.mjs" },
+    "audit-pwa.mjs": { "source": "templates/audit-pwa.template.mjs" },
+    "audit-lighthouse.mjs": { "source": "templates/audit-lighthouse.template.mjs" },
+    "generate-reports.mjs": { "source": "templates/generate-reports.template.mjs" }
+  }
+}
