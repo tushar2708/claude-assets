@@ -1,0 +1,22 @@
+{
+  "name": "claude-assets",
+  "owner": {
+    "name": "Tushar Dwivedi"
+  },
+  "metadata": {
+    "description": "Tushar's Claude Code assets marketplace"
+  },
+  "plugins": [
+    {
+      "name": "react-atomic-aesthetics",
+      "source": "./plugins/react-atomic-aesthetics",
+      "description": "Canonical React UI/UX aesthetic + atomic-structure rules with a planning architect agent, an implementation agent, and plan/review skills",
+      "version": "0.1.0",
+      "author": {
+        "name": "Tushar Dwivedi"
+      },
+      "homepage": "https://github.com/tushar2708/claude-assets",
+      "repository": "https://github.com/tushar2708/claude-assets"
+    }
+  ]
+}
