@@ -97,3 +97,49 @@ Every project using this plugin maintains an INDEX.md at the UI project root inv
 ## Part C — Dependency Requirement
 
 This plugin targets React + Tailwind CSS + shadcn/ui + lucide-react. Before doing UI work, the implementer detects whether Tailwind, shadcn/ui, and lucide-react are installed (inspect package.json and components.json). If any is absent, it offers to install/bootstrap them; it does not silently assume their presence, and does not hard-block.
+
+## Part D — Role Checklists
+
+Every agent MUST run its checklist before yielding and report each box as pass/fail. Each item cites the rule number that defines it (Parts A/B/C are the single source; these boxes are a terse actionable index, not a re-statement). Rules are APPEND-ONLY — add A21+/B6+ rather than renumbering, or these citations misalign. When you add a rule, add a matching box to the relevant checklist(s) here.
+
+### D1. Architect planning checklist (react-atomic-aesthetics:architect — run before returning a plan)
+
+- [ ] A1 — accent chosen by discovering the project's existing tokens (or deliberately picked only if none exist); never a default Tailwind named color
+- [ ] A4 — a real type pairing is specified (not default Inter/system sans)
+- [ ] A5 — hierarchy uses only 2–3 type sizes
+- [ ] A6 — grouping is whitespace-first; a container is planned only where spacing alone cannot separate a group
+- [ ] A7 — the single most important element is given the most space
+- [ ] A8 — at most ~3 contrast levels
+- [ ] A10 — depth cues (shadow/gradient) planned sparingly, if at all
+- [ ] A11 — at least one signature detail is defined
+- [ ] A12 — differentiation happens at the layout level, not just a swapped color
+- [ ] A16 — all four async states (empty/loading/error/success) are designed for every surface
+- [ ] B1 — every component is classified atom / molecule / organism / page
+- [ ] B4 — the plan uses the project's real design tokens
+- [ ] Existing-pattern analysis done; the plan states which existing patterns it matches
+
+### D2. Implementer execution checklist (react-atomic-aesthetics:implementer — run before yielding)
+
+- [ ] A3 — all color flows through semantic tokens; no hardcoded hex, no default named-color accent
+- [ ] A9 — spacing uses scale tokens; no ad-hoc pixel values
+- [ ] A13 — every micro-interaction is functional; no decorative motion
+- [ ] A14 — motion is scaled to action weight
+- [ ] A15 — CSS/Tailwind transitions by default; a motion library only when justified
+- [ ] A17 — content-loading uses skeletons mirroring final layout, not bare spinners
+- [ ] A18 — every icon-only control has an aria-label or sr-only text
+- [ ] A19 — keyboard-operable and WCAG-AA contrast in every theme
+- [ ] A20 — rendered UI viewed and judged; if flat/generic, revised once, then reported
+- [ ] B2 — typed props interface, import order, state boundaries, memo/useMemo/useCallback, cn()
+- [ ] B3 — Tailwind + shadcn/ui; no CSS Modules / styled-components; icons from lucide-react
+- [ ] B5 — INDEX.md updated as the final step
+- [ ] Part C — Tailwind/shadcn/lucide presence checked; offered to bootstrap if any is missing
+
+### D3. Reviewer audit checklist (react-atomic-aesthetics:review — verify each; findings go in the four category tables)
+
+- [ ] UI/UX category — A2, A6, A7, A8, A11, A12, A16: hierarchy, affordances, states, signature detail, non-generic layout
+- [ ] Micro-interactions category — A13, A14, A15, A17: functional + weight-scaled motion, prefers-reduced-motion fallback, skeleton loading
+- [ ] A11y category — A18, A19: labeled icon controls, keyboard operability, roles/state, WCAG-AA contrast in every theme
+- [ ] Responsive category — B3: mobile-first, no overflow at 320px, ≥44px touch targets, grids reflow
+- [ ] Structure — B1, B2, B5: atomic classification, props/state/imports/cn(), INDEX.md current
+- [ ] Color & type — A1, A3, A4, A5, A9: no default/hardcoded colors, real type pairing, ≤3 type sizes, token-based spacing
+- [ ] A20 — no real usability defect is masked by a polished surface

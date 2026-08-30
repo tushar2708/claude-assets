@@ -11,7 +11,7 @@
       "name": "react-atomic-aesthetics",
       "source": "./plugins/react-atomic-aesthetics",
       "description": "Canonical React UI/UX aesthetic + atomic-structure rules with a planning architect agent, an implementation agent, and plan/review skills",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "Tushar Dwivedi"
       },
