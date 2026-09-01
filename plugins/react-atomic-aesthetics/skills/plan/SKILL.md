@@ -15,7 +15,7 @@ This skill plans a React UI/UX change against the plugin's canonical rules befor
 
 ## Step 0 — Read the rules
 
-Read ${CLAUDE_PLUGIN_ROOT}/RULES.md. All planning decisions must comply with it. Reference rules by number (A1–A20, B1–B5, Part C).
+Read ${CLAUDE_PLUGIN_ROOT}/RULES.md. All planning decisions must comply with it. Reference rules by number (A1–A20, B1–B5, Part C, E1–E7, F1–F2).
 
 ## Step 1 — Enter Plan Mode
 
@@ -25,10 +25,11 @@ This planning step runs inside Claude Code Plan Mode. If not already in Plan Mod
 
 Delegate to the react-atomic-aesthetics:architect agent. Provide it: the feature goal, the target UI project path, and any known constraints. The architect will:
 1. Read RULES.md.
-2. Analyze the existing codebase patterns (component structure, design tokens/theme, spacing rhythm, existing atoms/molecules/organisms) and state which it will match for consistency.
+2. Analyze the existing codebase patterns (component structure, design tokens/theme, spacing rhythm, existing atoms/molecules/organisms, AND any existing asset/image pipeline or motion-timing vocabulary — RULES E7, F1) and state which it will match for consistency, verified by actually reading the relevant files, not assumed.
 3. Map the user journey including all four async states (empty, loading, error, success — RULES A16) and accessibility (A18–A19).
-4. Define the atomic component hierarchy (RULES B1) and the aesthetic direction: the single deliberate accent discovered from existing tokens (A1–A2), 2–3 type sizes (A5), whitespace-first grouping (A6), depth/signature (A10–A11), and layout-level differentiation (A12).
-5. Produce a prioritized, parallelizable implementation plan with exact files, props interfaces, styling approach (Tailwind + semantic tokens, RULES A3/B3), lucide-react icons and their aria-labels (A18), and per-component acceptance criteria.
+4. Define the atomic component hierarchy (RULES B1) and the aesthetic direction: the single deliberate accent discovered from existing tokens (A1–A2, verified against the actual theme file per F2 if the project has 3+ named theme variants), 2–3 type sizes (A5), whitespace-first grouping (A6), depth/signature (A10–A11), and layout-level differentiation (A12).
+5. If the feature includes any decorative imagery, illustration, or ambient/background motion, plan it against RULES E1–E2 (what real concept it depicts, how much ornamental intensity the surface earns) and E5–E6 (inspiration provenance disclosure; one consistent generation approach for a coordinated asset set).
+6. Produce a prioritized, parallelizable implementation plan with exact files, props interfaces, styling approach (Tailwind + semantic tokens, RULES A3/B3 — one canonical theme stylesheet), lucide-react icons and their aria-labels (A18), any decorative-content accessibility/perf requirements (E3–E4), and per-component acceptance criteria.
 
 ## Step 3 — Skip condition
 

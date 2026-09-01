@@ -1,6 +1,6 @@
 {
   "name": "react-atomic-aesthetics",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Atomic-design React/JSX UI plugin that enforces a canonical, gradually-growing set of UI/UX aesthetic and structure rules across a planning architect agent and an implementation agent, plus plan and review skills.",
   "author": { "name": "Tushar Dwivedi", "url": "https://github.com/SmrutAI" }
 }
