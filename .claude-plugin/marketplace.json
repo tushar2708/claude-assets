@@ -17,6 +17,17 @@
       },
       "homepage": "https://github.com/tushar2708/claude-assets",
       "repository": "https://github.com/tushar2708/claude-assets"
+    },
+    {
+      "name": "docsmith",
+      "source": "./plugins/docsmith",
+      "description": "Deterministic documentation governance — write, validate, score, and site-build docs by category with evergreen rules.",
+      "version": "0.1.2",
+      "author": {
+        "name": "Tushar Dwivedi"
+      },
+      "homepage": "https://github.com/tushar2708/claude-assets",
+      "repository": "https://github.com/tushar2708/claude-assets"
     }
   ]
 }

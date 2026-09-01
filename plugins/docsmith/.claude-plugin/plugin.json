@@ -1,0 +1,8 @@
+{
+  "name": "docsmith",
+  "version": "0.1.2",
+  "description": "Deterministic documentation governance — write, validate, score, and site-build docs by category with evergreen rules.",
+  "author": { "name": "Tushar Dwivedi" },
+  "license": "MIT",
+  "keywords": ["documentation", "adr", "okf", "evergreen-docs", "mkdocs", "governance"]
+}

@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "updated_at": "2026-01-01T00:00:00+00:00",
+  "map": {
+    "src/": [
+      {
+        "path": "docs/pipeline/overview.md",
+        "reason": "pipeline docs",
+        "message": ""
+      }
+    ],
+    "main.go": [
+      {
+        "path": "docs/pipeline/overview.md",
+        "reason": "",
+        "message": "update the entry-point section"
+      }
+    ],
+    "src/util/": ["docs/reference/util-reference.md"]
+  }
+}
