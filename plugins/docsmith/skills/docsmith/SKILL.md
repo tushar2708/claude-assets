@@ -14,6 +14,7 @@ description: Deterministic documentation governance for any project. Use when wr
 | [State files](#state-files) | config.json / docmap.json / state.json |
 | [Doc-task protocol](#doc-task-protocol) | The task-queue rules the hook enforces |
 | [Maintaining docmap.json](#maintaining-docmapjson) | Keeping the code-to-doc map current |
+| [Fixing validate findings](#fixing-validate-findings) | Apply known fixes mechanically, no re-analysis |
 | [Testing](#testing) | Running the engine test suite |
 
 ## What docsmith is
@@ -130,6 +131,18 @@ Skip entirely if your change is trivial (formatting, comments, renames with no b
   describes them.
 - `validate` (V4) errors on map keys or doc paths that no longer exist — fix the map entries,
   do not delete the coverage.
+
+## Fixing validate findings
+
+`validate` findings fall into a small, closed set of recurring shapes — missing frontmatter,
+a missing index table, a stale citation, a citation that only *looks* like a repo path,
+a dead `extra_gate_paths` glob, or a decision doc that doesn't match the ADR template. Look
+up the finding's shape in `references/autofix-patterns.md` and apply that fix directly —
+don't re-derive the fix from scratch or stop to explain the finding before fixing it. Ask
+first only when a fix in that reference explicitly says to (a genuinely unverifiable
+citation, a category call that depends on reading the doc's content, an ADR
+digit-count/renumbering choice with no established convention to follow). The
+`/docsmith:fix-findings` command runs this end to end.
 
 ## Testing
 

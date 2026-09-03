@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|Update|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/skills/docsmith/scripts/hook/docsmith_hook.py\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

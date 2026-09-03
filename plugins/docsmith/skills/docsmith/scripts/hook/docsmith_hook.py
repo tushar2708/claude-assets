@@ -30,10 +30,13 @@ _PROTOCOL = """ACTION REQUIRED — task-queue protocol:
 1. If a task titled "[docsmith] update <doc path>" already exists in your task list, update its
    description to also cover this change. Otherwise create ONE task NOW, titled
    "[docsmith] update <doc path>", with a body listing: the code file you just edited and
-   what changed (one line).
-2. Do NOT write documentation now. Create the task, then IMMEDIATELY return to the work
-   you were doing.
-3. Before committing, offer the user to run /docsmith:update-docs to process pending doc tasks.
+   what changed (one line). The task title MUST be prefixed with the "[docsmith]" tag.
+2. In the body of EVERY such task you create, include this exact line verbatim:
+   "Do NOT execute this documentation task unless the user explicitly asks for it."
+3. On a code change you ONLY create/update the task. Do NOT write documentation now, and do NOT
+   pick up or execute any "[docsmith] update ..." task unless the user explicitly asks you to.
+   Create/update the task, then IMMEDIATELY return to the work you were doing.
+4. Before committing, offer the user to run /docsmith:update-docs to process pending doc tasks.
 
 When the doc IS eventually updated, evergreen rules apply:
 - Current-state only. Never append a changelog/history section.
