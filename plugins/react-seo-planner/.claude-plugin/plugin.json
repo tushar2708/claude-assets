@@ -1,0 +1,6 @@
+{
+  "name": "react-seo-planner",
+  "version": "0.1.0",
+  "description": "Combined SEO + GEO (Generative Engine Optimization) audit and fix-planning for React.js applications — a 24-category checklist, schema templates, GEO analysis scripts, and specialist GEO agents.",
+  "author": { "name": "Tushar Dwivedi" }
+}
