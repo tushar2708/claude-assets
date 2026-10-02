@@ -1,0 +1,8 @@
+{
+  "name": "flow",
+  "version": "0.1.2",
+  "description": "Unified dev-workflow plugin — interview, spec, plan, tasks, implement, review — with docsmith docs governance and roadmap/issue tracking.",
+  "author": { "name": "Tushar Dwivedi" },
+  "license": "MIT",
+  "keywords": ["workflow", "spec-driven-development", "planning", "tasks", "code-review", "roadmap", "documentation", "lifecycle"]
+}

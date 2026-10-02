@@ -1,0 +1,12 @@
+# Managed by docsmith scaffold. The docsmith-collect-render hook is appended
+# automatically when the doc site is enabled. Add your own repos/hooks freely;
+# re-scaffolding only inserts docsmith hooks that are not already present.
+repos:
+  - repo: local
+    hooks:
+      - id: docsmith-validate
+        name: docsmith validate
+        entry: uv run .docsmith/engine/docsmith.py validate
+        language: system
+        types: [markdown]
+        pass_filenames: false

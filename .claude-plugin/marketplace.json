@@ -39,6 +39,17 @@
       },
       "homepage": "https://github.com/tushar2708/claude-assets",
       "repository": "https://github.com/tushar2708/claude-assets"
+    },
+    {
+      "name": "flow",
+      "source": "./plugins/flow",
+      "description": "Unified dev-workflow plugin — interview, spec, plan, tasks, implement, review — with docsmith docs governance and roadmap/issue tracking.",
+      "version": "0.1.2",
+      "author": {
+        "name": "Tushar Dwivedi"
+      },
+      "homepage": "https://github.com/tushar2708/claude-assets",
+      "repository": "https://github.com/tushar2708/claude-assets"
     }
   ]
 }

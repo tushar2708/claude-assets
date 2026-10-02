@@ -1,0 +1,95 @@
+{
+  "docsmith_version": 1,
+  "project": {
+    "name": "fixture",
+    "docs_dir": "docs",
+    "subsystem_depth": 1
+  },
+  "profile": "standard",
+  "overrides": {
+    "validate.require_index_table": true
+  },
+  "categories": {
+    "tutorial": {
+      "enabled": true,
+      "lifecycle": "evergreen",
+      "dir_patterns": ["docs/tutorials/**"],
+      "type_aliases": ["Tutorial"],
+      "template": "tutorial.md",
+      "stale_after_days": 180,
+      "site": {"include": true}
+    },
+    "how-to": {
+      "enabled": true,
+      "lifecycle": "evergreen",
+      "dir_patterns": ["docs/how-to/**"],
+      "type_aliases": ["Guide"],
+      "template": "how-to.md",
+      "stale_after_days": 120,
+      "site": {"include": true}
+    },
+    "reference": {
+      "enabled": true,
+      "lifecycle": "evergreen",
+      "dir_patterns": ["docs/reference/**"],
+      "type_aliases": ["Reference", "API", "Spec", "Index", "Priming"],
+      "template": "reference.md",
+      "stale_after_days": 90,
+      "site": {"include": true}
+    },
+    "explanation": {
+      "enabled": true,
+      "lifecycle": "evergreen",
+      "dir_patterns": ["docs/explanation/**"],
+      "type_aliases": ["Overview"],
+      "template": "explanation.md",
+      "stale_after_days": 240,
+      "site": {"include": true}
+    },
+    "runbook": {
+      "enabled": true,
+      "lifecycle": "evergreen",
+      "dir_patterns": ["docs/runbooks/**"],
+      "type_aliases": ["Runbook"],
+      "template": "runbook.md",
+      "stale_after_days": 90,
+      "site": {"include": true}
+    },
+    "decision": {
+      "enabled": true,
+      "lifecycle": "immutable",
+      "dir_patterns": ["docs/decisions/**"],
+      "type_aliases": ["ADR"],
+      "template": "decision.md",
+      "site": {"include": true},
+      "numbering": {"prefix": "ADR-", "digits": 3}
+    },
+    "plan": {
+      "enabled": true,
+      "lifecycle": "ephemeral",
+      "dir_patterns": ["docs/plans/**"],
+      "type_aliases": ["Plan"],
+      "template": "plan.md",
+      "site": {"include": true},
+      "ttl_days": 45,
+      "archive_dir": "docs/plans/archive"
+    },
+    "external": {
+      "enabled": true,
+      "lifecycle": "evergreen",
+      "dir_patterns": [],
+      "type_aliases": [],
+      "template": "external.md",
+      "stale_after_days": 365,
+      "site": {"include": false}
+    }
+  },
+  "frontmatter": {
+    "allowed_statuses": ["draft", "stable", "deprecated", "superseded"],
+    "require_title": true,
+    "require_stale_after": false
+  },
+  "extra_gate_paths": ["CLAUDE.md", "README.md", "src/**/README.md"],
+  "hook": {"enabled": true},
+  "site": {"enabled": false}
+}
