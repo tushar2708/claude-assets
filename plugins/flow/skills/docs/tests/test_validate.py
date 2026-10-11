@@ -7,8 +7,15 @@ need git history (V6 plan-ttl) use git_project.
 import json
 import shutil
 
+import pytest
+
+from docsmith_lib import config as config_lib
+from docsmith_lib import validate as validate_lib
+
 BROKEN = "docs/pipeline/broken.md"
 ADR = "docs/decisions/ADR-001-use-go.md"
+
+DEFAULT_GATE_PATTERNS = config_lib.DEFAULT_CONFIG["extra_gate_paths"]
 
 
 def _results(payload, check=None, severity=None, path=None):
@@ -20,6 +27,13 @@ def _results(payload, check=None, severity=None, path=None):
     if path is not None:
         results = [r for r in results if r["path"] == path]
     return results
+
+
+def _set_extra_gate_paths(root, patterns):
+    cfg_path = root / ".docsmith" / "config.json"
+    cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+    cfg["extra_gate_paths"] = list(patterns)
+    cfg_path.write_text(json.dumps(cfg), encoding="utf-8")
 
 
 # --- full run on the pristine fixture ----------------------------------------
@@ -104,6 +118,241 @@ def test_overview_has_no_index_table_warning(fixture_project, run_cli):
     assert _results(payload, check="frontmatter", path="docs/pipeline/overview.md") == []
 
 
+@pytest.mark.parametrize(
+    "doc_text, expected_messages",
+    [
+        pytest.param(
+            "See `src/gone.go`.\n",
+            [
+                "cited path 'src/gone.go' does not exist "
+                "(if 'src/gone.go' is an external name, "
+                "write it in italics instead of backticks)"
+            ],
+            id="missing-file-path",
+        ),
+        pytest.param(
+            "See `vendor-sdk/client`.\n",
+            [
+                "cited path 'vendor-sdk/client' does not exist "
+                "(if 'vendor-sdk/client' is an external name, "
+                "write it in italics instead of backticks)"
+            ],
+            id="missing-directory-style-path",
+        ),
+        pytest.param(
+            "See `src/main.go#VanishedSymbol`.\n",
+            ["symbol 'VanishedSymbol' not found in 'src/main.go'"],
+            id="missing-symbol-keeps-its-message-without-hint",
+        ),
+        pytest.param(
+            "See `src/main.go`.\n",
+            [],
+            id="existing-path-yields-no-finding",
+        ),
+    ],
+)
+def test_v3_drift_message_hints_italics_only_for_missing_path(
+    fixture_project, run_cli, doc_text, expected_messages
+):
+    (fixture_project / "README.md").write_text(doc_text, encoding="utf-8")
+
+    _, payload = run_cli(fixture_project, "validate", "--only", "drift")
+
+    drift = _results(payload, check="drift", path="README.md")
+    assert [r["message"] for r in drift] == expected_messages
+    assert {r["severity"] for r in drift} <= {"warning"}
+
+
+# --- extra-gate files: de-duplication by real path ----------------------------
+
+_DRIFTING_GATE_TEXT = "See `src/gone.go`.\n"
+_GATE_NAMES = {"AGENTS.md", "CLAUDE.md"}
+
+
+@pytest.mark.parametrize(
+    "gate_patterns, symlink, expected_reported_paths",
+    [
+        pytest.param(
+            ["CLAUDE.md", "AGENTS.md"], ("CLAUDE.md", "AGENTS.md"), ["AGENTS.md"],
+            id="claude-symlink-listed-first-keeps-real-agents",
+        ),
+        pytest.param(
+            ["AGENTS.md", "CLAUDE.md"], ("CLAUDE.md", "AGENTS.md"), ["AGENTS.md"],
+            id="claude-symlink-listed-last-keeps-real-agents",
+        ),
+        pytest.param(
+            ["AGENTS.md", "CLAUDE.md"], ("AGENTS.md", "CLAUDE.md"), ["CLAUDE.md"],
+            id="agents-symlink-keeps-real-claude",
+        ),
+        pytest.param(
+            ["CLAUDE.md"], ("CLAUDE.md", "AGENTS.md"), ["CLAUDE.md"],
+            id="lone-symlink-is-still-validated",
+        ),
+        pytest.param(
+            ["CLAUDE.md", "AGENTS.md"], None, ["AGENTS.md", "CLAUDE.md"],
+            id="distinct-regular-files-are-both-validated",
+        ),
+    ],
+)
+def test_gate_files_deduplicate_by_real_path_preferring_non_symlink(
+    fixture_project, run_cli, gate_patterns, symlink, expected_reported_paths
+):
+    _set_extra_gate_paths(fixture_project, gate_patterns)
+    for name in _GATE_NAMES:
+        (fixture_project / name).unlink(missing_ok=True)
+        (fixture_project / name).write_text(_DRIFTING_GATE_TEXT, encoding="utf-8")
+    if symlink is not None:
+        alias, target = symlink
+        (fixture_project / alias).unlink()
+        (fixture_project / alias).symlink_to(target)
+
+    _, payload = run_cli(fixture_project, "validate", "--only", "drift")
+
+    gate_drift = [
+        r for r in _results(payload, check="drift") if r["path"] in _GATE_NAMES
+    ]
+    assert sorted(r["path"] for r in gate_drift) == expected_reported_paths
+
+
+def _write_drifting_files(root, rel_paths):
+    """(Re)create each rel path as a regular file citing a missing path."""
+    for rel in rel_paths:
+        (root / rel).unlink(missing_ok=True)
+        (root / rel).write_text(_DRIFTING_GATE_TEXT, encoding="utf-8")
+
+
+def _replace_with_symlink(root, alias, target):
+    (root / alias).unlink()
+    (root / alias).symlink_to(target)
+
+
+# --- --paths through a symlink alias ------------------------------------------
+
+_OVERVIEW = "docs/pipeline/overview.md"
+# Fixture: 8 category docs; the alias pair contributes one real gate file.
+_FIXTURE_CATEGORY_DOC_COUNT = 8
+
+
+@pytest.mark.parametrize(
+    "paths_args, expected_drift_paths, expected_checked",
+    [
+        pytest.param(
+            ["--paths", "CLAUDE.md"], ["CLAUDE.md"], 1,
+            id="scoped-to-the-symlink-spelling-still-validates-the-file",
+        ),
+        pytest.param(
+            ["--paths", "AGENTS.md"], ["AGENTS.md"], 1,
+            id="scoped-to-the-real-spelling-validates-the-file",
+        ),
+        pytest.param(
+            [], ["AGENTS.md"], _FIXTURE_CATEGORY_DOC_COUNT + 1,
+            id="unscoped-reports-the-real-file-once-not-twice",
+        ),
+        pytest.param(
+            ["--paths", _OVERVIEW], [], 1,
+            id="scoped-to-another-doc-yields-nothing-from-the-pair",
+        ),
+    ],
+)
+def test_paths_filter_works_through_symlink_alias(
+    fixture_project, run_cli, paths_args, expected_drift_paths, expected_checked
+):
+    _set_extra_gate_paths(fixture_project, ["CLAUDE.md", "AGENTS.md"])
+    _write_drifting_files(fixture_project, ["AGENTS.md", "CLAUDE.md"])
+    _replace_with_symlink(fixture_project, "CLAUDE.md", "AGENTS.md")
+
+    _, payload = run_cli(fixture_project, "validate", "--only", "drift", *paths_args)
+
+    gate_drift = [
+        r for r in _results(payload, check="drift") if r["path"] in _GATE_NAMES
+    ]
+    assert [r["path"] for r in gate_drift] == expected_drift_paths
+    assert payload["summary"]["checked"] == expected_checked
+
+
+# --- gate symlink pointing at a category doc ------------------------------------
+
+_CATEGORY_DOC = "docs/reference/x.md"
+_CATEGORY_DOC_TEXT = (
+    "---\ntype: reference\ntitle: X\nstatus: stable\n---\n\n# X\n\n"
+    + _DRIFTING_GATE_TEXT
+)
+
+
+@pytest.mark.parametrize(
+    "paths_args, expected_drift_paths, expected_checked",
+    [
+        pytest.param(
+            [], [_CATEGORY_DOC], _FIXTURE_CATEGORY_DOC_COUNT + 1 + 1,
+            id="unscoped-reports-the-category-doc-once",
+        ),
+        pytest.param(
+            ["--paths", "README.md"], ["README.md"], 1,
+            id="scoped-to-the-gate-alias-validates-through-the-alias",
+        ),
+    ],
+)
+def test_gate_symlink_to_category_doc_is_validated_once(
+    fixture_project, run_cli, paths_args, expected_drift_paths, expected_checked
+):
+    # checked (unscoped) = 8 fixture docs + x.md + CLAUDE.md; the README.md
+    # alias of x.md must not add a second count or a second finding.
+    (fixture_project / _CATEGORY_DOC).write_text(_CATEGORY_DOC_TEXT, encoding="utf-8")
+    _replace_with_symlink(fixture_project, "README.md", _CATEGORY_DOC)
+
+    _, payload = run_cli(fixture_project, "validate", "--only", "drift", *paths_args)
+
+    x_drift = [
+        r
+        for r in _results(payload, check="drift")
+        if r["path"] in {_CATEGORY_DOC, "README.md"}
+    ]
+    assert [r["path"] for r in x_drift] == expected_drift_paths
+    assert payload["summary"]["checked"] == expected_checked
+
+
+# --- extra_gate_files ordering / stability ---------------------------------------
+
+
+@pytest.mark.parametrize(
+    "gate_patterns, symlink, collapse, expected_ordered_paths",
+    [
+        pytest.param(
+            ["CLAUDE.md", "README.md", "AGENTS.md"], ("CLAUDE.md", "AGENTS.md"), True,
+            ["AGENTS.md", "README.md"],
+            id="real-file-replaces-symlink-in-the-first-slot",
+        ),
+        pytest.param(
+            ["README.md", "AGENTS.md", "CLAUDE.md"], ("CLAUDE.md", "AGENTS.md"), True,
+            ["README.md", "AGENTS.md"],
+            id="real-file-listed-first-keeps-its-slot",
+        ),
+        pytest.param(
+            ["AGENTS.md", "CLAUDE.md", "README.md"], ("AGENTS.md", "CLAUDE.md"), True,
+            ["CLAUDE.md", "README.md"],
+            id="reversed-alias-direction-keeps-the-non-symlink-in-slot-zero",
+        ),
+        pytest.param(
+            ["CLAUDE.md", "README.md", "AGENTS.md"], ("CLAUDE.md", "AGENTS.md"), False,
+            ["CLAUDE.md", "README.md", "AGENTS.md"],
+            id="uncollapsed-keeps-every-spelling-in-pattern-order",
+        ),
+    ],
+)
+def test_extra_gate_files_order_and_kept_path(
+    fixture_project, gate_patterns, symlink, collapse, expected_ordered_paths
+):
+    _set_extra_gate_paths(fixture_project, gate_patterns)
+    _write_drifting_files(fixture_project, ["AGENTS.md", "CLAUDE.md", "README.md"])
+    alias, target = symlink
+    _replace_with_symlink(fixture_project, alias, target)
+    root, config = config_lib.load_config(project_root=fixture_project)
+
+    gated = validate_lib.extra_gate_files(root, config, collapse=collapse)
+
+    assert gated == expected_ordered_paths
+
+
 # --- --paths / --only / --strict ---------------------------------------------
 
 
@@ -172,6 +421,49 @@ def test_coverage_warns_on_pattern_matching_no_files(fixture_project, run_cli):
     warnings = _results(payload, check="coverage", severity="warning")
     assert [r["path"] for r in warnings] == ["src/**/README.md"]
     assert warnings[0]["message"] == "pattern matches no files"
+
+
+@pytest.mark.parametrize(
+    "extra_patterns, create, remove, expected_warning_paths",
+    [
+        pytest.param(
+            [], [], ["CLAUDE.md", "README.md"], [],
+            id="default-patterns-matching-nothing-are-silent",
+        ),
+        pytest.param(
+            ["NOTES.md"], [], [], ["NOTES.md"],
+            id="project-added-pattern-matching-nothing-warns",
+        ),
+        pytest.param(
+            ["docs/**/GUIDE.md"], [], [], ["docs/**/GUIDE.md"],
+            id="project-added-glob-matching-nothing-warns",
+        ),
+        pytest.param(
+            ["NOTES.md"], ["NOTES.md"], [], [],
+            id="project-added-pattern-matching-a-file-is-silent",
+        ),
+        pytest.param(
+            ["NOTES.md", "docs/**/GUIDE.md"], ["NOTES.md"], ["README.md"],
+            ["docs/**/GUIDE.md"],
+            id="mixed-only-unmatched-project-pattern-warns",
+        ),
+    ],
+)
+def test_coverage_warns_only_for_unmatched_project_added_patterns(
+    fixture_project, run_cli, extra_patterns, create, remove, expected_warning_paths
+):
+    _set_extra_gate_paths(fixture_project, [*DEFAULT_GATE_PATTERNS, *extra_patterns])
+    for rel in remove:
+        (fixture_project / rel).unlink()
+    for rel in create:
+        (fixture_project / rel).write_text("# Notes\n", encoding="utf-8")
+
+    _, payload = run_cli(fixture_project, "validate", "--only", "coverage")
+
+    coverage = _results(payload, check="coverage")
+    assert [r["path"] for r in coverage] == expected_warning_paths
+    assert {r["severity"] for r in coverage} <= {"warning"}
+    assert {r["message"] for r in coverage} <= {"pattern matches no files"}
 
 
 # --- V6 plan-ttl (needs git history) -----------------------------------------

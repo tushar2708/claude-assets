@@ -63,8 +63,8 @@ Do the following in order:
      `precommit`, `clean`), and — when the site is enabled — `ROOT/.docsmith/site-requirements.txt` (the
      mkdocs toolchain declared as ordinary Python deps) and `ROOT/.docsmith/setup.sh` (the idempotent
      bootstrap).
-   - The `.gitignore` additions (state, site autogen, the site venv `.docsmith/site/.venv/`, and the built
-     site `.docsmith/site/site/`).
+   - The `.gitignore` additions (state, site autogen, the site venv `.docsmith/site/.venv/`, the built
+     site `.docsmith/site/site/`, and `__pycache__/`).
    - The category directories under `docs/`.
    - **First real step: run `make setup`** — the idempotent bootstrap installs uv (if missing), creates the
      doc-site venv with the mkdocs toolchain, and installs the pre-commit hooks. Then `make validate`,
@@ -72,6 +72,8 @@ Do the following in order:
      `pip install mkdocs` step.)
    - Author docs with `/flow:write-doc`, `/flow:write-plan`, `/flow:write-adr`,
      `/flow:write-prd`; review `ROOT/.docsmith/config.json` (categories, dir_patterns) any time.
+
+8. **Validate and report.** After the engine finishes, run the project's engine UNSCOPED — `uv run "ROOT/.docsmith/engine/docsmith.py" --project-root "ROOT" validate` — and report its full output verbatim. With `--adopt`, pre-existing docs may be non-compliant (for example a hand-written index with no frontmatter); list each finding and tell the user `/flow:fix-findings` resolves them mechanically and `/flow:init` writes the AGENTS.md block and the CLAUDE.md link. Do NOT fix findings yourself in this command. Projects scaffolded earlier carry an older vendored engine in `.docsmith/engine/`; to receive validator fixes the user re-runs `/flow:scaffold` and chooses the engine refresh (`--sync-engine`).
 
 If the engine prints a NOTICE (e.g. `.claude/settings.json` was not valid JSON, or a `Makefile` already
 exists without the docsmith targets), relay that notice to the user with the manual step it suggests.

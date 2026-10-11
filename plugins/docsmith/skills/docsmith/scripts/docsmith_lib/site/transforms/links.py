@@ -48,9 +48,12 @@ def apply_links_transform(
 
     Args:
         file_path: Path to the already-collected markdown file, in place.
-        source_map: Dict keyed by each entry's ORIGINAL `source_path`,
-            mapping to that entry's full source-map dict (`source_id`,
-            `source_path`, `output_path`, `title`, `okf_type`).
+        source_map: Dict keyed by the ABSOLUTE resolved form of each entry's
+            ORIGINAL `source_path` (the precise-resolution branch resolves a
+            relative link against `current_source_path`'s directory and looks
+            the absolute result up here), mapping to that entry's full
+            source-map dict (`source_id`, `source_path`, `output_path`,
+            `title`, `okf_type`).
         autogen_docs_dir: Root of the collected/autogen docs tree, used to
             determine whether a relative link already resolves correctly
             within that tree.
@@ -90,6 +93,18 @@ def apply_links_transform(
         if link_target.startswith(_EXTERNAL_PREFIXES):
             return match.group(0)
         if link_target.startswith('#'):
+            return match.group(0)
+
+        # Bundle-absolute target (leading '/') — the form this transform ITSELF
+        # writes on rewrite. The check pass re-runs the transform over already-
+        # generated files, so recognize our own output: resolve against the
+        # autogen root and leave it untouched when the page exists. Only a
+        # bundle-absolute target pointing at a missing page is a real break.
+        if link_target.startswith('/'):
+            bundle_path = link_target.split('#', 1)[0].split('?', 1)[0]
+            if (resolved_autogen_root / bundle_path.lstrip('/')).exists():
+                return match.group(0)
+            warnings.append(f"{file_path}: unresolved document link target '{link_target}'")
             return match.group(0)
 
         candidate = (file_path.parent / link_target).resolve()

@@ -55,6 +55,7 @@ _GITIGNORE_LINES = [
     ".docsmith/site/autogen/",
     ".docsmith/site/.venv/",
     ".docsmith/site/site/",
+    "__pycache__/",
 ]
 
 _VENDOR_HEADER_PREFIX = "# VENDORED by docsmith scaffold"

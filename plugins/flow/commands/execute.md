@@ -1,5 +1,7 @@
 Start working on the decided plan, following the following instructions STRICTLY:
 
+> **MANDATORY: writer agent.** Documentation files go to `flow:docsmith-doc-author`; for other file types launch the purpose-built agent for that type (~/.claude/CLAUDE.md lists the available agents when present). If NO purpose-built agent exists for a file type, the main thread makes that edit itself — NEVER delegate it to `general-purpose` or any generic or unnamed agent. If the matching agent exists but is unavailable, STOP and ask the user (AskUserQuestion); do not fall back. This applies to every subagent prompt you launch, in addition to the contract below.
+
 Check out ~/.claude/CLAUDE.md to know about which agents are avilable and how to use them.
 
 1. Make detailed todos, but only if they don't exist for the given goal, Keep the total todo items under 25 (if there are more tasks, you can use the question tool to ask the user if it is okay to create more than 25 tasks by giving them an estimate about how many tasks you need to be created. If the user approves, there is no limit on the number of tasks. You can create even thousands of tasks as long as the user explicitly approve that number). If there are already tasks related to what you are being asked to do, either explicitly or based on the recent context, then do not create any duplicate tasks. 

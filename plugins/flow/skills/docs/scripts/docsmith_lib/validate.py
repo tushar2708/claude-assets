@@ -30,7 +30,8 @@ Checks (config key in validate section / --only token):
                                    #fragments match GitHub-slugged headings
     V3 drift       / drift         cited code refs (refs.extract) resolve
     V4 docmap      / docmap        docmap keys and entry paths exist
-    V5 coverage    / coverage      every extra_gate_paths glob matches
+    V5 coverage    / coverage      every project-added extra_gate_paths glob
+                                   matches (default-list globs are optional)
     V6 plan-ttl    / plan_ttl      ephemeral docs older than ttl_days warn
     V7 decisions   / decisions     numbered-category filename, unique
                                    numbers, required H2 sections
@@ -177,6 +178,10 @@ def _matches_any(rel_path: str, patterns: "list[str]") -> bool:
     return any(fnmatch.fnmatch(rel_path, pattern) for pattern in patterns)
 
 
+def _is_symlink(root: Path, rel_path: str) -> bool:
+    return (root / rel_path).is_symlink()
+
+
 def _glob_pattern_files(root: Path, pattern: str) -> "list[str]":
     """Posix rel paths of the FILES a posix glob (with **) matches under root."""
     matches = glob.glob(pattern, root_dir=str(root), recursive=True)
@@ -230,10 +235,43 @@ def category_docs(project_root: Path, config: dict) -> "list[tuple[str, Optional
     return docs
 
 
-def extra_gate_files(project_root: Path, config: dict) -> "list[str]":
+def _collapse_by_real_path(
+    root: Path,
+    rel_paths: "list[str]",
+    exclude_real: "frozenset[str]" = frozenset(),
+) -> "list[str]":
+    """Collapse rel paths that resolve to the same real file (e.g. CLAUDE.md
+    symlinked to AGENTS.md) into one entry, preferring the path that is not a
+    symlink; the entry keeps the position of the first path seen. Any path
+    whose real path is in exclude_real is dropped."""
+    collapsed: list[str] = []
+    index_by_real_path: dict[str, int] = {}
+    for rel_path in rel_paths:
+        real_path = os.path.realpath(root / rel_path)
+        if real_path in exclude_real:
+            continue
+        kept_index = index_by_real_path.get(real_path)
+        if kept_index is None:
+            index_by_real_path[real_path] = len(collapsed)
+            collapsed.append(rel_path)
+            continue
+        if _is_symlink(root, collapsed[kept_index]) and not _is_symlink(root, rel_path):
+            collapsed[kept_index] = rel_path
+    return collapsed
+
+
+def extra_gate_files(
+    project_root: Path, config: dict, collapse: bool = True
+) -> "list[str]":
     """Files matched by extra_gate_paths globs, de-duplicated, excluding
     anything already in category_docs, anything inside an excluded dir, and
-    anything inside a git submodule."""
+    anything inside a git submodule.
+
+    With collapse=True (default), paths resolving to the same real file (e.g.
+    CLAUDE.md symlinked to AGENTS.md) collapse to one entry (see
+    _collapse_by_real_path). With collapse=False every distinct path is kept,
+    so a caller can filter by the spelling the user typed (--paths) before
+    collapsing."""
     root = Path(project_root)
     category_set = {rel_path for rel_path, _ in category_docs(root, config)}
     exclude_basenames = _exclude_basenames(config)
@@ -251,7 +289,9 @@ def extra_gate_files(project_root: Path, config: dict) -> "list[str]":
                 continue
             seen.add(rel_path)
             gated.append(rel_path)
-    return gated
+    if not collapse:
+        return gated
+    return _collapse_by_real_path(root, gated)
 
 
 # --- checks ------------------------------------------------------------------
@@ -386,7 +426,11 @@ def _check_drift(
                 continue
             if state == "missing_path":
                 severity = path_severity if is_evergreen else "warning"
-                message = f"cited path '{ref.path}' does not exist"
+                message = (
+                    f"cited path '{ref.path}' does not exist "
+                    f"(if '{ref.path}' is an external name, "
+                    "write it in italics instead of backticks)"
+                )
             else:  # missing_symbol
                 severity = symbol_severity
                 message = f"symbol '{ref.symbol}' not found in '{ref.path}'"
@@ -446,10 +490,16 @@ def _check_docmap(report: Report, root: Path) -> None:
 
 
 def _check_coverage(report: Report, root: Path, config: dict) -> None:
-    """V5: every extra_gate_paths glob must match at least one file."""
+    """V5: every project-added extra_gate_paths glob must match at least one
+    file. Patterns from the engine's DEFAULT list are optional (a fresh repo
+    has no AGENTS.md, docs/**/README.md, ...), so they never warn."""
+    default_patterns = set(config_lib.DEFAULT_CONFIG["extra_gate_paths"])
     for pattern in config.get("extra_gate_paths", []):
-        if not _glob_pattern_files(root, pattern):
-            report.add("coverage", "warning", pattern, "pattern matches no files")
+        if pattern in default_patterns:
+            continue
+        if _glob_pattern_files(root, pattern):
+            continue
+        report.add("coverage", "warning", pattern, "pattern matches no files")
 
 
 def _check_plan_ttl(
@@ -603,10 +653,20 @@ def run(args, project_root: Path, config: dict) -> int:
         return 2
 
     cat_docs = category_docs(root, config)
-    gate_files = extra_gate_files(root, config)
+    # Gate files stay uncollapsed until --paths has filtered them, so a scoped
+    # run through an alias spelling (CLAUDE.md -> AGENTS.md) still matches.
+    gate_candidates = extra_gate_files(root, config, collapse=False)
     if args.paths:
         cat_docs = [(rel, cat) for rel, cat in cat_docs if _matches_any(rel, args.paths)]
-        gate_files = [rel for rel in gate_files if _matches_any(rel, args.paths)]
+        gate_candidates = [
+            rel for rel in gate_candidates if _matches_any(rel, args.paths)
+        ]
+    category_real_paths = frozenset(
+        os.path.realpath(root / rel) for rel, _ in cat_docs
+    )
+    gate_files = _collapse_by_real_path(
+        root, gate_candidates, exclude_real=category_real_paths
+    )
 
     report = Report(command="validate", project_root=root)
     report.checked = len(cat_docs) + len(gate_files)

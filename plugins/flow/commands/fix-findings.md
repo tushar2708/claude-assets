@@ -3,6 +3,8 @@ description: Run docsmith validate and mechanically fix every finding using the 
 disable-model-invocation: true
 ---
 
+> **MANDATORY: writer agent.** This user-invoked mechanical command normally edits directly — an explicit exception in the dispatch rule in references/rules.md. If you delegate any edit, delegate documentation edits ONLY to `flow:docsmith-doc-author`. NEVER use `general-purpose` or any generic or unnamed agent to write files. If the matching agent is unavailable, STOP and ask the user (AskUserQuestion).
+
 Resolve every `validate` error and warning in this project by applying
 `${CLAUDE_SKILL_DIR}/references/autofix-patterns.md` directly. That reference is the
 authority on HOW to fix each finding shape — read it once at the start of this command, then

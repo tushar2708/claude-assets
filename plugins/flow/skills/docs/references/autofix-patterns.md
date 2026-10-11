@@ -28,7 +28,7 @@ type: <category key or alias>
 title: "<derived from the H1>"
 status: draft|stable|deprecated|superseded
 tags:
-  - <1-3 kebab-case tags>
+  - <2-4 kebab-case tags>
 stale_after: <YYYY-MM-DD>   # evergreen categories only: today + categories.<cat>.stale_after_days
 generated:
   by: <agent/model>
@@ -44,6 +44,8 @@ generated:
   tag a file without moving it (see [Coverage: dead glob](#coverage-dead-glob) sibling case:
   moving isn't always required — an explicit `type:` is enough when relocation isn't in scope).
 - `decision` and `plan` categories omit `stale_after`.
+- Index docs such as `docs/plans/INDEX.md` use `type: Reference` (alias) with the standard
+  block; keep their table untouched.
 - Category ambiguous from filename alone → read the doc's actual content before picking.
   Rationale/design-intent content → `explanation`. Exhaustive facts/schema/flags →
   `reference`. Numbered operational steps for an operator under pressure → `runbook`. Records
@@ -126,8 +128,11 @@ Fix: confirm the convention genuinely isn't used in this project (e.g. no per-su
 remove that glob from `extra_gate_paths` in `.docsmith/config.json`. This is a mechanical
 dead-config cleanup — the array element pointed at something this project's layout never
 produces — not a policy change, and doesn't need the same review weight as changing what a
-category means. If the convention IS meant to exist but just hasn't been created yet, create
-one qualifying file instead of deleting the gate.
+category means. A DEFAULT `extra_gate_paths` pattern's dead-glob warning can no longer
+fire — the engine never warns when a default pattern matches nothing — so this fix applies only to
+patterns the project added itself. If a project never wants a default pattern gated, it removes that
+pattern from `extra_gate_paths` by hand. If the convention IS meant to exist but just hasn't been
+created yet, create one qualifying file instead of deleting the gate.
 
 ## Decision non-compliance
 

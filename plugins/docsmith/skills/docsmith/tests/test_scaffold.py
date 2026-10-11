@@ -11,6 +11,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 SKILL_DIR = Path(__file__).resolve().parent.parent
 CLI = SKILL_DIR / "scripts" / "docsmith.py"
 
@@ -344,12 +346,43 @@ def test_scaffold_creates_makefile_requirements_and_setup(tmp_path):
     assert "mkdocs-material" in reqs.read_text(encoding="utf-8")
 
 
-def test_scaffold_gitignores_site_venv_and_build(tmp_path):
+@pytest.mark.parametrize(
+    "preexisting_gitignore",
+    [
+        pytest.param(None, id="no-gitignore"),
+        pytest.param("", id="empty-gitignore"),
+        pytest.param("node_modules/\n", id="unrelated-lines"),
+        pytest.param("dist/", id="no-trailing-newline"),
+        pytest.param("__pycache__/\n", id="line-already-present"),
+        pytest.param(
+            ".docsmith/state.json\n.docsmith/site/.venv/\n__pycache__/\n",
+            id="some-docsmith-lines-present",
+        ),
+    ],
+)
+@pytest.mark.parametrize(
+    "expected_line",
+    [
+        ".docsmith/state.json",
+        ".docsmith/site/autogen/",
+        ".docsmith/site/.venv/",
+        ".docsmith/site/site/",
+        "__pycache__/",
+    ],
+)
+def test_scaffold_gitignore_line_present_exactly_once_across_reruns(
+    tmp_path, preexisting_gitignore, expected_line
+):
     root = _make_repo(tmp_path)
+    gitignore = root / ".gitignore"
+    if preexisting_gitignore is not None:
+        gitignore.write_text(preexisting_gitignore, encoding="utf-8")
+
     assert _scaffold(root).returncode == 0
-    gi = (root / ".gitignore").read_text(encoding="utf-8")
-    assert ".docsmith/site/.venv/" in gi
-    assert ".docsmith/site/site/" in gi
+    assert gitignore.read_text(encoding="utf-8").split("\n").count(expected_line) == 1
+
+    assert _scaffold(root, "--force").returncode == 0
+    assert gitignore.read_text(encoding="utf-8").split("\n").count(expected_line) == 1
 
 
 def test_makefile_not_clobbered_when_present(tmp_path):

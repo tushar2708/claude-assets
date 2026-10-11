@@ -3,6 +3,8 @@ description: Process pending "[docsmith] update ..." documentation tasks — ver
 disable-model-invocation: true
 ---
 
+> **MANDATORY: writer agent.** Every documentation file this command writes is written by the `flow:docsmith-doc-author` subagent (Task tool, `subagent_type: flow:docsmith-doc-author`). NEVER use `general-purpose`, an unnamed agent type, or any other agent to write files, and never write the doc yourself in the main thread. If the agent is unavailable, STOP and ask the user (AskUserQuestion); do not fall back. After the agent hands back, YOU re-run `validate` unscoped and quote its output; never accept an agent's "green" claim you have not reproduced.
+
 > Agents: when `[docsmith] update ...` tasks are pending in the session task list, OFFER this
 > command to the user before committing — that is step 3 of the docsmith task-queue protocol.
 
@@ -35,9 +37,14 @@ Process every pending documentation task in your task tracker tool (not any todo
    tells you why the mapping exists; a `message` carries custom update instructions that
    take precedence).
 
-3. **Verify, then rewrite wholesale.** Check each of the doc's claims against the code —
-   grep the cited `path#Symbol` anchors. Rewrite invalidated sections wholesale, as if
-   authored today, per `$RULES`:
+3. **Verify claims (main thread), then dispatch the rewrite.** The main thread checks each
+   of the doc's claims against the code — grep the cited `path#Symbol` anchors — and gathers
+   the inputs for the rewrite. It does NOT rewrite the doc itself: the wholesale rewrite is
+   done by one `flow:docsmith-doc-author` dispatch per doc (Task tool, `subagent_type:
+   flow:docsmith-doc-author`). Dispatch independent docs in parallel; tasks touching the same
+   doc are grouped into one dispatch. Give each dispatch: the doc path, the category, the code
+   paths and docmap entries to check, and the update instructions. The agent rewrites
+   invalidated sections wholesale, as if authored today, per `$RULES`:
    - Never append change-notes, changelogs, or "Update:" paragraphs (R1/R2).
    - NEVER degrade or drop diagrams, box drawings, flowcharts, or any other visual elements
      to save effort — update them so they stay true (R9).
@@ -45,10 +52,10 @@ Process every pending documentation task in your task tracker tool (not any todo
      readers know what to look for in the real code — do not add verbose code to a doc that
      isn't already code-focused.
 
-4. **Refresh frontmatter and index.** Set `stale_after` = today + the doc's category
-   `stale_after_days` (from `$DOCSMITH_DIR/config.json`); update `generated:`
-   (`by: <agent/model>`, `at: <ISO-8601 now>`); keep the index table under the H1 in sync
-   with the sections.
+4. **Refresh frontmatter and index (in the same dispatch).** The `flow:docsmith-doc-author`
+   dispatch also sets `stale_after` = today + the doc's category `stale_after_days` (from
+   `$DOCSMITH_DIR/config.json`); updates `generated:` (`by: <agent/model>`,
+   `at: <ISO-8601 now>`); and keeps the index table under the H1 in sync with the sections.
 
 5. **Validate and score.** Run, per doc (from the repo root, using the `$DOCSMITH` resolved
    in step 0):
@@ -58,6 +65,10 @@ Process every pending documentation task in your task tracker tool (not any todo
 
    Iterate until validate reports no errors for the doc and its score meets the freshness
    threshold.
+
+   Then, after all docs are processed, the main thread runs a final unscoped validate from the
+   repo root — `uv run "$DOCSMITH" --project-root . validate` — which must print `FAILURES: 0`;
+   quote its output.
 
 6. **Close the loop.** Mark the processed `[docsmith]` tasks completed.
 

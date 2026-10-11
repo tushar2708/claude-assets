@@ -2,13 +2,16 @@
 
 Verifies that the plugin loads, every /flow:* command and skill resolves, and
 every skill/command carries valid frontmatter. This does NOT test prose behavior
-(the prose skills are verified by invoking them). Co-located with the docsmith
+(the prose skills are verified by invoking them); the only exception is the
+"prose pins" section at the bottom, which pins required rule text. Co-located with the docsmith
 engine suite so it runs under the same run_tests.sh (uv provides pytest+pyyaml).
 """
 
 import json
+import re
 from pathlib import Path
 
+import pytest
 import yaml
 
 # tests/ -> docs -> skills -> PLUGIN_ROOT (flow)
@@ -114,3 +117,143 @@ def test_no_stale_docsmith_references():
             if needle in text:
                 offenders.append(f"{path.relative_to(PLUGIN_ROOT)} contains {needle!r}")
     assert not offenders, "stale docsmith references found:\n" + "\n".join(offenders)
+
+
+# --- prose pins ---------------------------------------------------------------
+# The docstring above says prose behavior is not tested; these are the narrow
+# exception. They pin REQUIRED RULE TEXT in specific skill/command/agent files
+# so that it cannot silently regress or be edited away. They check that the
+# text is present, not that the prose is good.
+
+_WRITER_RULE_FILES = [
+    "skills/spec/SKILL.md",
+    "skills/init/SKILL.md",
+    "commands/write-doc.md",
+    "commands/write-plan.md",
+    "commands/write-adr.md",
+    "commands/write-prd.md",
+    "commands/update-docs.md",
+    "commands/fix-findings.md",
+    "commands/execute.md",
+]
+
+_QUALIFIED_AGENT_FILES = [
+    "skills/spec/SKILL.md",
+    "commands/write-doc.md",
+    "commands/write-plan.md",
+    "commands/write-adr.md",
+    "commands/write-prd.md",
+    "commands/update-docs.md",
+]
+
+_FAILURES_ZERO_COMMAND_FILES = [
+    "commands/write-doc.md",
+    "commands/write-plan.md",
+    "commands/write-adr.md",
+    "commands/write-prd.md",
+    "commands/update-docs.md",
+]
+
+# rule name -> (PLUGIN_ROOT-relative files, substrings EACH file must contain)
+_REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
+    "writer-rule": (_WRITER_RULE_FILES, ["MANDATORY: writer agent", "general-purpose"]),
+    "qualified-agent": (_QUALIFIED_AGENT_FILES, ["flow:docsmith-doc-author"]),
+    "init": (["skills/init/SKILL.md"], ["ln -s AGENTS.md CLAUDE.md", "readlink"]),
+    "spec": (
+        ["skills/spec/SKILL.md"],
+        [".docsmith/config.json", "/flow:scaffold", "validate"],
+    ),
+    "author": (
+        ["agents/docsmith-doc-author.md"],
+        [".docsmith/config.json", "exit code"],
+    ),
+    "spec-index": (
+        ["skills/spec/SKILL.md"],
+        ["FAILURES: 0", "docs/plans/INDEX.md", "Never hand-write the index"],
+    ),
+    "writer-failures-zero": (_FAILURES_ZERO_COMMAND_FILES, ["FAILURES: 0"]),
+    "init-link-cases": (
+        ["skills/init/SKILL.md"],
+        [
+            "AGENTS.md is a link to CLAUDE.md",
+            "CLAUDE.md is a link to a missing AGENTS.md",
+            "Both exist as regular files",
+            "repo root",
+            "do NOT copy the file",
+            "--sync-engine",
+        ],
+    ),
+    "scaffold-sync-engine": (["commands/scaffold.md"], ["--sync-engine"]),
+}
+
+# rule name -> (PLUGIN_ROOT-relative file, substring it must NOT contain)
+_FORBIDDEN_TEXT_PINS: dict[str, tuple[str, str]] = {
+    "spec-no-init-fallback": ("skills/spec/SKILL.md", "or `/flow:init`"),
+}
+
+_REQUIRED_TEXT_CASES = [
+    pytest.param(rel_path, needle, id=f"{rule}:{rel_path}:{needle}")
+    for rule, (rel_paths, needles) in _REQUIRED_TEXT_PINS.items()
+    for rel_path in rel_paths
+    for needle in needles
+]
+
+_FORBIDDEN_TEXT_CASES = [
+    pytest.param(rel_path, needle, id=f"{rule}:{rel_path}")
+    for rule, (rel_path, needle) in _FORBIDDEN_TEXT_PINS.items()
+]
+
+# `subagent_type: docsmith-doc-author`, `subagent_type="docsmith-doc-author"`,
+# or the colon-less "subagent_type\n`docsmith-doc-author`" (any mix of colon,
+# equals, whitespace/newlines, backticks, quotes or bold markers in between)
+# names the agent WITHOUT the `flow:` plugin qualifier, which does not resolve
+# when the plugin is installed. `subagent_type: flow:docsmith-doc-author` does
+# not match: the qualifier's "flow:" sits between the separators and the name.
+_BARE_AGENT_RE = re.compile(r"subagent_type[\s:=\"'`*]*docsmith-doc-author")
+
+_PROSE_FILES = (
+    sorted(PLUGIN_ROOT.glob("commands/*.md"))
+    + sorted(PLUGIN_ROOT.glob("skills/*/SKILL.md"))
+    + sorted(PLUGIN_ROOT.glob("agents/*.md"))
+    + sorted(PLUGIN_ROOT.glob("skills/docs/references/*.md"))
+)
+
+
+@pytest.mark.parametrize("rel_path, needle", _REQUIRED_TEXT_CASES)
+def test_prose_pin_required_text_present(rel_path: str, needle: str):
+    text = (PLUGIN_ROOT / rel_path).read_text(encoding="utf-8")
+    assert needle in text, f"{rel_path} must contain {needle!r}"
+
+
+@pytest.mark.parametrize("rel_path, forbidden", _FORBIDDEN_TEXT_CASES)
+def test_prose_pin_forbidden_text_absent(rel_path: str, forbidden: str):
+    text = (PLUGIN_ROOT / rel_path).read_text(encoding="utf-8")
+    assert forbidden not in text, f"{rel_path} must not contain {forbidden!r}"
+
+
+@pytest.mark.parametrize(
+    "sample, should_match",
+    [
+        pytest.param("subagent_type: docsmith-doc-author", True, id="colon"),
+        pytest.param('subagent_type="docsmith-doc-author"', True, id="equals-quoted"),
+        pytest.param("subagent_type\n`docsmith-doc-author`", True, id="newline-backtick-no-colon"),
+        pytest.param("`subagent_type`: `docsmith-doc-author`", True, id="backticked-key"),
+        pytest.param("subagent_type: flow:docsmith-doc-author", False, id="qualified-colon"),
+        pytest.param("subagent_type\n`flow:docsmith-doc-author`", False, id="qualified-newline"),
+    ],
+)
+def test_bare_agent_regex_classifies_samples(sample: str, should_match: bool):
+    assert bool(_BARE_AGENT_RE.search(sample)) is should_match
+
+
+@pytest.mark.parametrize(
+    "prose_file",
+    [pytest.param(p, id=str(p.relative_to(PLUGIN_ROOT))) for p in _PROSE_FILES],
+)
+def test_prose_pin_no_bare_doc_author_agent_name(prose_file: Path):
+    text = prose_file.read_text(encoding="utf-8")
+    match = _BARE_AGENT_RE.search(text)
+    assert match is None, (
+        f"{prose_file.relative_to(PLUGIN_ROOT)} names the agent without the "
+        f"'flow:' qualifier: {match.group(0)!r}"
+    )

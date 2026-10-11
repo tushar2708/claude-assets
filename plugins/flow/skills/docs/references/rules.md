@@ -146,3 +146,23 @@ Every governed doc starts with a YAML block at line 1 (`---` ... `---`) with the
 Decision docs additionally use optional `supersedes` / `superseded_by` fields (see
 `references/categories.md`); decision and plan docs omit `stale_after` (their lifecycles are
 governed by the supersede chain and the plan TTL, not a staleness date).
+
+## Dispatch rule (not an R-rule)
+
+This applies to every flow command/skill that writes docs:
+
+> **MANDATORY: writer agent.** Every documentation file is written by the `flow:docsmith-doc-author`
+> subagent (Task tool, `subagent_type: flow:docsmith-doc-author`). NEVER use `general-purpose`, an
+> unnamed agent type, or any other agent to write documentation files, and never write the doc yourself
+> in the main thread. If the agent is unavailable, STOP and ask the user (AskUserQuestion); do not fall
+> back. After the agent hands back, the orchestrator re-runs `validate` unscoped and quotes its output;
+> never accept an agent's "green" claim you have not reproduced.
+
+Exceptions:
+
+- `/flow:fix-findings` is a user-invoked mechanical autofix command and may apply its mechanical edits
+  directly; if it delegates any edit, only to `flow:docsmith-doc-author`.
+- `/flow:init` writes `AGENTS.md` and the CLAUDE.md link itself because they are agent-instruction files,
+  not governed docs.
+
+No exception ever allows `general-purpose`.
