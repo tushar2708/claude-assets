@@ -79,6 +79,10 @@ _DECISION_SECTIONS = ["Status", "Context", "Options Considered", "Decision", "Co
 
 _SECONDS_PER_DAY = 86400
 
+# Frontmatter statuses whose docs are not drift-checked (a draft is work in
+# progress); overridable via validate.drift_skip_statuses.
+_DEFAULT_DRIFT_SKIP_STATUSES = ("draft",)
+
 
 # --- shared helpers ----------------------------------------------------------
 
@@ -397,8 +401,15 @@ def _check_drift(
     not a build-breaker); a project may raise either to "error" via
     validate.path_drift_severity / validate.symbol_drift_severity. missing_path
     only ever applies to evergreen category docs; extra-gate files are always
-    warning-level."""
+    warning-level. Docs whose frontmatter status is listed in
+    validate.drift_skip_statuses (default ["draft"]) are not drift-checked; a
+    draft is work in progress and may cite files that do not exist yet."""
     categories: dict[str, dict] = config.get("categories", {})
+    skip_statuses = tuple(
+        config.get("validate", {}).get(
+            "drift_skip_statuses", _DEFAULT_DRIFT_SKIP_STATUSES
+        )
+    )
     symbol_severity = (
         "error"
         if config.get("validate", {}).get("symbol_drift_severity") == "error"
@@ -419,6 +430,9 @@ def _check_drift(
     for rel_path, is_evergreen in targets:
         text = _read_text(root, rel_path)
         if text is None:
+            continue
+        fm, _ = frontmatter_spec.parse_frontmatter(text)
+        if fm and fm.get("status") in skip_statuses:
             continue
         for ref in refs_lib.extract(text):
             state = refs_lib.resolve(ref, root, rel_path)

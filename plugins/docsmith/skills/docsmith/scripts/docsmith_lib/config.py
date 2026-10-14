@@ -45,6 +45,7 @@ PROFILES: dict[str, dict[str, dict[str, Any]]] = {
             "decisions": True,
             "require_index_table": True,
             "symbol_drift_severity": "warning",
+            "drift_skip_statuses": ["draft"],
         },
         "freshness": {
             "threshold": 70,
@@ -61,6 +62,7 @@ PROFILES: dict[str, dict[str, dict[str, Any]]] = {
             "decisions": True,
             "require_index_table": False,
             "symbol_drift_severity": "warning",
+            "drift_skip_statuses": ["draft"],
         },
         "freshness": {
             "threshold": 70,
@@ -77,6 +79,7 @@ PROFILES: dict[str, dict[str, dict[str, Any]]] = {
             "decisions": False,
             "require_index_table": False,
             "symbol_drift_severity": "warning",
+            "drift_skip_statuses": ["draft"],
         },
         "freshness": {
             "threshold": 70,

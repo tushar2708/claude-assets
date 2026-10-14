@@ -118,6 +118,8 @@ Fix, in order of preference:
    de-backticking when the token is genuinely meant to read as code (an env var + suffix).
 3. Never use `path_drift_severity`/`symbol_drift_severity` config overrides to silence these —
    that hides real drift for every doc, not just the false positive.
+   (`validate.drift_skip_statuses`, default `["draft"]`: docs with these statuses are not
+   checked for cited paths and symbols.)
 
 ## Coverage: dead glob
 

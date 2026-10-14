@@ -163,6 +163,48 @@ def test_v3_drift_message_hints_italics_only_for_missing_path(
     assert {r["severity"] for r in drift} <= {"warning"}
 
 
+@pytest.mark.parametrize(
+    "frontmatter_lines, skip_override, expect_drift",
+    [
+        pytest.param(["status: draft"], None, False, id="draft-is-skipped-by-default"),
+        pytest.param(["status: stable"], None, True, id="stable-is-checked"),
+        pytest.param(["status: deprecated"], None, True, id="deprecated-is-checked"),
+        pytest.param(["title: No Status"], None, True, id="no-status-key-is-checked"),
+        pytest.param(
+            ["status: draft"], [], True, id="empty-skip-list-checks-draft"
+        ),
+        pytest.param(
+            ["status: deprecated"], ["deprecated"], False,
+            id="configured-skip-status-is-skipped",
+        ),
+    ],
+)
+def test_v3_drift_skips_docs_by_frontmatter_status(
+    fixture_project, run_cli, frontmatter_lines, skip_override, expect_drift
+):
+    if skip_override is not None:
+        cfg_path = fixture_project / ".docsmith" / "config.json"
+        cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+        cfg.setdefault("validate", {})["drift_skip_statuses"] = skip_override
+        cfg_path.write_text(json.dumps(cfg), encoding="utf-8")
+    (fixture_project / "README.md").write_text(
+        "---\n" + "\n".join(frontmatter_lines) + "\n---\n\n"
+        "See `src/gone.go` and `src/main.go#VanishedSymbol`.\n",
+        encoding="utf-8",
+    )
+
+    _, payload = run_cli(fixture_project, "validate", "--only", "drift")
+
+    drift = _results(payload, check="drift", path="README.md")
+    messages = " ".join(r["message"] for r in drift)
+    if not expect_drift:
+        assert drift == []
+        return
+    assert {r["severity"] for r in drift} == {"warning"}
+    assert "src/gone.go" in messages
+    assert "VanishedSymbol" in messages
+
+
 # --- extra-gate files: de-duplication by real path ----------------------------
 
 _DRIFTING_GATE_TEXT = "See `src/gone.go`.\n"
