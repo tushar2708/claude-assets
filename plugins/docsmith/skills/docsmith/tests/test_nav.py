@@ -161,9 +161,10 @@ def test_subsystem_first_grouping(fixture_project):
     assert "Archived Plan" not in plans_index
     assert "Superseded Plan" not in plans_index
 
-    # Uncategorized: the discovered README (no category) is never dropped.
+    # Uncategorized: the discovered root folder docs (README.md and the
+    # regular-file CLAUDE.md, no category) are never dropped.
     uncategorized = next(s for s in sections if s["title"] == "Uncategorized")
-    assert _leaf_paths(uncategorized["nav_items"]) == ["readmes/index.md"]
+    assert _leaf_paths(uncategorized["nav_items"]) == ["readmes/claude.md", "readmes/index.md"]
 
     # Nothing dropped: nav leaves == collected entries minus excluded plans.
     excluded_paths = {

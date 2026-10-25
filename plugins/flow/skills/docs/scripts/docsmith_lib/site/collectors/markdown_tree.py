@@ -40,14 +40,18 @@ from pathlib import Path
 
 import yaml
 
+from .readme_discovery import FOLDER_DOC_FILENAMES
+
 H1_HEADING_PATTERN = re.compile(r'^#\s+(.+)$', re.MULTILINE)
 FRONTMATTER_DELIMITER = '---'
 NUMERIC_PREFIX_PATTERN = re.compile(r'^\d+-')
 
-# README.md is deliberately NEVER collected by this module -- that is
-# structurally `readme_discovery`'s job (it has collision-safe renaming
-# logic for the many identically-named README.md files across the repo).
-README_FILENAME = 'README.md'
+# Folder docs (README.md, AGENTS.md, CLAUDE.md) are deliberately NEVER
+# collected by this module, in either mode -- that is structurally
+# `readme_discovery`'s job (it has collision-safe renaming logic for the many
+# identically-named folder docs across the repo). Skipping them here means no
+# folder doc is collected twice.
+_FOLDER_DOC_FILENAME_SET = frozenset(FOLDER_DOC_FILENAMES)
 
 
 @dataclass
@@ -126,6 +130,9 @@ def _discover_discrete_files(source: dict, repo_root: Path, exclude_config: dict
         if not absolute.exists():
             print(f'[markdown_tree] skipping missing file: {absolute}')
             continue
+        if absolute.name in _FOLDER_DOC_FILENAME_SET:
+            print(f'[markdown_tree] skipping folder doc (collected by readme_discovery): {absolute}')
+            continue
         if absolute.name in excluded_filenames:
             continue
         candidates.append((absolute, Path(absolute.name)))
@@ -150,7 +157,7 @@ def _discover_directory_tree(source: dict, repo_root: Path, exclude_config: dict
         for filename in filenames:
             if not filename.endswith('.md'):
                 continue
-            if filename == README_FILENAME or filename in excluded_filenames:
+            if filename in _FOLDER_DOC_FILENAME_SET or filename in excluded_filenames:
                 continue
             absolute = current_dir / filename
             relative = absolute.relative_to(base_dir)
