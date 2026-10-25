@@ -84,7 +84,7 @@ All fields are required.
 | Stage | `S1`, `S2`, `S3`, or a sub-stage |
 | Files | Every file the task owns in this stage |
 | Changes | Every edit, per file, with full detail |
-| Shared contracts | Copied in full from the wave section into every task |
+| Shared contracts | In the plan: the wave section names its contract sections by exact heading. In the tracker: `/flow:make-tasks` writes them once per wave to `<plan path without .md>.tasks/W<n>-contracts.md`, and each task names that file and the plan sections it cites |
 | Test cases | Table-driven cases (S2 tasks, and S3 tasks that make them pass) |
 | Self-check | One compile/build command for the touched package. No test suite. Runs without asking. |
 | Agent | An agent name from the agent table, or `main-thread` |
@@ -113,6 +113,14 @@ Procedure:
 8. Fix every failure. Run steps 5–7 again until all pass.
 
 Rule: If the user said run, run. If the user said skip, skip. No exceptions.
+
+## Post-wave Tasks
+
+Owner reminders, doc tasks, and feedback.
+
+1. Blocked by the last verify task.
+2. Block nothing.
+3. Feedback is last.
 
 ## Agent Table
 

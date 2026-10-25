@@ -219,15 +219,29 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
             "End with ExitPlanMode.",
             "compliance ledger",
             "Translate every rule that asks for one wave per TDD phase into stages S1/S2/S3 of the sub-feature wave.",
+            "references/plan-validation.md",
         ],
     ),
     "make-tasks-wave-model": (
         ["commands/make-tasks.md"],
         [
             "skills/plan-it/references/wave-model.md",
+            "skills/plan-it/references/plan-validation.md",
             "A file belongs to at most one task in a stage.",
             "Never use agents to create tasks.",
             "Never commit.",
+            "W<n>-contracts.md",
+        ],
+    ),
+    # one validation list, run by plan-it after planning and by make-tasks before task creation
+    "plan-validation": (
+        ["skills/plan-it/references/plan-validation.md"],
+        [
+            "`/flow:plan-it`",
+            "`/flow:make-tasks`",
+            "| V1 |",
+            "| V10 |",
+            "Create no task.",
         ],
     ),
     "execute-wave-model": (
@@ -259,6 +273,11 @@ _FORBIDDEN_TEXT_PINS: dict[str, tuple[str, str]] = {
     "execute-no-absolute": ("commands/execute.md", "ABSOLUTE"),
     "plan-it-no-absolute": ("skills/plan-it/SKILL.md", "ABSOLUTE"),
     "wave-model-no-absolute": ("skills/plan-it/references/wave-model.md", "ABSOLUTE"),
+    # make-tasks validates only through plan-validation.md; the old inline check list must not return
+    "make-tasks-no-inline-checks": ("commands/make-tasks.md", "The compliance ledger is missing."),
+    # shared contracts are written to a contract file, never pasted into every task
+    "make-tasks-no-full-paste": ("commands/make-tasks.md", "including the full shared contracts"),
+    "wave-model-no-full-paste": ("skills/plan-it/references/wave-model.md", "Copied in full from the wave section into every task"),
 }
 
 _REQUIRED_TEXT_CASES = [
