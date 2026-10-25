@@ -58,7 +58,8 @@ Condensed from `references/rules.md` (R1-R12 — read it before writing any doc)
 5. Body tables only for homogeneous comparable records; terse cells, never prose in cells.
 6. Diagrams: mermaid only, and only when they encode structure/flow that text cannot
    (C4 context/container altitude, never code-level). Never degrade or drop existing visuals.
-7. READMEs are external-user-facing only; internal detail goes to CLAUDE.md / AGENTS.md.
+7. A repository's root README is external-user-facing only; internal detail goes to CLAUDE.md / AGENTS.md.
+   Subfolder READMEs are not bound by this rule.
 8. No empty scaffolds; every word must earn its place.
 
 ## CLI

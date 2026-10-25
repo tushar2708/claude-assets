@@ -57,8 +57,9 @@ ambiguous, ask the user via AskUserQuestion using the category table below befor
   them to stay true.
 - **R10** Create structure only where content exists — delete template sections you have nothing to say
   in; never ship placeholder headings.
-- **R11** README.md is external-user-facing only (install/commands/config/public behavior); internal
-  detail belongs in CLAUDE.md/AGENTS.md.
+- **R11** The README.md at the root of a git repository or submodule is external-user-facing only
+  (install/commands/config/public behavior); internal detail belongs in CLAUDE.md/AGENTS.md. A README.md
+  in a subfolder is not bound by R11.
 - **R12** To-the-point and precise; cut filler; when a line runs long, move detail into its own section
   and link it from the index table.
 

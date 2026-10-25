@@ -12,7 +12,7 @@
 | [R8](#r8-mermaid-only-structural-diagrams) | Mermaid only, structural only, C4 L1/L2 altitude |
 | [R9](#r9-preserve-visuals-on-update) | Never degrade or drop existing diagrams when updating |
 | [R10](#r10-no-empty-scaffolds) | Structure only where content exists |
-| [R11](#r11-readme-audience-rule) | READMEs are external-user-facing only |
+| [R11](#r11-readme-audience-rule) | A repository's root README is external-user-facing only |
 | [R12](#r12-every-word-earns-its-place) | To-the-point and precise; cut filler |
 | [Frontmatter contract](#frontmatter-contract) | The exact fields and allowed values |
 
@@ -115,9 +115,10 @@ say in; never ship placeholder headings.
 
 ## R11: README audience rule
 
-Every README.md is external-user-facing only — the what, why, and how of USING the project
-(install, commands, configuration, public behavior); internal implementation detail belongs
-in CLAUDE.md / AGENTS.md, never in a README.
+The README.md at the root of a git repository (a repo or a git submodule) is external-user-facing
+only — the what, why, and how of USING the project (install, commands, configuration, public
+behavior); internal implementation detail belongs in CLAUDE.md / AGENTS.md, never in that README.
+A README.md in a subfolder of a repository is not bound by this rule.
 
 - Wrong: a README section explaining why the package is CommonJS instead of ESM.
 - Right: that rationale in the package's AGENTS.md; the README documents commands and options.
