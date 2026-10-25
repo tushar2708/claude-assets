@@ -12,8 +12,7 @@ documentation entries that must be reviewed when those paths change:
       }
     }
 
-Matching semantics (ported exactly from the smritea posttooluse hook's
-find_matching_docs):
+Matching semantics:
     - Keys ending in '/' are directory prefixes: they match any rel_path
       that starts with the key.
     - All other keys are exact file-path matches.

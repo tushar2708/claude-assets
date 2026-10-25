@@ -1,4 +1,4 @@
-# Vendored from smritea-cloud docs-site (generic, config-driven) — docsmith engine
+# docsmith engine — site pipeline module (generic, config-driven)
 """Frontmatter transform: stamp collection metadata onto collected docs.
 
 This module adds `source_path` / `source_id` provenance keys to the YAML

@@ -1,5 +1,4 @@
-"""Tests for docsmith_lib.docmap — matching semantics ported from the
-smritea posttooluse hook's find_matching_docs."""
+"""Tests for docsmith_lib.docmap — file-to-doc matching semantics."""
 
 import pytest
 

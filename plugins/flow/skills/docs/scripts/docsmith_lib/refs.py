@@ -21,7 +21,7 @@ _FILE_EXT_RE = re.compile(r"\.[A-Za-z0-9_]+$")
 # Only these extensions make a slashed token a *file* reference. Anything else
 # with a dot after a slash (e.g. `pkg/Type.Method`, `api/v1.0`) is a symbol or
 # version, not a path. A dotted token WITHOUT a slash (`service.name`,
-# `django.contrib.auth`, `prod.smritea.ai`, `100.64.1.2`) is never a path.
+# `django.contrib.auth`, `prod.example.com`, `100.64.1.2`) is never a path.
 _KNOWN_EXTS = frozenset({
     ".go", ".py", ".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs",
     ".md", ".mdx", ".rst", ".txt",
@@ -58,7 +58,7 @@ def _qualifies_as_path(path: str) -> bool:
         return False
     ext_match = _FILE_EXT_RE.search(path)
     if ext_match is None:
-        return True  # directory-style path, e.g. cloud_backend/studio-api
+        return True  # directory-style path, e.g. backend_services/api-server
     return ext_match.group(0).lower() in _KNOWN_EXTS
 
 

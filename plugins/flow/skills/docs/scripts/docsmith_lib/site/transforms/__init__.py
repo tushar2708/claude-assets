@@ -1,4 +1,4 @@
-# Vendored from smritea-cloud docs-site (generic, config-driven) — docsmith engine
+# docsmith engine — site pipeline module (generic, config-driven)
 """Post-collection content transforms for the docs-site pipeline."""
 
 from .frontmatter import apply_frontmatter_transform

@@ -8,7 +8,7 @@ Two navigation styles, selected by config `site.nav.style`:
   pulled out into trailing global "Decisions" / "Plans" sections (each with
   a generated index table page), and category-less entries land in a
   trailing "Uncategorized" section so nothing is ever silently dropped.
-- "type-first": the legacy shape ported from smritea-cloud's docs_kb.py --
+- "type-first": the legacy navigation shape --
   one section per OKF type from `okf_compat.allowed_types`, sub-grouped by
   top-level repo directory when a type spans several of them. No hubs.
 
@@ -31,7 +31,7 @@ from .. import frontmatter_spec
 if TYPE_CHECKING:
     from .engine import SiteContext
 
-# --- Legacy type-first constants (ported verbatim from docs_kb.py) ----------
+# --- Legacy type-first constants --------------------------------------------
 
 # Types kept as a single flat, path-sorted list even when their entries span
 # several top-level repo directories.
@@ -97,10 +97,7 @@ def rel_source_path(entry: dict, ctx: "SiteContext") -> str:
 
 
 def _humanize(segment: str) -> str:
-    """Humanize a path segment, e.g. 'cloud_frontend' -> 'Cloud Frontend'.
-
-    Port of docs_kb.py's _top_level_dir_title humanization.
-    """
+    """Humanize a path segment, e.g. 'web_frontend' -> 'Web Frontend'."""
     return segment.replace("-", " ").replace("_", " ").title()
 
 
@@ -113,9 +110,9 @@ def _slugify(title: str) -> str:
 def _disambiguate_titles(entries: list[dict]) -> list[dict]:
     """Disambiguate duplicate titles by appending the parent dir name.
 
-    Port of docs_kb.py's _disambiguate_titles: only titles that actually
-    collide within `entries` are touched. Returns {'title', 'path'} leaf
-    dicts sorted by output_path for deterministic ordering.
+    Only titles that actually collide within `entries` are touched. Returns
+    {'title', 'path'} leaf dicts sorted by output_path for deterministic
+    ordering.
     """
     sorted_entries = sorted(entries, key=lambda entry: entry["output_path"])
 
@@ -438,12 +435,12 @@ def _render_plans_index(
     return "\n".join(lines)
 
 
-# --- Legacy type-first builder (ported from docs_kb.py) ----------------------
+# --- Legacy type-first builder -----------------------------------------------
 
 
 def _top_level_dir_title(entry: dict, ctx: "SiteContext") -> str:
     """Humanize the first path segment of an entry's project-relative source
-    path (port of docs_kb.py's _top_level_dir_title)."""
+    path."""
     parts = Path(rel_source_path(entry, ctx)).parts
     top_segment = parts[0] if parts else ""
     return _humanize(top_segment)
@@ -451,7 +448,7 @@ def _top_level_dir_title(entry: dict, ctx: "SiteContext") -> str:
 
 def _build_type_section_items(type_entries: list[dict], ctx: "SiteContext") -> list[dict]:
     """Build nav items for one OKF-type section, sub-grouping by top-level
-    repo dir when the type spans more than one (port of docs_kb.py)."""
+    repo dir when the type spans more than one."""
     entries_by_top_dir: dict[str, list[dict]] = {}
     for entry in type_entries:
         entries_by_top_dir.setdefault(_top_level_dir_title(entry, ctx), []).append(entry)
@@ -466,8 +463,7 @@ def _build_type_section_items(type_entries: list[dict], ctx: "SiteContext") -> l
 
 
 def _build_type_first_sections(entries: list[dict], ctx: "SiteContext") -> list[dict]:
-    """Legacy theme-based sections grouped by OKF `type` (port of
-    docs_kb.py's build_navigation_sections). Section order follows
+    """Legacy theme-based sections grouped by OKF `type`. Section order follows
     `okf_compat.allowed_types`; unrecognized types land in a trailing
     'Uncategorized' section rather than being silently dropped."""
     allowed_types: list[str] = (ctx.config.get("okf_compat", {}) or {}).get("allowed_types", [])

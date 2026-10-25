@@ -1,4 +1,4 @@
-# Vendored from smritea-cloud docs-site (generic, config-driven) — docsmith engine
+# docsmith engine — site pipeline module (generic, config-driven)
 """Mermaid fence-balance validator for collected documentation files.
 
 This module is a *validator*, not a content transform: it does not modify
@@ -9,7 +9,7 @@ the same file. An unclosed Mermaid fence silently breaks MkDocs rendering
 (everything after the unclosed fence renders as one giant code block), so
 this check exists to catch that failure mode before it ships.
 
-It is meant to be invoked by the orchestrating `docs_kb.py` `check` command,
+It is meant to be invoked by the orchestrating engine's `check` stage,
 which walks the collected doc tree (`docs-site/autogen/docs/`) and calls
 `validate_mermaid_fences()` on each markdown file, aggregating the returned
 error messages across the whole tree.

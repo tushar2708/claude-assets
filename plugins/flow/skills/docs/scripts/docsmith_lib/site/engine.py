@@ -1,7 +1,6 @@
 """Generalized MkDocs doc-site pipeline engine for `docsmith collect`.
 
-Fork of smritea-cloud's docs-site/docs_kb.py, restructured around a
-SiteContext and the docsmith config's `site` section:
+Structured around a SiteContext and the docsmith config's `site` section:
 
     collect -> transform -> links -> hubs/nav -> landing -> mkdocs.yml
 
@@ -336,7 +335,7 @@ def render_mkdocs_config(ctx: SiteContext, navigation_sections: list[dict]) -> P
     }
 
     environment = Environment(loader=FileSystemLoader(str(_TEMPLATES_DIR)))
-    # Same yaml_str filter contract as the original docs_kb.py pipeline.
+    # yaml_str filter: render any value as a safely quoted YAML string.
     environment.filters["yaml_str"] = lambda value: json.dumps(str(value))
     template = environment.get_template("mkdocs.yml.j2")
     rendered = template.render(**template_context)
@@ -404,8 +403,8 @@ def run_render_pipeline(ctx: SiteContext) -> tuple[list[dict], list[dict], list[
 def _resolve_mkdocs_binary(ctx: SiteContext) -> Optional[str]:
     """Resolve the `mkdocs` executable.
 
-    Checks (in order): a sibling of the running Python interpreter (the
-    original docs_kb.py venv resolution), a venv inside the site workdir
+    Checks (in order): a sibling of the running Python interpreter (its
+    own venv), a venv inside the site workdir
     (`<workdir>/.venv/bin/mkdocs`), and finally `mkdocs` on PATH. Returns
     None when no candidate exists.
     """

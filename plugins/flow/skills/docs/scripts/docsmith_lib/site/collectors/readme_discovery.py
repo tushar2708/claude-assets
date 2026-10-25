@@ -1,4 +1,4 @@
-# Vendored from smritea-cloud docs-site (generic, config-driven) — docsmith engine
+# docsmith engine — site pipeline module (generic, config-driven)
 """README discovery collector for the docs-site autogen pipeline.
 
 This collector recursively searches a configured list of root directories
@@ -11,14 +11,14 @@ filename and all preceding segments preserved as nested subdirectories
 (with underscores hyphenated for readability).
 
 Example:
-    ``cloud_backend/dataplane-api/README.md``
-    -> ``readmes/cloud-backend/dataplane-api.md``
+    ``backend_services/api-server/README.md``
+    -> ``readmes/backend-services/api-server.md``
 
     ``python/README.md`` (single parent segment, no subdirectory)
     -> ``readmes/python.md``
 
-    ``smritea-oss/oss_backend/smritea-oss-core/README.md``
-    -> ``readmes/smritea-oss/oss-backend/smritea-oss-core.md``
+    ``libs/core_lib/core-utils/README.md``
+    -> ``readmes/libs/core-lib/core-utils.md``
 """
 
 import fnmatch

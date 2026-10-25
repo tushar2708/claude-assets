@@ -42,7 +42,7 @@ def test_extract_rejects_dotted_identifiers_and_hosts():
     # hostnames, IPs, version numbers must not be treated as file refs.
     for token in (
         "service.name", "django.contrib.contenttypes", "cfg.Jobs.Enable",
-        "prod.smritea.ai", "100.64.1.2", "99.9", "main.go", "config.yaml",
+        "prod.example.com", "100.64.1.2", "99.9", "main.go", "config.yaml",
     ):
         assert extract(f"See `{token}` here.\n") == [], token
 
@@ -50,11 +50,11 @@ def test_extract_rejects_dotted_identifiers_and_hosts():
 def test_extract_slashed_extension_allowlist():
     # With a '/', a known code/doc extension or no extension qualifies; an
     # unknown "extension" (a symbol or version segment) does not.
-    assert [r.path for r in extract("`cloud_backend/studio-api/main.go`\n")] == [
-        "cloud_backend/studio-api/main.go"
+    assert [r.path for r in extract("`backend_services/api-server/main.go`\n")] == [
+        "backend_services/api-server/main.go"
     ]
-    assert [r.path for r in extract("`cloud_backend/studio-api`\n")] == [
-        "cloud_backend/studio-api"
+    assert [r.path for r in extract("`backend_services/api-server`\n")] == [
+        "backend_services/api-server"
     ]
     assert extract("`pkg/store.HandleThing`\n") == []  # slash + unknown ext
     assert extract("`api/v1.0`\n") == []  # slash + version, not a file

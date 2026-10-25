@@ -27,6 +27,7 @@ EXPECTED_SKILLS = [
     "prototype",
     "sync-issues",
     "init",
+    "plan-it",
 ]
 
 EXPECTED_COMMANDS = [
@@ -45,7 +46,7 @@ EXPECTED_COMMANDS = [
 
 # Lifecycle/roadmap skills the spec requires to be user-invoked only.
 # grilling is intentionally EXEMPT (spec: "Edit: none").
-USER_ONLY_SKILLS = ["grill", "spec", "sync-issues", "init"]
+USER_ONLY_SKILLS = ["grill", "spec", "sync-issues", "init", "plan-it"]
 
 
 def _parse_frontmatter(path: Path) -> dict:
@@ -184,11 +185,80 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
         ],
     ),
     "scaffold-sync-engine": (["commands/scaffold.md"], ["--sync-engine"]),
+    # wave model (spec 186): sub-feature waves -> stages -> tasks
+    "wave-model": (
+        ["skills/plan-it/references/wave-model.md"],
+        [
+            "S1 contracts",
+            "S2 tests",
+            "S3 implementation",
+            "A file belongs to at most one task in a stage.",
+            "Run for this wave",
+            "Run for every wave",
+            "Skip for every wave",
+            "If the user said run, run. If the user said skip, skip. No exceptions.",
+            "Never commit. Never offer or suggest a commit. Commit only when the user asks.",
+            "| Title |",
+            "| Wave |",
+            "| Stage |",
+            "| Files |",
+            "| Changes |",
+            "| Shared contracts |",
+            "| Test cases |",
+            "| Self-check |",
+            "| Agent |",
+            "| Done-when |",
+            "| Blocked by |",
+            "Never use general-purpose.",
+        ],
+    ),
+    "plan-it": (
+        ["skills/plan-it/SKILL.md"],
+        [
+            "references/wave-model.md",
+            "End with ExitPlanMode.",
+            "compliance ledger",
+            "Translate every rule that asks for one wave per TDD phase into stages S1/S2/S3 of the sub-feature wave.",
+        ],
+    ),
+    "make-tasks-wave-model": (
+        ["commands/make-tasks.md"],
+        [
+            "skills/plan-it/references/wave-model.md",
+            "A file belongs to at most one task in a stage.",
+            "Never use agents to create tasks.",
+            "Never commit.",
+        ],
+    ),
+    "execute-wave-model": (
+        ["commands/execute.md"],
+        [
+            "skills/plan-it/references/wave-model.md",
+            "Only one stage in progress at a time.",
+            "Never commit. Never offer or suggest a commit. Commit only when the user asks.",
+            "The verify question is the only planned stop.",
+        ],
+    ),
+    "spec-sub-features": (
+        ["skills/spec/SKILL.md"],
+        ["## Sub-features", "skills/plan-it/references/wave-model.md"],
+    ),
+    "grill-flow-spec": (["skills/grill/SKILL.md"], ["/flow:spec"]),
 }
 
 # rule name -> (PLUGIN_ROOT-relative file, substring it must NOT contain)
 _FORBIDDEN_TEXT_PINS: dict[str, tuple[str, str]] = {
     "spec-no-init-fallback": ("skills/spec/SKILL.md", "or `/flow:init`"),
+    # wave model (spec 186): sub-feature waves -> stages -> tasks
+    "make-tasks-no-one-file-rule": ("commands/make-tasks.md", "One task = one file"),
+    "make-tasks-no-slices": ("commands/make-tasks.md", "ertical slices"),  # "Vertical"/"vertical"
+    "execute-no-todo-cap": ("commands/execute.md", "under 25"),
+    "execute-no-end-commit": ("commands/execute.md", "No intermediate commits"),
+    "grill-no-to-spec": ("skills/grill/SKILL.md", "/to-spec"),
+    "make-tasks-no-absolute": ("commands/make-tasks.md", "ABSOLUTE"),
+    "execute-no-absolute": ("commands/execute.md", "ABSOLUTE"),
+    "plan-it-no-absolute": ("skills/plan-it/SKILL.md", "ABSOLUTE"),
+    "wave-model-no-absolute": ("skills/plan-it/references/wave-model.md", "ABSOLUTE"),
 }
 
 _REQUIRED_TEXT_CASES = [

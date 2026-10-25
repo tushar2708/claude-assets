@@ -1,4 +1,4 @@
-# Vendored from smritea-cloud docs-site (generic, config-driven) — docsmith engine
+# docsmith engine — site pipeline module (generic, config-driven)
 """Collector that turns raw `swagger.json` specs into browsable API reference pages.
 
 This module implements the `openapi` collector referenced in

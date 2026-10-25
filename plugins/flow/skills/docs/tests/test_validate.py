@@ -36,6 +36,13 @@ def _set_extra_gate_paths(root, patterns):
     cfg_path.write_text(json.dumps(cfg), encoding="utf-8")
 
 
+def _set_validate_config(root, key, value):
+    cfg_path = root / ".docsmith" / "config.json"
+    cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+    cfg.setdefault("validate", {})[key] = value
+    cfg_path.write_text(json.dumps(cfg), encoding="utf-8")
+
+
 # --- full run on the pristine fixture ----------------------------------------
 
 
@@ -86,6 +93,8 @@ def test_broken_v2_link_error(fixture_project, run_cli):
 def test_broken_v3_drift_warnings_by_default(fixture_project, run_cli):
     # Drift feeds the freshness score, so by default both a missing path and a
     # missing symbol are warnings (staleness signals, not build-breakers).
+    # broken.md is a draft, so the draft skip is disabled to drift-check it.
+    _set_validate_config(fixture_project, "drift_skip_statuses", [])
     _, payload = run_cli(fixture_project, "validate")
     assert _results(payload, check="drift", severity="error", path=BROKEN) == []
     drift_warnings = _results(payload, check="drift", severity="warning", path=BROKEN)
@@ -97,10 +106,9 @@ def test_broken_v3_drift_warnings_by_default(fixture_project, run_cli):
 def test_v3_path_drift_escalates_to_error_when_configured(fixture_project, run_cli):
     # validate.path_drift_severity="error" makes a missing path on an evergreen
     # doc a hard error again.
-    cfg_path = fixture_project / ".docsmith" / "config.json"
-    cfg = json.loads(cfg_path.read_text())
-    cfg.setdefault("validate", {})["path_drift_severity"] = "error"
-    cfg_path.write_text(json.dumps(cfg))
+    # broken.md is a draft, so the draft skip is disabled to drift-check it.
+    _set_validate_config(fixture_project, "path_drift_severity", "error")
+    _set_validate_config(fixture_project, "drift_skip_statuses", [])
     _, payload = run_cli(fixture_project, "validate")
     drift_errors = _results(payload, check="drift", severity="error", path=BROKEN)
     assert any("src/gone.go" in e["message"] for e in drift_errors)
@@ -183,10 +191,7 @@ def test_v3_drift_skips_docs_by_frontmatter_status(
     fixture_project, run_cli, frontmatter_lines, skip_override, expect_drift
 ):
     if skip_override is not None:
-        cfg_path = fixture_project / ".docsmith" / "config.json"
-        cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
-        cfg.setdefault("validate", {})["drift_skip_statuses"] = skip_override
-        cfg_path.write_text(json.dumps(cfg), encoding="utf-8")
+        _set_validate_config(fixture_project, "drift_skip_statuses", skip_override)
     (fixture_project / "README.md").write_text(
         "---\n" + "\n".join(frontmatter_lines) + "\n---\n\n"
         "See `src/gone.go` and `src/main.go#VanishedSymbol`.\n",

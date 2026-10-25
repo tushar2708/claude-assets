@@ -1,4 +1,4 @@
-# Vendored from smritea-cloud docs-site (generic, config-driven) — docsmith engine
+# docsmith engine — site pipeline module (generic, config-driven)
 """Collector that copies markdown files from a directory tree or file list.
 
 This module implements the `markdown_tree` collector referenced in

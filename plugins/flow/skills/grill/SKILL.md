@@ -93,4 +93,4 @@ The session is done when the frontier is empty: every branch of the design tree 
 
 1. Summarise the shared understanding: the decisions made, the best practices adopted, the pitfalls now avoided, and the open risks that remain.
 2. Do not act on the feature until the developer confirms this summary.
-3. When they confirm, offer to hand the same conversation to `/to-spec` to turn it into a published spec — no fresh session, the value is the context you just built.
+3. When they confirm, offer only `/flow:spec`, in the same conversation, to turn it into a governed spec — no fresh session, the value is the context you just built.

@@ -1,4 +1,4 @@
-# Vendored from smritea-cloud docs-site (generic, config-driven) — docsmith engine
+# docsmith engine — site pipeline module (generic, config-driven)
 """Collector implementations for the docs-site pipeline."""
 
 from .markdown_tree import collect_markdown_tree

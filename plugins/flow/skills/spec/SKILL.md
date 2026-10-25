@@ -18,7 +18,7 @@ This skill takes the current conversation context and codebase understanding and
 
 Check with the user that these seams match their expectations.
 
-3. Write the spec using the template below.
+3. Write the spec using the template below. Sub-features schema: ${CLAUDE_PLUGIN_ROOT}/skills/plan-it/references/wave-model.md.
 4. Stamp docsmith `plan`-category frontmatter and tags on the spec — `type: plan`, `status: draft`, and a `tags:` list that includes `plan` — then route authoring through the `flow:docsmith-doc-author` subagent (Task tool, `subagent_type: flow:docsmith-doc-author`) with validate-to-green — one dispatch per file. The agent saves the spec as a numbered `docs/plans/NN-slug.md` (NN = next-of-largest existing numeric prefix in that folder).
 5. Have `flow:docsmith-doc-author` write the plan index too (one dispatch per file). If `docs/plans/INDEX.md` (or the project's equivalent index) does not exist, the agent creates it WITH docsmith frontmatter (`type: Reference` — confirm the alias in `.docsmith/config.json` `type_aliases`; `title`; `status: draft`; 2-4 kebab-case tags as a YAML block list; `stale_after` per the evergreen contract; `generated: {by, at}`), an H1, and the table header `| # | [Title](file) | Aim | Status | Notes |` with its rows, then adds the new row. If it exists, the agent appends the row, matching the existing row format `| # | [Title](file) | Aim | Status | Notes |` with Status `❌ Not Implemented`. Never hand-write the index in the main thread.
 Do NOT publish to any issue tracker and do NOT apply any triage label — GitHub-issue creation is owned solely by `/flow:add-to-roadmap`.
@@ -61,6 +61,18 @@ A list of implementation decisions that were made. This can include:
 Do NOT include specific file paths or code snippets. They may end up being outdated very quickly.
 
 Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it within the relevant decision and note briefly that it came from a prototype. Trim to the decision-rich parts — not a working demo, just the important bits.
+
+## Sub-features
+
+An ordered list. Each item has:
+
+- `SF-<n>` and name
+- Behavior
+- User stories covered
+- Depends on (earlier SF only)
+- Done-when
+
+No file paths. Each sub-feature becomes one wave in `/flow:plan-it`.
 
 ## Testing Decisions
 

@@ -1,4 +1,4 @@
-# Vendored from smritea-cloud docs-site (generic, config-driven) — docsmith engine
+# docsmith engine — site pipeline module (generic, config-driven)
 """Internal link rewrite transform for collected documentation files.
 
 This module rewrites relative Markdown links (`[text](target)`) inside an

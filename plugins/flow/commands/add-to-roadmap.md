@@ -4,7 +4,7 @@ Analyze the current conversation to identify an item that should be documented i
 
 ## Step 1: Infer from Context
 Extract from the conversation:
-- **Project**: Which repo was discussed (smritea, smritea-cloud, etc.)
+- **Project**: Which repo was discussed
 - **Area**: File path or component mentioned
 - **Description**: The technical issue or shortcut identified
 - **Impact**: Infer based on discussion tone and scope

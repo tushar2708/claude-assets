@@ -1,4 +1,4 @@
-# Vendored from smritea-cloud docs-site (generic, config-driven) — docsmith engine
+# docsmith engine — site pipeline module (generic, config-driven)
 """Provenance transform: append a source footer to collected docs.
 
 This module appends a small, idempotent Markdown footer noting where a

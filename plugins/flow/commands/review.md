@@ -33,15 +33,14 @@ Before reviewing the code, verify the plan itself was built correctly and the im
 
 1. **Find the skill that created the plan.** Locate the plan / plan file this work was built from and read its top for
    the stamp line `**Planned-with-skill:** <skill-name>` (it may be a chain, e.g.
-   `smritea-planner → smritea-backend-planner`).
+   `<router-planner> → <backend-planner>`).
    - **If the stamp is present**, use those skill name(s) and go to step 2.
    - **If a plan exists but has NO stamp** (or no plan file exists and the review is being run on existing tasks / from
      loose context), do NOT silently guess. Use the **AskUserQuestion** tool to ask the user which skill was used to
      create this plan / should be used to review the code. Offer, as options, the skills that best fit the work's domain
-     (look in `.claude/skills/` — e.g. `smritea-backend-planner`, `smritea-multipay-india-planner`, `smritea-ui-planner`,
-     `smritea-e2e-test-planner`, `cloud-deployment-feature-guide`, `smritea-clients-cascade`, `smritea-planner`). The
-     user can always pick a custom skill (the "Other" free-text option the tool provides). Also record the missing stamp
-     as a P0 issue when a plan file existed without one.
+     (look in `.claude/skills/` for the project's planning skills — for example a router planner and the domain
+     planners it dispatches to). The user can always pick a custom skill (the "Other" free-text option the tool
+     provides). Also record the missing stamp as a P0 issue when a plan file existed without one.
    - **If the user rejects / dismisses that prompt**, continue the review WITHOUT any skill (skip steps 2–3 and do only
      the code review below).
 2. **Invoke that skill.** Run `Skill("<skill-name>")` for the chosen skill — and for every skill in the chain. This
