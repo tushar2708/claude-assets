@@ -11,8 +11,10 @@ tags:
 ---
 
 <!-- This doc is ephemeral: after the category's ttl_days (default 45) past terminal status
-     it belongs in the category's archive_dir (default docs/plans/archive/). Terminal
-     statuses: stable (executed, kept as record), superseded/deprecated (replaced/abandoned).
+     it belongs in the category's archive_dir (default docs/plans/archive/). Live statuses:
+     draft, partially-implemented (some of the scope is built). Terminal statuses:
+     implemented (fully built), stable (executed, kept as record), superseded/deprecated
+     (replaced/abandoned).
      File name gets a numbered prefix: {NN}-{slug}.md, next-of-largest existing prefix. -->
 
 # Plan: <Title>

@@ -12,7 +12,7 @@ Read `${CLAUDE_PLUGIN_ROOT}/skills/plan-it/references/wave-model.md` first.
 
 1. Read the approved plan.
 2. Before any other step, run every check of `${CLAUDE_PLUGIN_ROOT}/skills/plan-it/references/plan-validation.md` (the same file `/flow:plan-it` runs). On any failure: STOP. Tell the user which check failed, with the plan line. Create no task.
-3. For each wave, write one contract file `<plan path without .md>.tasks/W<n>-contracts.md`. Copy into it, verbatim, every plan section that the wave's shared contracts name, each under its plan heading.
+3. For each wave, write one contract file `/tmp/flow-make-tasks/<plan file name without .md>/W<n>-contracts.md`. Copy into it, verbatim, every plan section that the wave's shared contracts name, each under its plan heading. The contract file is temporary: `/tmp` is cleared at restart, and the plan file stays the source of truth.
 4. Create every task yourself with TaskCreate, one after another, in wave → stage → task order. Create the verify task last in each wave. Create the post-wave tasks after the last verify task. Never use agents to create tasks.
 5. Write each task description as: every task field of the plan, verbatim; then "Shared contracts: read `<contract file>` in full"; then "Plan: `<plan path>`, sections: <exact headings the task's fields cite>".
 6. Wire `blockedBy` per the reference with TaskUpdate `addBlockedBy`.

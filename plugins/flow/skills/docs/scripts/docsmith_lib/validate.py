@@ -522,8 +522,9 @@ def _check_plan_ttl(
     config: dict,
     cat_docs: "list[tuple[str, Optional[str]]]",
 ) -> None:
-    """V6: ephemeral docs (status draft/stable, not archived) whose last
-    commit is older than the category ttl_days get an expiry warning."""
+    """V6: live ephemeral docs (status draft, stable or partially-implemented,
+    not archived) whose last commit is older than the category ttl_days get an
+    expiry warning. implemented, deprecated and superseded are terminal."""
     categories: dict[str, dict] = config.get("categories", {})
     now = time.time()
     for rel_path, category in cat_docs:
@@ -544,7 +545,7 @@ def _check_plan_ttl(
             continue
         fm, _ = frontmatter_spec.parse_frontmatter(text)
         status = fm.get("status") if fm else None
-        if status not in ("draft", "stable"):
+        if status not in ("draft", "stable", "partially-implemented"):
             continue
 
         commit_ts = gitinfo.last_commit_ts(root, rel_path)

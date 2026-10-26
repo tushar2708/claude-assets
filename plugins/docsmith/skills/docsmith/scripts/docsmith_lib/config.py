@@ -190,7 +190,14 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "overrides": {},
     "categories": DEFAULT_CATEGORIES,
     "frontmatter": {
-        "allowed_statuses": ["draft", "stable", "deprecated", "superseded"],
+        "allowed_statuses": [
+            "draft",
+            "stable",
+            "partially-implemented",
+            "implemented",
+            "deprecated",
+            "superseded",
+        ],
         "require_title": True,
         "require_stale_after": False,
     },

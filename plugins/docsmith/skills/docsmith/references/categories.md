@@ -98,13 +98,15 @@ Defaults below are the engine defaults.
   with ❌/⚠️/✅ statuses, and mandatory review stages.
 - **Vs neighbors**: a plan is disposable by design; anything in it worth keeping forever
   should graduate into an evergreen doc or a decision record before the plan is archived.
-- **Frontmatter**: `type: plan` (default alias `Plan`); `status: draft` while live, then a
-  terminal status (`stable` executed-and-kept, `superseded`/`deprecated` replaced or
-  abandoned). No `stale_after`.
+- **Frontmatter**: `type: plan` (default alias `Plan`); `status: draft` while live,
+  `partially-implemented` when some but not all of its scope is built, then a terminal
+  status (`implemented` fully built, `stable` executed-and-kept, `superseded`/`deprecated`
+  replaced or abandoned). No `stale_after`.
 - **Lifecycle**: **ephemeral TTL + archive** — after the category's `ttl_days` (default 45)
   past terminal status, the file belongs in the category's `archive_dir` (default
-  `docs/plans/archive/`). The validator's plan-ttl check warns on any live (`draft`/`stable`)
-  plan whose last commit is older than the TTL: move it to the archive or mark it superseded.
+  `docs/plans/archive/`). The validator's plan-ttl check warns on any live
+  (`draft`/`stable`/`partially-implemented`) plan whose last commit is older than the TTL:
+  finish it, move it to the archive, or mark it superseded.
 - **Naming — numbered prefix (apply without being asked)**: plans get a `{NN}-{slug}.md`
   name. If the doc is to be created in plans/ todos/ or any similar directory that has
   numbered-prefixed files, always add your file with a prefix of next-of-largest existing

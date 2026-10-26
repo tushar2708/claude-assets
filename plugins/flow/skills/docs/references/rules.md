@@ -139,7 +139,7 @@ Every governed doc starts with a YAML block at line 1 (`---` ... `---`) with the
 |-------|----------------------|--------------------|
 | `type` | always set; the category key or one of its `type_aliases` | must resolve to a configured category (dir_patterns also resolve by location) — else error |
 | `title` | always set; the doc's human title | non-empty string required — else error |
-| `status` | always set; `draft` on creation | when present, must be one of `draft`, `stable`, `deprecated`, `superseded` |
+| `status` | always set; `draft` on creation | when present, must be one of `draft`, `stable`, `partially-implemented`, `implemented`, `deprecated`, `superseded` |
 | `tags` | 2-4 topical tags, YAML block list (never inline `[a, b]`) | when present, must be a YAML list |
 | `stale_after` | evergreen docs: today + the category's `stale_after_days`; refresh on every substantive update | when present, must be `YYYY-MM-DD`; a past date warns "document is stale" |
 | `generated` | set/update whenever an agent authors or updates the doc | when present, must be a mapping with a non-empty string `by` and an ISO-8601 `at` |

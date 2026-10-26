@@ -231,7 +231,13 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
             "Never use agents to create tasks.",
             "Never commit.",
             "W<n>-contracts.md",
+            "/tmp/flow-make-tasks/<plan file name without .md>/W<n>-contracts.md",
         ],
+    ),
+    # contract files are temporary: /tmp is cleared at restart, the plan stays the source of truth
+    "wave-model-contract-file-in-tmp": (
+        ["skills/plan-it/references/wave-model.md"],
+        ["/tmp/flow-make-tasks/<plan file name without .md>/W<n>-contracts.md"],
     ),
     # one validation list, run by plan-it after planning and by make-tasks before task creation
     "plan-validation": (
@@ -258,6 +264,31 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
         ["## Sub-features", "skills/plan-it/references/wave-model.md"],
     ),
     "grill-flow-spec": (["skills/grill/SKILL.md"], ["/flow:spec"]),
+    # one tracker reference: roadmap.md declares the tracker, read from disk on every run
+    "issue-tracker-reference": (
+        ["skills/sync-issues/references/issue-tracker.md"],
+        [
+            "## Issue Tracking",
+            "| Tool |",
+            "| Location |",
+            "| MCP server |",
+            "Read `roadmap.md` from disk on every run.",
+            "Never reuse a tracker value from memory, an earlier run, or the conversation.",
+            "Never invent an MCP tool name.",
+            "roadmap-id: <ID>",
+            "AskUserQuestion",
+            "`github`",
+            "`jira`",
+            "`asana`",
+            "`other:<name>`",
+            "gh auth status",
+        ],
+    ),
+    # both issue commands resolve the tracker only through issue-tracker.md
+    "issue-tracker-users": (
+        ["commands/add-to-roadmap.md", "skills/sync-issues/SKILL.md"],
+        ["${CLAUDE_PLUGIN_ROOT}/skills/sync-issues/references/issue-tracker.md"],
+    ),
 }
 
 # rule name -> (PLUGIN_ROOT-relative file, substring it must NOT contain)
@@ -278,6 +309,15 @@ _FORBIDDEN_TEXT_PINS: dict[str, tuple[str, str]] = {
     # shared contracts are written to a contract file, never pasted into every task
     "make-tasks-no-full-paste": ("commands/make-tasks.md", "including the full shared contracts"),
     "wave-model-no-full-paste": ("skills/plan-it/references/wave-model.md", "Copied in full from the wave section into every task"),
+    # contract files never go next to the plan file; they live in /tmp/flow-make-tasks/
+    "make-tasks-no-plan-dir-contracts": ("commands/make-tasks.md", ".tasks/W<n>-contracts.md"),
+    "wave-model-no-plan-dir-contracts": ("skills/plan-it/references/wave-model.md", ".tasks/W<n>-contracts.md"),
+    # issue work follows the tracker that roadmap.md declares; no GitHub-only text may return
+    "add-to-roadmap-no-github-step": ("commands/add-to-roadmap.md", "Create the GitHub Issue"),
+    "add-to-roadmap-no-inline-gh": ("commands/add-to-roadmap.md", "gh issue create"),
+    "sync-issues-no-github-only": ("skills/sync-issues/SKILL.md", "All GitHub reads/writes use `gh`"),
+    "init-no-github-issue": ("skills/init/SKILL.md", "the one GitHub issue"),
+    "spec-no-github-issue-owner": ("skills/spec/SKILL.md", "GitHub-issue creation"),
 }
 
 _REQUIRED_TEXT_CASES = [
