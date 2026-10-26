@@ -21,8 +21,15 @@ Check with the user that these seams match their expectations.
 3. Write the spec using the template below. Sub-features schema: ${CLAUDE_PLUGIN_ROOT}/skills/plan-it/references/wave-model.md.
 4. Stamp docsmith `plan`-category frontmatter and tags on the spec — `type: plan`, `status: draft`, and a `tags:` list that includes `plan` — then route authoring through the `flow:docsmith-doc-author` subagent (Task tool, `subagent_type: flow:docsmith-doc-author`) with validate-to-green — one dispatch per file. The agent saves the spec as a numbered `docs/plans/NN-slug.md` (NN = next-of-largest existing numeric prefix in that folder).
 5. Have `flow:docsmith-doc-author` write the plan index too (one dispatch per file). If `docs/plans/INDEX.md` (or the project's equivalent index) does not exist, the agent creates it WITH docsmith frontmatter (`type: Reference` — confirm the alias in `.docsmith/config.json` `type_aliases`; `title`; `status: draft`; 2-4 kebab-case tags as a YAML block list; `stale_after` per the evergreen contract; `generated: {by, at}`), an H1, and the table header `| # | [Title](file) | Aim | Status | Notes |` with its rows, then adds the new row. If it exists, the agent appends the row, matching the existing row format `| # | [Title](file) | Aim | Status | Notes |` with Status `❌ Not Implemented`. Never hand-write the index in the main thread.
-Do NOT publish to any issue tracker and do NOT apply any triage label — GitHub-issue creation is owned solely by `/flow:add-to-roadmap`.
+Do NOT publish to a tracker or apply a triage label yourself. Create issues only through `/flow:add-to-roadmap` in step 7.
 6. **Verify (orchestrator, never delegated).** From the repo root run `uv run .docsmith/engine/docsmith.py validate` UNSCOPED (no `--paths`). It must print `FAILURES: 0`. Relay every WARN line to the user. If there are failures, re-dispatch `flow:docsmith-doc-author` with the exact findings; do not fix them yourself. Quote the validator output in your report.
+7. **Offer a story.** Run only after step 6 prints `FAILURES: 0`. Ask each question with AskUserQuestion.
+   1. Ask: "Create the Jira story now?" Yes or no. On no, stop.
+   2. Ask the epic: existing epic (ask its key or URL) or new epic.
+   3. Invoke the Skill tool with skill `flow:add-to-roadmap`.
+   4. Pass in `args`: spec path, spec title, epic choice, and the SF list.
+   5. It creates one Story and one Subtask per `SF-<n>`.
+   6. Create no item or roadmap row yourself. Leave the `docs/plans/INDEX.md` row as is.
 
 <spec-template>
 

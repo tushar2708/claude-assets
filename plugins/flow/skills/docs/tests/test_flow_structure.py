@@ -99,6 +99,21 @@ def test_user_only_skills_disable_model_invocation():
         )
 
 
+# Commands another flow skill invokes through the Skill tool. The model sees a
+# command as a skill only when it has a description and does not disable model
+# invocation (/flow:spec step 7 invokes /flow:add-to-roadmap).
+MODEL_INVOKED_COMMANDS = ["add-to-roadmap.md"]
+
+
+@pytest.mark.parametrize("name", MODEL_INVOKED_COMMANDS)
+def test_model_invoked_commands_are_invocable(name: str):
+    fm = _parse_frontmatter(PLUGIN_ROOT / "commands" / name)
+    assert fm.get("description"), f"command {name} needs a non-empty description"
+    assert fm.get("disable-model-invocation") is not True, (
+        f"command {name} must not set disable-model-invocation: true"
+    )
+
+
 def test_no_stale_docsmith_references():
     stale = ["skills/docsmith", "/docsmith:"]
     self_path = Path(__file__).resolve()
@@ -289,6 +304,45 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
         ["commands/add-to-roadmap.md", "skills/sync-issues/SKILL.md"],
         ["${CLAUDE_PLUGIN_ROOT}/skills/sync-issues/references/issue-tracker.md"],
     ),
+    # spec offers one Story under an epic, created only through /flow:add-to-roadmap
+    "spec-offer-tasks": (
+        ["skills/spec/SKILL.md"],
+        ["flow:add-to-roadmap", "existing epic", "new epic", "Subtask"],
+    ),
+    # add-to-roadmap has a spec mode that links every item to its epic
+    "add-to-roadmap-epic-mode": (
+        ["commands/add-to-roadmap.md"],
+        ["Set parent", "Invoked from /flow:spec"],
+    ),
+    # roadmap.md groups items by epic sections; items are typed Story, Task, or Bug
+    "epic-sections": (
+        ["skills/sync-issues/references/issue-tracker.md", "skills/sync-issues/SKILL.md"],
+        ["## Epic:"],
+    ),
+    "item-types": (
+        ["commands/add-to-roadmap.md", "skills/sync-issues/references/issue-tracker.md"],
+        ["Story, Task, or Bug", "Subtask"],
+    ),
+    # given inputs are used as-is; only missing fields are asked
+    "add-to-roadmap-inputs": (
+        ["commands/add-to-roadmap.md"],
+        ["## Inputs", "Never ask for a given field.", "Ask only missing or unclear fields"],
+    ),
+    # roadmap rows stay brief; details live in the tracker item
+    "row-brevity": (
+        ["commands/add-to-roadmap.md", "skills/sync-issues/references/issue-tracker.md"],
+        ["under 10 words", "under 15 words"],
+    ),
+    # a GitHub issue beside a non-GitHub tracker is created only on request
+    "github-on-request": (
+        ["commands/add-to-roadmap.md", "skills/sync-issues/references/issue-tracker.md"],
+        ["only when the user explicitly asks"],
+    ),
+    # one place defines the per-tool epic operations
+    "issue-tracker-epics": (
+        ["skills/sync-issues/references/issue-tracker.md"],
+        ["## G. Epics", "Create epic", "Get epic", "Set parent"],
+    ),
 }
 
 # rule name -> (PLUGIN_ROOT-relative file, substring it must NOT contain)
@@ -318,6 +372,12 @@ _FORBIDDEN_TEXT_PINS: dict[str, tuple[str, str]] = {
     "sync-issues-no-github-only": ("skills/sync-issues/SKILL.md", "All GitHub reads/writes use `gh`"),
     "init-no-github-issue": ("skills/init/SKILL.md", "the one GitHub issue"),
     "spec-no-github-issue-owner": ("skills/spec/SKILL.md", "GitHub-issue creation"),
+    # the per-type sections and their ID schemes are gone; items live in epic sections
+    "add-to-roadmap-no-id-schemes": ("commands/add-to-roadmap.md", '"## Tech Debt"  → TD<n>'),
+    # spec always creates one Story with one Subtask per sub-feature
+    "spec-no-task-per-sub-feature": ("skills/spec/SKILL.md", "one task per sub-feature"),
+    # the long Description-cell format moved into the tracker item body
+    "add-to-roadmap-no-long-row": ("commands/add-to-roadmap.md", "Write the Description cell in this order"),
 }
 
 _REQUIRED_TEXT_CASES = [

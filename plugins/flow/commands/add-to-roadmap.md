@@ -1,61 +1,72 @@
-Analyze the current conversation to identify an item that should be documented in `roadmap.md` (repo root) — in ANY of its sections, not just Tech Debt.
+---
+description: Add a roadmap.md item under an epic and create it in the tracker. /flow:spec invokes it.
+---
 
-> This command is the SOLE GitHub-issue creator in flow: after writing the roadmap entry it creates exactly one GitHub issue for that entry (see Step 4). No other flow command creates issues.
+Find the item to track in `roadmap.md` (repo root) from the current conversation.
+If the conversation names no item, ask the user to describe it.
 
-## Step 1: Infer from Context
-Extract from the conversation:
-- **Project**: Which repo was discussed
-- **Area**: File path or component mentioned
-- **Description**: The technical issue or shortcut identified
-- **Impact**: Infer based on discussion tone and scope
-- **Effort**: Estimate based on complexity discussed
+> This command is the SOLE issue creator in flow. It creates items in the declared tracker.
 
-## Step 2: Clarify with User
-Use the AskUserQuestion tool to confirm your inferences:
-- Ask about Impact if unclear (High/Medium/Low)
-- Ask about Effort if unclear (High/Medium/Low)
-- Ask for any additional context needed
+## Step 0: Resolve the Issue Tracker
+Read `${CLAUDE_PLUGIN_ROOT}/skills/sync-issues/references/issue-tracker.md` first.
+Run its part C on every run, before any other step.
+Write no row until the tracker resolves or the user chose skip.
 
-## Step 3: Add Entry
-Add a row to the appropriate section's table in `roadmap.md` (repo root). There is no separate document.
-The entry can go into ANY roadmap section, not just Tech Debt. Each section has its own ID scheme:
+## Mode: Invoked from /flow:spec
+Inputs: spec path, spec title, epic choice, and the SF list.
+1. Run Step 0. The spec gives the inputs. Ask only unclear Impact or Effort.
+2. Use the passed epic choice. Do not ask again. Resolve it per part D.
+3. Create one Story under the epic. Title: the spec title.
+4. Story description: the spec path and one line from the spec's Solution.
+5. Create one Subtask per `SF-<n>` under the Story. Title: `SF-<n> <name>`.
+6. Subtask description: its Behavior and Done-when, from the spec.
+7. Write ONE roadmap row, for the Story only (Step 3).
+8. Never create a Task for a sub-feature. Only a Subtask can be a Story's child.
 
-roadmap.md sections and their ID schemes:
-- "## P0 — Critical"  → ID prefix P0-<n>
-- "## Features"  → plain integer <n> (rows count DOWN; use max+1)
-- "## Performance Improvements"  → P<n>
-- "## Future Enhancements"  → FE<n>
-- "## Architecture Refactors"  → A<n>
-- "## Ranking Signal Weighting"  → W<n>
-- "## Known Gaps / Bugs"  → G<n>
-- "## Tech Debt"  → TD<n>
-- "## Testing & Sandbox Validation"  → derive the prefix from that section's existing rows at run time
+## Inputs
 
-Rule: infer the section from the conversation; if ambiguous, ask the user via AskUserQuestion. Auto-increment
-the ID by scanning that section's existing rows for the highest number of its scheme and using the next.
-Each section's table header is `| # | Title | Description | Status |`. Keep the whole row on one line; never
-put a `|` inside a cell.
+| Field | Value | If not given |
+|---|---|---|
+| Type | Story, Task, or Bug | Ask. |
+| Epic | Existing key or URL, or `new` | Ask per part D. |
+| New epic name | Short name | Ask. |
+| New epic purpose | One line | Ask. |
+| Title | Under 10 words | Infer from the conversation. |
+| Short description | One sentence, under 15 words | Infer from the conversation. |
+| Full description | All details | Infer from the conversation. |
+| Area | File path or component | Infer. Ask if unclear. |
+| Impact | High, Medium, or Low | Infer. Ask if unclear. |
+| Effort | High, Medium, or Low | Infer. Ask if unclear. |
 
-1. Determine the target section and auto-increment its ID per the scheme above
-2. Insert the new row at the TOP of that section's table (newest first), directly under the header separator row
-3. Row format: `| <ID> | **Title** | Description | Status |`
-4. In the Description cell, start with `**Date**: <today's date>.`, then put the project and priority level
-   (based on Impact) as `**Priority**: <project> / <High|Medium|Low> Priority.`, then `**Area**: <file path
-   or component>.`, then the description of the issue, then `**Impact**: <High|Medium|Low>.` and
-   `**Effort**: <High|Medium|Low>.` (add `**Details**:` / `**Fix approach**:` text inline if needed; keep
-   the whole row on one line, and never use a `|` character inside a cell)
-5. Set Status to `Open`
+## Step 1: Collect Inputs
+1. Take every value given in the invocation or the user's request.
+2. A given value always wins. Never ask for a given field.
+3. Infer the remaining fields from the conversation.
+4. Ask only missing or unclear fields, with AskUserQuestion.
+5. Ask them together, in as few calls as possible.
 
-## Step 4: Create the GitHub Issue (this command is the SOLE issue creator in flow)
-4. Create exactly ONE GitHub issue (this command is the only issue creator in flow): run `gh issue create` in
-   the current repo with --title = the entry Title (strip surrounding `**` markdown), --body = the entry
-   Description followed by a line `roadmap-id: <the entry ID>` (exact — `/flow:sync-issues` matches on it),
-   and --label derived from the section (P0→priority:P0; Features→feature; Performance Improvements→performance;
-   Future Enhancements→enhancement; Architecture Refactors→refactor; Ranking Signal Weighting→ranking;
-   Known Gaps / Bugs→bug; Tech Debt→tech-debt; create the label with `gh label create` if missing). Capture the
-   printed issue URL. (`gh` runs in the invoking main context, not a subagent.)
-5. Append ` **Issue**: <url>.` to the end of that row's Description cell (one line, no `|` inside the cell),
-   linking the entry to its issue at creation time.
+## Step 2: Create the Item
+1. Create the item first, with Create (part F) and the fields of part E.
+   Put all details in the item body, in this order:
+   - `**Date**: <today's date>.`
+   - `**Area**: <file path or component>.`
+   - The full description.
+   - `**Impact**: <High|Medium|Low>.` and `**Effort**: <High|Medium|Low>.`
+   - Optional `**Details**:` or `**Fix approach**:` text.
+2. Link it to the epic with Set parent (part G). In Jira, `parent` goes in Create.
+3. Create a GitHub issue only when the user explicitly asks in this run.
+4. On skip in Step 0, create nothing. A new epic then needs the tracker; use an existing epic.
+
+## Step 3: Write the Row
+1. Insert the row at the top of the epic section's table (part D).
+2. Row: `#` = the item key, then Title, Description, Status, and the tracker column (part E).
+3. On skip: `#` = `TBD` and an empty tracker column. `/flow:sync-issues` fills both later.
+4. Set Status to `Open`.
+5. Keep the row brief. Details go in the tracker item.
+   - Title: bold, under 10 words.
+   - Description: one sentence, under 15 words. Problem or goal only.
+   - No dates, paths, links, Impact, or Effort in the row.
+6. Never add a row to `## Issue Tracking` (part B).
 
 ## Impact Guidelines
 - **High**: Causes bugs, blocks features, security risk
@@ -66,5 +77,3 @@ put a `|` inside a cell.
 - **High**: >1 day of work
 - **Medium**: 2-8 hours
 - **Low**: <2 hours
-
-If no tech debt was discussed in the conversation, ask the user to describe the issue they want to track.

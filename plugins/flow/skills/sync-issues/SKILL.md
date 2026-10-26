@@ -1,29 +1,45 @@
 ---
 name: sync-issues
-description: Reconcile roadmap.md with GitHub issues — backfill missing issues, repair entry↔issue links, and sync labels/status. Never creates a duplicate issue; never guesses ownership.
+description: Reconcile roadmap.md epic sections with the declared tracker. Backfill items, repair links, sync status. Never duplicates an item or guesses ownership.
 disable-model-invocation: true
 ---
 
 # sync-issues
 
-Reconcile `roadmap.md` (repo root) with the repository's GitHub issues. This skill is a RECONCILER, not the primary creator — `/flow:add-to-roadmap` is the sole issue creator.
+Reconcile `roadmap.md` (repo root) with the declared tracker's issues. This skill reconciles; `/flow:add-to-roadmap` is the sole issue creator.
+
+## Step 0: Resolve the Issue Tracker
+
+Read `${CLAUDE_PLUGIN_ROOT}/skills/sync-issues/references/issue-tracker.md` first.
+1. Run its part C on every run, before any other step.
+2. On skip, stop and change nothing.
+3. Read entries only from `## Epic:` sections (part D).
+4. Treat a legacy `**Epic**:` field as an epic link, never as the entry's issue.
 
 ## Matching rule (never guess)
 
-Every roadmap entry that already has an issue carries an inline `**Issue**: <url>.` field (written by `/flow:add-to-roadmap`), and the issue body carries a `roadmap-id: <ID>` marker line. Match an entry to its issue by:
-1. the `**Issue**:` URL on the entry, else
-2. the `roadmap-id:` marker in an issue body.
+Match an entry to its item in this order:
+1. the key in the tracker column (part E), else
+2. the legacy `**Issue**:` URL, else
+3. the exact `roadmap-id:` marker line in an item body (Find by marker, part F).
 
-Because the URL is written onto the entry at creation time, this reconciler NEVER guesses which issue belongs to which entry. If neither signal is present, treat the entry as unlinked — never fuzzy-match on title.
+No signal: the entry is unlinked. Never fuzzy-match on title.
 
 ## Operations
 
-1. **Backfill** — for a roadmap entry with NO `**Issue**:` link and NO matching `roadmap-id:` issue, create one issue using the exact `/flow:add-to-roadmap` creation rule (title from the entry, body + `roadmap-id: <ID>` marker, label from the section) and write the URL back into the entry. This is the only case where sync-issues creates an issue, and only for already-existing unlinked roadmap rows — never a brand-new entry.
-2. **Repair links** — where an entry's `**Issue**:` URL is missing but a `roadmap-id:` issue exists, write the URL back onto the entry. Where an issue exists for an ID no longer in `roadmap.md`, report it (do not auto-close).
-3. **Sync labels/status** — align each issue's label with its section (same section→label map as `/flow:add-to-roadmap`) and reflect the entry's Status: `Open`/`Planned`/`Pending`/`Deferred` → issue stays OPEN; `Done`/`Closed` → close the issue. Report every change.
+Use the part F and G operations.
 
-All GitHub reads/writes use `gh` (issue list/create/edit, label) in the current repo; `gh` runs in the invoking main context.
+1. **Backfill** — for an unlinked entry, create its item per `/flow:add-to-roadmap` (parts D, E).
+   - Write the tracker column. Replace a `TBD` in `#` with the key.
+   - Create items only for existing unlinked rows. Never add a new entry.
+2. **Repair links** — matched entry without a tracker column: write the column. Keep the old `#`.
+   - A listed item (List items, part F) that matches no entry: report it. Never close it.
+3. **Sync status** — set each item's state (Set state) from the entry's Status:
+   - `Open`/`Planned`/`Pending`/`Deferred` → open (reopen if closed).
+   - `Done`/`Closed` → close.
+   - GitHub or Asana: also set the label per part D.
+   - Report every change.
 
 ## Report
 
-Print counts of: backfilled, link-repaired, label/status-synced, and orphaned-issue entries.
+Print counts: backfilled, link-repaired, status-synced, and orphaned items.

@@ -41,7 +41,7 @@ Write the block BETWEEN idempotent markers:
 
 Block content (agent-facing, concise): state that this repo follows the flow dev-workflow, and list the lifecycle + commands:
 - `/flow:grill` (interview) → `/flow:spec` (governed spec with sub-features) → `/flow:plan-it` (Plan Mode plan: sub-feature waves → stages → tasks) → `/flow:make-tasks` (copies the plan into tasks) → `/flow:execute` (runs wave → stage → task) → `/flow:review` (read-only three-table review).
-- `/flow:add-to-roadmap` (roadmap entry + the one GitHub issue) and `/flow:sync-issues` (reconcile roadmap ↔ GitHub).
+- `/flow:add-to-roadmap` (roadmap entry + its issue in the declared tracker) and `/flow:sync-issues` (reconcile roadmap ↔ tracker).
 - docs commands: `/flow:write-doc`, `/flow:write-plan`, `/flow:write-adr`, `/flow:write-prd`, `/flow:update-docs`.
 - Documentation files are written only by the `flow:docsmith-doc-author` agent; never use `general-purpose` or any generic agent to write files.
 
