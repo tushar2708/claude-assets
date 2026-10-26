@@ -17,6 +17,7 @@ Inputs: spec path, spec title, epic choice, and the SF list.
 1. Run Step 0. The spec gives the inputs. Ask only unclear Impact or Effort.
 2. Use the passed epic choice. Do not ask again. Resolve it per part D.
 3. Create one Story under the epic. Title: the spec title.
+   Set its status to `Spec Created` (part E).
 4. Story description: the spec path and one line from the spec's Solution.
 5. Create one Subtask per `SF-<n>` under the Story. Title: `SF-<n> <name>`.
 6. Subtask description: its Behavior and Done-when, from the spec.

@@ -368,6 +368,11 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
         ["commands/add-to-roadmap.md"],
         ["## Inputs", "Never ask for a given field.", "Ask only missing or unclear fields"],
     ),
+    # a spec Story starts in the Spec Created status; other items use the default
+    "spec-created-status": (
+        ["commands/add-to-roadmap.md", "skills/sync-issues/references/issue-tracker.md"],
+        ["`Spec Created`"],
+    ),
     # roadmap rows stay brief; details live in the tracker item
     "row-brevity": (
         ["commands/add-to-roadmap.md", "skills/sync-issues/references/issue-tracker.md"],

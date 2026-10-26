@@ -110,6 +110,8 @@ Read and write entries only there.
 | Body | All details. The roadmap row holds only a short line. |
 | Priority (Jira) | From Impact: High, Medium, or Low. A P0 marker means Highest. No source: ask the user. |
 | Parent | Story, Task, Bug: the epic. Subtask: its Story. |
+| Status | Spec Story: `Spec Created`. Other items: the default status. |
+| Set `Spec Created` | Jira: transition with the matching `listJiraIssueTransitions` id. Missing: ask the user. |
 | Row `#` | New row: the item key. Old rows keep their IDs (`TD12`, `G3`, `13`). |
 | Tracker column | Jira: `[<KEY>](https://<site>/browse/<KEY>) <Type>`. Other tools: `[<id>](<url>) <Type>`. |
 | Row shape | One line. No pipe inside a cell. |
