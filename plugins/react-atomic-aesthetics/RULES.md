@@ -103,7 +103,13 @@ Validation before committing: grep for hardcoded hex (grep -rE "#[0-9a-fA-F]{3,6
 
 ### B5. INDEX.md inventory
 
-Every project using this plugin maintains an INDEX.md at the UI project root inventorying atoms/molecules/organisms/pages/hooks. Updating INDEX.md is the FINAL step of any component work. Sort entries alphabetically within each section; update the timestamp on every modification; remove deleted components; add new ones under the correct classification.
+Every UI package root keeps an INDEX.md: each app and each shared component library.
+If it is missing, create it from `${CLAUDE_PLUGIN_ROOT}/templates/INDEX.template.md`.
+Read every INDEX.md in the repo before planning or writing a component.
+Reuse a listed component; never re-create it in another package.
+In a monorepo, put generic atoms and molecules in the shared library.
+Updating INDEX.md is the FINAL step of any component work.
+Sort rows alphabetically; update `Last updated:`; remove deleted rows; keep the format.
 
 ## Part C — Dependency Requirement
 
