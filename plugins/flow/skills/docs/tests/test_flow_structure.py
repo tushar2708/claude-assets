@@ -9,6 +9,8 @@ engine suite so it runs under the same run_tests.sh (uv provides pytest+pyyaml).
 
 import json
 import re
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -97,6 +99,44 @@ def test_user_only_skills_disable_model_invocation():
         assert fm.get("disable-model-invocation") is True, (
             f"skill {name} must set disable-model-invocation: true"
         )
+
+
+# Plugin hooks: (event, matcher, script relative to PLUGIN_ROOT). Claude Code
+# merges these with user and project hooks while the plugin is enabled.
+PLUGIN_HOOKS = [
+    ("PostToolUse", "Edit|Write|MultiEdit|Update|NotebookEdit", "skills/docs/scripts/hook/docsmith_hook.py"),
+    ("PostToolUse", "ExitPlanMode", "hooks/exit_plan_make_tasks.py"),
+]
+
+
+@pytest.mark.parametrize(
+    "event, matcher, script",
+    [pytest.param(*h, id=f"{h[0]}:{h[1]}") for h in PLUGIN_HOOKS],
+)
+def test_plugin_hook_registered(event: str, matcher: str, script: str):
+    data = json.loads((PLUGIN_ROOT / "hooks" / "hooks.json").read_text(encoding="utf-8"))
+    entries = [e for e in data["hooks"].get(event, []) if e.get("matcher") == matcher]
+    assert len(entries) == 1, f"{event} hook with matcher {matcher!r} must be registered once"
+    commands = [h["command"] for h in entries[0]["hooks"]]
+    assert any(f"${{CLAUDE_PLUGIN_ROOT}}/{script}" in c for c in commands), commands
+    assert (PLUGIN_ROOT / script).is_file(), f"hook script missing: {script}"
+
+
+@pytest.mark.parametrize(
+    "needle",
+    ["flow:make-tasks", "AskUserQuestion", ".claude/rules/", "Do not create tasks yet."],
+)
+def test_exit_plan_hook_output(needle: str):
+    proc = subprocess.run(
+        [sys.executable, str(PLUGIN_ROOT / "hooks" / "exit_plan_make_tasks.py")],
+        input='{"tool_name": "ExitPlanMode"}',
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    out = json.loads(proc.stdout)["hookSpecificOutput"]
+    assert out["hookEventName"] == "PostToolUse"
+    assert needle in out["additionalContext"]
 
 
 # Commands another flow skill invokes through the Skill tool. The model sees a
