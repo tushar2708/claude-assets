@@ -213,6 +213,11 @@ _FAILURES_ZERO_COMMAND_FILES = [
 # rule name -> (PLUGIN_ROOT-relative files, substrings EACH file must contain)
 _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
     "writer-rule": (_WRITER_RULE_FILES, ["MANDATORY: writer agent", "general-purpose"]),
+    "brevity-rule": (
+        ["commands/update-docs.md", "agents/docsmith-doc-author.md"],
+        ["Keep every sentence under 15 words. Table cells count.", "A small update adds at most 3 lines."],
+    ),
+    "update-docs-brevity-check": (["commands/update-docs.md"], ["15 or more: send it back"]),
     "qualified-agent": (_QUALIFIED_AGENT_FILES, ["flow:docsmith-doc-author"]),
     "init": (["skills/init/SKILL.md"], ["ln -s AGENTS.md CLAUDE.md", "readlink"]),
     "spec": (
@@ -302,6 +307,7 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
             "`/flow:make-tasks`",
             "| V1 |",
             "| V10 |",
+            "| V11 |",
             "Create no task.",
         ],
     ),
@@ -311,7 +317,7 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
             "skills/plan-it/references/wave-model.md",
             "Only one stage in progress at a time.",
             "Never commit. Never offer or suggest a commit. Commit only when the user asks.",
-            "The verify question is the only planned stop.",
+            "The verify question and the close question are the only planned stops.",
         ],
     ),
     "spec-sub-features": (

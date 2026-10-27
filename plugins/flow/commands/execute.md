@@ -20,7 +20,8 @@ Read `${CLAUDE_PLUGIN_ROOT}/skills/plan-it/references/wave-model.md` first.
    5. Read every changed file. Check it against the task. Fix gaps.
    6. Mark the stage's tasks completed.
 2. Run the wave's verify task exactly as the reference's verify procedure says. Extra gate commands come from the plan (example: the project's coverage target).
-3. Start the next wave.
+3. Run the wave's close task exactly as the reference's close procedure says.
+4. Start the next wave.
 
 ## Subagent prompt
 
@@ -44,7 +45,7 @@ Add these lines to every subagent prompt:
 | E3 | Never choose an agent. | Spawned type equals the Agent field |
 | E4 | Read every changed file and check it against its task before marking the task completed. Agents can lie. Verify every claim. | Each completed task has a file read after its agent returned |
 | E5 | Never commit. Never offer or suggest a commit. Commit only when the user asks. | No `git add`, no `git commit`, no commit offer |
-| E6 | The verify question is the only planned stop. | No other planned AskUserQuestion |
+| E6 | The verify question and the close question are the only planned stops. | No other planned AskUserQuestion |
 | E7 | After the last wave, review all waves against the plan once. Fix every gap. | Review done before the final report |
 | E8 | Follow each task's title and description exactly. Never paraphrase. | Agent prompt carries the task text verbatim |
 | E9 | Add the subagent prompt lines to every subagent prompt. | Each prompt contains all eight lines |

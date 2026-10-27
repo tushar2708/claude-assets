@@ -67,6 +67,8 @@ ambiguous, ask the user via AskUserQuestion using the category table below befor
   in a subfolder is not bound by R11.
 - **R12** To-the-point and precise; cut filler; when a line runs long, move detail into its own section
   and link it from the index table.
+  Use the minimum words. Keep every sentence under 15 words. Table cells count.
+  A small update adds at most 3 lines. Put a larger one in a table.
 
 ## Frontmatter contract
 

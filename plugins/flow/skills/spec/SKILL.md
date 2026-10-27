@@ -28,7 +28,7 @@ Do NOT publish to a tracker or apply a triage label yourself. Create issues only
    2. Ask the epic: existing epic (ask its key or URL) or new epic.
    3. Invoke the Skill tool with skill `flow:add-to-roadmap`.
    4. Pass in `args`: spec path, spec title, epic choice, and the SF list.
-   5. It creates one Story and one Subtask per `SF-<n>`.
+   5. It creates one Story and one Subtask per `SF-<n>`. It writes their keys into the spec.
    6. Create no item or roadmap row yourself. Leave the `docs/plans/INDEX.md` row as is.
 
 <spec-template>
@@ -78,7 +78,9 @@ An ordered list. Each item has:
 - User stories covered
 - Depends on (earlier SF only)
 - Done-when
+- Tracker key (left empty; `/flow:add-to-roadmap` fills it)
 
+Start the section with a `Tracker Story:` line, left empty. `/flow:add-to-roadmap` fills it.
 No file paths. Each sub-feature becomes one wave in `/flow:plan-it`.
 
 ## Testing Decisions

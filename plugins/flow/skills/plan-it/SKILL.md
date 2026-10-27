@@ -17,7 +17,7 @@ Read `${CLAUDE_SKILL_DIR}/references/wave-model.md` first. It defines every term
 5. Scan each invoked skill for other skills it requires. Invoke those too. Repeat until no new skill appears. Skip none.
 6. Translate every rule that asks for one wave per TDD phase into stages S1/S2/S3 of the sub-feature wave. This plan's tasks satisfy any rule that defers task creation.
 7. Write the compliance ledger: each MUST rule of each invoked skill → where it is satisfied, or N/A with a reason.
-8. Write the waves, stages, and tasks per the reference. Apply the ownership rule. Apply the sub-stage split rule.
+8. Write the waves, stages, and tasks per the reference. Apply the ownership rule. Apply the sub-stage split rule. Add each wave's close task per the reference.
 9. Set the agent for each task from the agent table.
 10. Plan each wave so that it ends compiling, testing green, and passing pre-commit.
 11. After the plan is written, run every check of `${CLAUDE_SKILL_DIR}/references/plan-validation.md` (the same file `/flow:make-tasks` runs before it creates tasks). Fix each failure. Run all checks again. Repeat until all pass. Then check every rule below.
@@ -38,3 +38,4 @@ Read `${CLAUDE_SKILL_DIR}/references/wave-model.md` first. It defines every term
 | P9 | Use the reference's ledger columns. | Ledger columns match the reference. |
 | P10 | Write each finished step and skill result to the plan file at once. Never hold decisions in context. | The plan file holds every finished part. |
 | P11 | Validate the plan with `references/plan-validation.md` only. | Step 11 ran every check of that file and all pass. |
+| P12 | Every wave with a Subtask key has one close task. | One `W<n>.close` per such wave, after `W<n>.verify`. |

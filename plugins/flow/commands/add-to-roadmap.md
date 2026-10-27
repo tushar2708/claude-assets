@@ -21,8 +21,10 @@ Inputs: spec path, spec title, epic choice, and the SF list.
 4. Story description: the spec path and one line from the spec's Solution.
 5. Create one Subtask per `SF-<n>` under the Story. Title: `SF-<n> <name>`.
 6. Subtask description: its Behavior and Done-when, from the spec.
-7. Write ONE roadmap row, for the Story only (Step 3).
-8. Never create a Task for a sub-feature. Only a Subtask can be a Story's child.
+7. Write the keys into the spec with `flow:docsmith-doc-author`. Re-run `validate` unscoped.
+8. Story key: the `Tracker Story` line. Subtask key: that SF's `Tracker key`.
+9. Write ONE roadmap row, for the Story only (Step 3).
+10. Never create a Task for a sub-feature. Only a Subtask can be a Story's child.
 
 ## Inputs
 

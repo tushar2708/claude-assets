@@ -24,7 +24,8 @@ Plan
    ├─ Stage S1 contracts | S2 tests | S3 implementation   (non-TDD: S1 only)
    │  └─ sub-stage S<m>a, S<m>b only when a task imports a new symbol from a task in the same stage
    │     └─ Task T<k>
-   └─ Verify task
+   ├─ Verify task
+   └─ Close task   (only when SF-<id> has a tracker Subtask key)
 ```
 
 ## Spec Sub-feature Fields
@@ -37,6 +38,7 @@ Plan
 | User stories covered | User story numbers |
 | Depends on | Earlier SF only |
 | Done-when | Checkable acceptance criteria |
+| Tracker key | Subtask key. `/flow:add-to-roadmap` writes it. Empty without a tracker. |
 
 1. The list is ordered.
 2. No file paths.
@@ -114,11 +116,35 @@ Procedure:
 
 Rule: If the user said run, run. If the user said skip, skip. No exceptions.
 
+## Close Task
+
+One per wave whose sub-feature has a tracker Subtask key. Title `[<tag>] W<n>.close`.
+Blocked by `W<n>.verify`. Blocks nothing. It marks the Subtask done.
+
+| Field | Content |
+|---|---|
+| Wave | `W<n>` = `SF-<id>` |
+| Subtask key | The spec sub-feature's `Tracker key` |
+| Agent | `main-thread` |
+| Procedure | The steps below |
+
+1. A split sub-feature closes only in its last wave.
+2. No Subtask key: no close task.
+
+Procedure (operations: `${CLAUDE_PLUGIN_ROOT}/skills/sync-issues/references/issue-tracker.md` part F):
+
+1. Read the wave's verify task.
+2. Verify was skipped: ask with AskUserQuestion. Options: "Mark done unverified", "Leave open".
+3. On "Leave open": mark this task completed with "left open — user choice". Stop.
+4. Set the Subtask state to done ("Set state").
+5. Jira: use the Done transition from `listJiraIssueTransitions`. None found: ask the user.
+6. Read the Subtask back ("Get by key"). Confirm its state is done.
+
 ## Post-wave Tasks
 
 Owner reminders, doc tasks, and feedback.
 
-1. Blocked by the last verify task.
+1. Blocked by the last verify and close tasks.
 2. Block nothing.
 3. Feedback is last.
 

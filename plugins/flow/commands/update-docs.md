@@ -51,6 +51,10 @@ Process every pending documentation task in your task tracker tool (not any todo
    - Match the doc's altitude: high-level docs get key decisions and minimal pseudo-code so
      readers know what to look for in the real code — do not add verbose code to a doc that
      isn't already code-focused.
+   - Brevity (give the agent these lines verbatim):
+     - Use the minimum words. Add no filler, recap, or restated context.
+     - Keep every sentence under 15 words. Table cells count.
+     - A small update adds at most 3 lines. Put a larger one in a table.
 
 4. **Refresh frontmatter and index (in the same dispatch).** The `flow:docsmith-doc-author`
    dispatch also sets `stale_after` = today + the doc's category `stale_after_days` (from
@@ -65,6 +69,9 @@ Process every pending documentation task in your task tracker tool (not any todo
 
    Iterate until validate reports no errors for the doc and its score meets the freshness
    threshold.
+
+   Then count the words of every changed sentence and table cell.
+   15 or more: send it back to the agent.
 
    Then, after all docs are processed, the main thread runs a final unscoped validate from the
    repo root — `uv run "$DOCSMITH" --project-root . validate` — which must print `FAILURES: 0`;
