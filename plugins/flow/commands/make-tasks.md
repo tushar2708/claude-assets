@@ -30,3 +30,4 @@ Read `${CLAUDE_PLUGIN_ROOT}/skills/plan-it/references/wave-model.md` first.
 | M7 | Validate the plan with the shared file only. | Step 2 runs every check of `plan-validation.md`; M1 and M4 hold the same rules for the tracker after the tasks exist. |
 | M6 | Never commit. Never offer or suggest a commit. | The run has no commit and no commit offer. |
 | M8 | Every wave with a Subtask key gets one close task. The plan has none: create it per the reference. | One `W<n>.close` per such wave, blocked by `W<n>.verify`. |
+| M9 | A close task whose Done-when needs an owner-run test is blocked by that reminder. | Its `blockedBy` holds the owner reminder task. |

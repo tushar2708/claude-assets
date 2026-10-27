@@ -55,6 +55,7 @@ Add these lines to every subagent prompt:
 | E13 | The main thread runs every check except Self-check. | No other command in agent evidence |
 | E14 | The main thread edits code only for `main-thread` tasks and to fix agent gaps. | Main-thread edits map to one of the two cases |
 | E15 | Never create a duplicate task. | No two tracker tasks share a title |
+| E16 | Never mark a Subtask done while it needs an owner-run test result. | Each Done Subtask has its owner-run result recorded |
 
 Follow any other instructions the user gives here:
 

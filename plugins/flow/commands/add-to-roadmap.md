@@ -7,6 +7,9 @@ If the conversation names no item, ask the user to describe it.
 
 > This command is the SOLE issue creator in flow. It creates items in the declared tracker.
 
+> **Never create a Subtask unless invoked from `/flow:spec` with a spec.** Without a spec, create one item only.
+> Put proposed subtasks in that item's body, under "Proposed subtasks".
+
 ## Step 0: Resolve the Issue Tracker
 Read `${CLAUDE_PLUGIN_ROOT}/skills/sync-issues/references/issue-tracker.md` first.
 Run its part C on every run, before any other step.
@@ -57,6 +60,7 @@ Inputs: spec path, spec title, epic choice, and the SF list.
    - `**Impact**: <High|Medium|Low>.` and `**Effort**: <High|Medium|Low>.`
    - Optional `**Details**:` or `**Fix approach**:` text.
 2. Link it to the epic with Set parent (part G). In Jira, `parent` goes in Create.
+3. Create no Subtask in this mode. List proposed subtasks in the body instead.
 3. Create a GitHub issue only when the user explicitly asks in this run.
 4. On skip in Step 0, create nothing. A new epic then needs the tracker; use an existing epic.
 
