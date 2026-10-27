@@ -11,7 +11,6 @@
       "name": "react-atomic-aesthetics",
       "source": "./plugins/react-atomic-aesthetics",
       "description": "Canonical React UI/UX aesthetic + atomic-structure rules with a planning architect agent, an implementation agent, and plan/review skills",
-      "version": "0.1.1",
       "author": {
         "name": "Tushar Dwivedi"
       },
@@ -22,7 +21,6 @@
       "name": "docsmith",
       "source": "./plugins/docsmith",
       "description": "Deterministic documentation governance — write, validate, score, and site-build docs by category with evergreen rules.",
-      "version": "0.1.2",
       "author": {
         "name": "Tushar Dwivedi"
       },
@@ -33,7 +31,6 @@
       "name": "react-seo-planner",
       "source": "./plugins/react-seo-planner",
       "description": "Combined SEO + GEO (Generative Engine Optimization) audit and fix-planning for React.js applications — a 24-category checklist, schema templates, GEO analysis scripts, and specialist GEO agents.",
-      "version": "0.1.0",
       "author": {
         "name": "Tushar Dwivedi"
       },
@@ -44,7 +41,6 @@
       "name": "flow",
       "source": "./plugins/flow",
       "description": "Unified dev-workflow plugin — interview, spec, plan, tasks, implement, review — with docsmith docs governance and roadmap/issue tracking.",
-      "version": "0.1.2",
       "author": {
         "name": "Tushar Dwivedi"
       },
