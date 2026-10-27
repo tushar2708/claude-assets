@@ -125,6 +125,7 @@ Blocked by `W<n>.verify`. Blocks nothing. It marks the Subtask done.
 |---|---|
 | Wave | `W<n>` = `SF-<id>` |
 | Subtask key | The spec sub-feature's `Tracker key` |
+| Comment | How this wave implemented the sub-feature: behavior, files, tests. |
 | Agent | `main-thread` |
 | Procedure | The steps below |
 
@@ -136,9 +137,10 @@ Procedure (operations: `${CLAUDE_PLUGIN_ROOT}/skills/sync-issues/references/issu
 1. Read the wave's verify task.
 2. Verify was skipped: ask with AskUserQuestion. Options: "Mark done unverified", "Leave open".
 3. On "Leave open": mark this task completed with "left open — user choice". Stop.
-4. Set the Subtask state to done ("Set state").
-5. Jira: use the Done transition from `listJiraIssueTransitions`. None found: ask the user.
-6. Read the Subtask back ("Get by key"). Confirm its state is done.
+4. Post the Comment field, updated with the wave's actual changes ("Add comment").
+5. Set the Subtask state to done ("Set state").
+6. Jira: use the Done transition from `listJiraIssueTransitions`. None found: ask the user.
+7. Read the Subtask back ("Get by key"). Confirm its state is done.
 
 ## Post-wave Tasks
 
