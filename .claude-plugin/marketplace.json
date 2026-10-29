@@ -18,16 +18,6 @@
       "repository": "https://github.com/tushar2708/claude-assets"
     },
     {
-      "name": "docsmith",
-      "source": "./plugins/docsmith",
-      "description": "Deterministic documentation governance — write, validate, score, and site-build docs by category with evergreen rules.",
-      "author": {
-        "name": "Tushar Dwivedi"
-      },
-      "homepage": "https://github.com/tushar2708/claude-assets",
-      "repository": "https://github.com/tushar2708/claude-assets"
-    },
-    {
       "name": "react-seo-planner",
       "source": "./plugins/react-seo-planner",
       "description": "Combined SEO + GEO (Generative Engine Optimization) audit and fix-planning for React.js applications — a 24-category checklist, schema templates, GEO analysis scripts, and specialist GEO agents.",

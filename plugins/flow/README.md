@@ -6,7 +6,6 @@ CLI that validates, scores, and site-builds documentation by category, plus a se
 ## Commands
 
 - `/flow:write-doc` — write a category doc.
-- `/flow:write-plan` — write an implementation plan.
 - `/flow:write-adr` — write an ADR (architecture decision record).
 - `/flow:write-prd` — write a PRD (product requirements document).
 - `/flow:update-docs` — process pending doc-update tasks.

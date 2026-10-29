@@ -70,8 +70,8 @@ Do the following in order:
      doc-site venv with the mkdocs toolchain, and installs the pre-commit hooks. Then `make validate`,
      `make docs-build` / `make docs-serve`. (Everything the site needs is carried by the project; no manual
      `pip install mkdocs` step.)
-   - Author docs with `/flow:write-doc`, `/flow:write-plan`, `/flow:write-adr`,
-     `/flow:write-prd`; review `ROOT/.docsmith/config.json` (categories, dir_patterns) any time.
+   - Author docs with `/flow:write-doc`, `/flow:write-adr`, `/flow:write-prd`,
+     and plans with `/flow:spec`; review `ROOT/.docsmith/config.json` (categories, dir_patterns) any time.
 
 8. **Validate and report.** After the engine finishes, run the project's engine UNSCOPED — `uv run "ROOT/.docsmith/engine/docsmith.py" --project-root "ROOT" validate` — and report its full output verbatim. With `--adopt`, pre-existing docs may be non-compliant (for example a hand-written index with no frontmatter); list each finding and tell the user `/flow:fix-findings` resolves them mechanically and `/flow:init` writes the AGENTS.md block and the CLAUDE.md link. Do NOT fix findings yourself in this command. Projects scaffolded earlier carry an older vendored engine in `.docsmith/engine/`; to receive validator fixes the user re-runs `/flow:scaffold` and chooses the engine refresh (`--sync-engine`).
 

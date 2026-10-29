@@ -37,7 +37,6 @@ Then restart Claude Code, or run `/reload-plugins`.
 | Plugin | What it does |
 |---|---|
 | [`react-atomic-aesthetics`](./plugins/react-atomic-aesthetics) | Atomic-design React/JSX UI plugin enforcing canonical UI/UX aesthetic and structure rules via a planning architect agent, an implementation agent, and plan/review skills. |
-| [`docsmith`](./plugins/docsmith) | Deterministic documentation governance — write, validate, score, and site-build docs by category with evergreen rules. |
 | [`react-seo-planner`](./plugins/react-seo-planner) | Plans and audits SEO (and GEO/AI-visibility) for React apps: checklist-driven categories, schema templates, GEO analysis scripts, and specialist GEO agents. |
 | [`flow`](./plugins/flow) | Dev workflow: interview, spec, plan, tasks, implement, review, docs governance, and roadmap tracking. |
 

@@ -38,13 +38,15 @@ EXPECTED_COMMANDS = [
     "review.md",
     "add-to-roadmap.md",
     "write-doc.md",
-    "write-plan.md",
     "write-adr.md",
     "write-prd.md",
     "update-docs.md",
     "scaffold.md",
     "fix-findings.md",
 ]
+
+# Commands removed on purpose; /flow:spec and /flow:plan-it write plans.
+RETIRED_COMMANDS = ["write-plan.md"]
 
 # Lifecycle/roadmap skills the spec requires to be user-invoked only.
 # grilling is intentionally EXEMPT (spec: "Edit: none").
@@ -91,6 +93,15 @@ def test_expected_commands_present_and_frontmatter_parses():
             parts = text.split("---", 2)
             assert len(parts) >= 3, f"{cmd} frontmatter is not closed"
             assert isinstance(yaml.safe_load(parts[1]), dict), f"{cmd} frontmatter invalid"
+
+
+@pytest.mark.parametrize("name", RETIRED_COMMANDS)
+def test_retired_commands_absent(name: str):
+    assert not (PLUGIN_ROOT / "commands" / name).exists(), f"retired command returned: {name}"
+    for path in _PROSE_FILES:
+        assert f"/flow:{name[:-3]}" not in path.read_text(encoding="utf-8"), (
+            f"{path.relative_to(PLUGIN_ROOT)} still names /flow:{name[:-3]}"
+        )
 
 
 def test_user_only_skills_disable_model_invocation():
@@ -185,7 +196,6 @@ _WRITER_RULE_FILES = [
     "skills/spec/SKILL.md",
     "skills/init/SKILL.md",
     "commands/write-doc.md",
-    "commands/write-plan.md",
     "commands/write-adr.md",
     "commands/write-prd.md",
     "commands/update-docs.md",
@@ -196,7 +206,6 @@ _WRITER_RULE_FILES = [
 _QUALIFIED_AGENT_FILES = [
     "skills/spec/SKILL.md",
     "commands/write-doc.md",
-    "commands/write-plan.md",
     "commands/write-adr.md",
     "commands/write-prd.md",
     "commands/update-docs.md",
@@ -204,7 +213,6 @@ _QUALIFIED_AGENT_FILES = [
 
 _FAILURES_ZERO_COMMAND_FILES = [
     "commands/write-doc.md",
-    "commands/write-plan.md",
     "commands/write-adr.md",
     "commands/write-prd.md",
     "commands/update-docs.md",

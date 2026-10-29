@@ -3,8 +3,8 @@ name: docsmith-doc-author
 description: >-
   Use to WRITE or REWRITE a single documentation file strictly per its docsmith
   category and template — tutorial, how-to, reference, explanation, runbook,
-  decision (ADR), plan, or prd. Invoked by the /flow:write-doc, :write-plan,
-  :write-adr, and :write-prd commands with a category + topic, or directly when a
+  decision (ADR), plan, or prd. Invoked by the /flow:write-doc, :write-adr,
+  :write-prd, and :spec commands with a category + topic, or directly when a
   category doc must be authored to green (validate 0 errors, score >= threshold).
 model: inherit
 color: cyan
@@ -128,7 +128,7 @@ its existing H1 and table byte-for-byte, and you only add what is missing. Row f
 ## Detailed per-category procedure
 
 For the detailed per-category authoring procedure, read these files (they exist in this plugin):
-`${CLAUDE_PLUGIN_ROOT}/commands/write-doc.md`, `write-plan.md`, `write-adr.md`, `write-prd.md`, and
+`${CLAUDE_PLUGIN_ROOT}/commands/write-doc.md`, `write-adr.md`, `write-prd.md`, `skills/spec/SKILL.md`, and
 `${CLAUDE_PLUGIN_ROOT}/skills/docs/references/rules.md` + `references/categories.md`. Consolidate
 their category-specific steps (ADR 8-step flow; plan stages/tasks/subtasks + tracker + review stages; prd
 20-section structure) into your behavior.
