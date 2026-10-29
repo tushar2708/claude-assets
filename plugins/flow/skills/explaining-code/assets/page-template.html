@@ -1,0 +1,70 @@
+<!doctype html>
+<!-- explaining-code — single feature page / one section page.
+     Replace the CAPS placeholders. Keep the structure identical across pages.
+     Section order: abstract → objects it touches → one pipeline diagram → exact steps (with the running example) → comparison → sources. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FEATURE_NAME — explained</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<main>
+
+<div class="bar">
+  <a href="PREV.html">&larr; PREV_LABEL</a>
+  <span class="crumb">SECTION_NUMBER. SECTION_TITLE</span>
+  <a href="NEXT.html">NEXT_LABEL &rarr;</a>
+</div>
+
+<h1>SECTION_NUMBER. SECTION_TITLE</h1>
+<p class="lead">ONE true plain-language sentence that orients a newcomer — the accurate abstract.</p>
+<p class="muted">Entry point <code>ENTRY_FUNCTION()</code> (<span class="src">FILE:LINE</span>).</p>
+
+<!-- Vocabulary: pin every term this page uses, with its kind and any code alias. -->
+<div class="card def">
+<span class="boxlabel def">Vocabulary</span>
+<table>
+<tr><th>Term</th><th>Exactly what it is</th><th>Same word as</th><th>Kind</th></tr>
+<tr><td><b>TERM_1</b></td><td>DEFINITION</td><td>CODE_ALIAS</td><td>KIND</td></tr>
+</table>
+<p>How they connect: RELATIONSHIP_SENTENCE.</p>
+</div>
+
+<!-- One pipeline diagram (see references/diagram-grammar.md). Use real values, clickable stages. -->
+<h2>The flow</h2>
+<div class="card">
+<svg viewBox="0 0 640 400" role="img" aria-label="DESCRIBE THE DIAGRAM">
+  <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5a5a66"/></marker></defs>
+  <!-- stage boxes top-to-bottom; each links to its explanation; each shows a real value + file:line -->
+</svg>
+</div>
+
+<!-- The exact steps, with the running example carried through. -->
+<h2>Step by step (worked on EXAMPLE_NAME)</h2>
+<div class="card">
+<table>
+<tr><th>#</th><th>What happens, on EXAMPLE_NAME</th><th>Source</th></tr>
+<tr><td>1</td><td>ACTOR does OPERATION on DATA_STRUCTURE, producing CONCRETE_RESULT.</td><td>FILE:LINE</td></tr>
+</table>
+</div>
+
+<!-- Optional: one comparison that places this against a more familiar approach. -->
+<div class="card cmp">
+<span class="boxlabel cmp">Compared to FAMILIAR_THING</span>
+<table>
+<tr><th></th><th>FAMILIAR_THING</th><th>THIS</th></tr>
+<tr><td>ASPECT</td><td>…</td><td>…</td></tr>
+</table>
+</div>
+
+<div class="bar">
+  <a href="PREV.html">&larr; PREV_LABEL</a>
+  <span class="crumb">SECTION_NUMBER. SECTION_TITLE</span>
+  <a href="NEXT.html">NEXT_LABEL &rarr;</a>
+</div>
+
+</main>
+</body>
+</html>

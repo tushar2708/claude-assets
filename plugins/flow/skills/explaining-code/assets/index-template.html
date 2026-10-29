@@ -1,0 +1,48 @@
+<!doctype html>
+<!-- explaining-code — landing page for a multi-page site (whole repo / subsystem).
+     Replace CAPS placeholders. The landing page orients the reader, pins vocabulary,
+     shows ONE end-to-end pipeline diagram, and links to every section. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PROJECT_NAME — explained</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<main>
+
+<h1>PROJECT_NAME, explained</h1>
+<p class="lead">ONE sentence: what this document explains and who it is for.</p>
+<p class="muted">Source analysed: <code>REPO_PATH</code>. Every mechanism statement is traced to a <code>file:line</code>.</p>
+
+<!-- Reading key: tell the reader how far to trust each statement. -->
+<div class="card def">
+<span class="boxlabel def">Reading key</span>
+<table>
+<tr><th>Tag</th><th>Meaning</th></tr>
+<tr><td><span class="tag exact">EXACT</span></td><td>Traced to a specific line in the source. Treat as fact.</td></tr>
+<tr><td><span class="tag analogy">ANALOGY</span></td><td>An intuition. Not literally in the code.</td></tr>
+<tr><td><span class="tag note">NOTE</span></td><td>Context from docs/design, not the running code.</td></tr>
+</table>
+</div>
+
+<!-- The whole journey in one vertical diagram. Clickable stages, real values. -->
+<h2 id="journey">The whole flow (one picture)</h2>
+<div class="card">
+<svg viewBox="0 0 640 FLOW_HEIGHT" role="img" aria-label="End-to-end pipeline">
+  <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5a5a66"/></marker></defs>
+  <!-- stages top-to-bottom; wrap each in <a href="sN-….html"> ; put the core value + file:line in each -->
+</svg>
+</div>
+
+<!-- Navigation to every section. -->
+<h2>Sections</h2>
+<div class="grid">
+  <a class="navcard" href="s1-SLUG.html"><div class="n">Section A</div><div class="t">1. SECTION_TITLE</div><div class="d">ONE-LINE SUMMARY.</div></a>
+  <!-- repeat per section -->
+</div>
+
+</main>
+</body>
+</html>

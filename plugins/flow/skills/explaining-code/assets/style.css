@@ -1,0 +1,78 @@
+/* explaining-code — shared stylesheet. Copy into the output docs folder; every page links it.
+   Keep it identical across pages and across runs so all documents look like one system. */
+:root {
+  --fg:#1d1d1f; --muted:#5a5a66; --bg:#fbfbfd; --card:#fff; --line:#d0d0d8;
+  --primary:#2f6fde; --secondary:#7a4fd0; --rel:#e07a1f; --bad:#c62828; --ok:#2e7d32;
+  --def:#2e7d32; --cmp:#a35a00; --warn:#c62828;
+  --code-bg:#f1f1f5; --accent:#0d47a1;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { font: 15px/1.6 -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--fg);
+       background:var(--bg); margin:0; padding:24px 20px 120px; }
+main { max-width: 1040px; margin: 0 auto; }
+
+h1 { font-size: 25px; margin: 0 0 4px; }
+h2 { font-size: 19px; margin: 36px 0 8px; border-bottom: 1px solid var(--line); padding-bottom: 4px; color: var(--accent); }
+h3 { font-size: 16px; margin: 20px 0 4px; color: #333; }
+p, li { color: var(--fg); }
+.muted { color: var(--muted); font-size: 13.5px; }
+.lead  { font-size: 16px; }
+
+/* top bar: back-to-index + prev/next */
+.bar { display:flex; justify-content:space-between; align-items:center; gap:12px;
+       background:#f2f6fb; border:1px solid var(--line); border-radius:10px;
+       padding:9px 14px; margin-bottom:16px; font-size:13.5px; }
+.bar a { color: var(--accent); text-decoration:none; }
+.bar a:hover { text-decoration:underline; }
+.bar .crumb { font-weight:600; }
+
+/* landing-page navigation cards */
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:12px; margin-top:14px; }
+.navcard { display:block; background:var(--card); border:1px solid var(--line); border-radius:10px;
+           padding:14px 16px; text-decoration:none; color:var(--fg); transition:border-color .15s, transform .05s; }
+.navcard:hover { border-color:var(--accent); transform:translateY(-1px); }
+.navcard .n { font-size:12px; color:var(--muted); }
+.navcard .t { font-size:16px; font-weight:600; color:var(--accent); margin:2px 0; }
+.navcard .d { font-size:13px; color:var(--muted); }
+
+/* content cards + callout variants */
+.card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:16px; margin:12px 0; overflow-x:auto; }
+.def  { border-left:4px solid var(--def); }
+.cmp  { border-left:4px solid var(--cmp); }
+.warn { border-left:4px solid var(--warn); }
+.card h3:first-child, .card h4:first-child { margin-top:0; }
+.boxlabel { display:inline-block; font-size:11px; font-weight:700; letter-spacing:.04em;
+            text-transform:uppercase; padding:1px 8px; border-radius:10px; margin-bottom:6px; }
+.boxlabel.def  { background:#e6f4ea; color:var(--ok);  }
+.boxlabel.cmp  { background:#fff4e0; color:var(--cmp); }
+.boxlabel.warn { background:#fde7e7; color:var(--bad); }
+
+/* provenance tags */
+.tag { display:inline-block; font-size:11px; font-weight:700; padding:1px 7px; border-radius:10px; margin-left:4px; vertical-align:middle; }
+.tag.exact   { background:#e6f0fd; color:var(--accent); }
+.tag.analogy { background:#f0ecfb; color:var(--secondary); }
+.tag.note    { background:#fff4e0; color:var(--cmp); }
+
+table { border-collapse:collapse; width:100%; font-size:13.5px; margin-top:10px; }
+th, td { border:1px solid var(--line); padding:6px 9px; text-align:left; vertical-align:top; }
+th { background:#f1f1f5; color:var(--accent); }
+
+code { font:12.5px ui-monospace, SFMono-Regular, Menlo, monospace; background:var(--code-bg); padding:0 4px; border-radius:3px; }
+pre { background:#0f1320; color:#e6e6e6; border-radius:8px; padding:14px 16px; overflow-x:auto;
+      font:12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; }
+pre .cmt { color:#7f8aa0; }
+pre .kw  { color:#7fd1ff; }
+pre .str { color:#9fe6c0; }
+pre .num { color:#ffb86c; }
+
+svg { width:100%; height:auto; }
+svg text { font:13px -apple-system,"Segoe UI",Roboto,sans-serif; fill:var(--fg); }
+svg .small { font-size:11px; fill:var(--muted); }
+svg .mono  { font:12px ui-monospace,Menlo,monospace; }
+svg a { cursor:pointer; }
+svg a text { text-decoration:underline; }
+svg a:hover rect, svg a:hover circle { stroke-width:3.5; }
+
+.src { font:11.5px ui-monospace,Menlo,monospace; color:var(--muted); }
+ul { margin:6px 0; } li { margin:3px 0; }
