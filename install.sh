@@ -52,11 +52,17 @@ plugin_names() {
 install_plugins() {
   log "Adding marketplace $REPO"
   run claude plugin marketplace add "$REPO"
+  # Refresh the registry so it offers the latest commit, otherwise an
+  # already-installed plugin would never see a newer version below.
+  run claude plugin marketplace update "$MARKETPLACE" || true
   local name
   for name in $(plugin_names); do
     log "Installing plugin $name"
-    run claude plugin install "$name@$MARKETPLACE" --scope user \
-      || run claude plugin update "$name@$MARKETPLACE"
+    # `install` exits 0 for an already-installed plugin without upgrading it,
+    # so always follow with `update` to pull the newest marketplace commit.
+    run claude plugin install "$name@$MARKETPLACE" --scope user || true
+    log "Updating plugin $name"
+    run claude plugin update "$name@$MARKETPLACE" || true
   done
 }
 
