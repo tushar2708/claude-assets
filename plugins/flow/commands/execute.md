@@ -19,9 +19,10 @@ Read `${CLAUDE_PLUGIN_ROOT}/skills/plan-it/references/wave-model.md` first.
    4. Each agent makes the changes, runs its Self-check, and returns the evidence.
    5. Read every changed file. Check it against the task. Fix gaps.
    6. Mark the stage's tasks completed.
-2. Run the wave's verify task exactly as the reference's verify procedure says. Extra gate commands come from the plan (example: the project's coverage target).
-3. Run the wave's close task exactly as the reference's close procedure says.
+2. Run the wave's verify task exactly as the reference's verify procedure says. Extra gate commands come from the plan (example: the project's coverage target). Then mark it completed.
+3. Run the wave's close task exactly as the reference's close procedure says. Then mark it completed.
 4. Start the next wave.
+5. After the last wave and the E7 review, run the final close task exactly as the reference says.
 
 ## Subagent prompt
 
@@ -45,7 +46,7 @@ Add these lines to every subagent prompt:
 | E3 | Never choose an agent. | Spawned type equals the Agent field |
 | E4 | Read every changed file and check it against its task before marking the task completed. Agents can lie. Verify every claim. | Each completed task has a file read after its agent returned |
 | E5 | Never commit. Never offer or suggest a commit. Commit only when the user asks. | No `git add`, no `git commit`, no commit offer |
-| E6 | The verify question and the close question are the only planned stops. | No other planned AskUserQuestion |
+| E6 | The verify, close and final close questions are the only planned stops. | No other planned AskUserQuestion |
 | E7 | After the last wave, review all waves against the plan once. Fix every gap. | Review done before the final report |
 | E8 | Follow each task's title and description exactly. Never paraphrase. | Agent prompt carries the task text verbatim |
 | E9 | Add the subagent prompt lines to every subagent prompt. | Each prompt contains all eight lines |
@@ -56,6 +57,8 @@ Add these lines to every subagent prompt:
 | E14 | The main thread edits code only for `main-thread` tasks and to fix agent gaps. | Main-thread edits map to one of the two cases |
 | E15 | Never create a duplicate task. | No two tracker tasks share a title |
 | E16 | Never mark a Subtask done while it needs an owner-run test result. | Each Done Subtask has its owner-run result recorded |
+| E17 | Never mark a Story, Subtask or task done while any child is open. | Each closed parent had all children done at close time |
+| E18 | Close every finished task in the local tracker and the external tracker. | No finished task stays open in either tracker |
 
 Follow any other instructions the user gives here:
 

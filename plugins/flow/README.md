@@ -75,7 +75,7 @@ flowchart TD
         direction TB
         execute["Run each stage's tasks<br/>with the planned agent"]
         verify{"Verify gate<br/>(you choose: run or skip)"}
-        close["Close task: comment on the tracker Subtask<br/>and move it to Done (via its MCP)"]
+        close["Close task (only with a tracker)<br/>Comment on the sub-feature's Subtask<br/>and mark it Done"]
         next{"More waves?"}
         execute --> verify --> close --> next
         next -- yes --> execute
@@ -84,12 +84,16 @@ flowchart TD
     next -- no --> review["/flow:review<br/>Read-only review of the implementation<br/>against the plan's skills"]
     review --> done([Reviewed code])
 
+    %% Note bubble for the close task. Declared after the main path so it sits to the right.
+    close -.- closenote["Runs only if the sub-feature has a Subtask,<br/>created by /flow:add-to-roadmap.<br/>The tracker is the one declared in roadmap.md<br/>(Jira, GitHub, Asana, or other).<br/>Posts a comment with what the wave built,<br/>then sets the Subtask to Done.<br/>If you skipped the verify gate, it asks first."]:::note
+
     %% Optional branch. Declared last so it sits beside the main path.
     spec -. optional .-> roadmap["/flow:add-to-roadmap<br/>Story + one Subtask per sub-feature<br/>in your tracker"]
     roadmap -.-> tracker[("Tracker<br/>Jira · GitHub · Asana · other")]
     roadmap -.-> rmfile[["roadmap.md<br/>in your project"]]
 
     classDef hidden fill:none,stroke:none,color:transparent
+    classDef note fill:#fff8c5,stroke:#d4a72c,color:#1f2328,stroke-dasharray:4 3
 ```
 
 Dashed arrows are optional. They need a declared tracker and a reachable MCP server (or `gh` for GitHub).

@@ -18,14 +18,15 @@ Plan
 ├─ Tag: one short tag for the whole plan, used in every task title
 ├─ Sources: session | spec <path> | both
 ├─ Skill compliance ledger: skill | MUST rule | satisfied in (wave/stage/task) | N/A reason
-└─ Wave W<n> = sub-feature SF-<id>   (serial; W<n+1> starts after W<n>'s verify task)
-   ├─ Shared contracts (types, interfaces, conventions, test tables)
-   ├─ Extra gate commands (optional)
-   ├─ Stage S1 contracts | S2 tests | S3 implementation   (non-TDD: S1 only)
-   │  └─ sub-stage S<m>a, S<m>b only when a task imports a new symbol from a task in the same stage
-   │     └─ Task T<k>
-   ├─ Verify task
-   └─ Close task   (only when SF-<id> has a tracker Subtask key)
+├─ Wave W<n> = sub-feature SF-<id>   (serial; W<n+1> starts after W<n>'s verify task)
+│  ├─ Shared contracts (types, interfaces, conventions, test tables)
+│  ├─ Extra gate commands (optional)
+│  ├─ Stage S1 contracts | S2 tests | S3 implementation   (non-TDD: S1 only)
+│  │  └─ sub-stage S<m>a, S<m>b only when a task imports a new symbol from a task in the same stage
+│  │     └─ Task T<k>
+│  ├─ Verify task
+│  └─ Close task   (only when SF-<id> has a tracker Subtask key)
+└─ Final close task   (one per plan, after the last wave)
 ```
 
 ## Spec Sub-feature Fields
@@ -138,9 +139,41 @@ Procedure (operations: `${CLAUDE_PLUGIN_ROOT}/skills/sync-issues/references/issu
 2. Verify was skipped: ask with AskUserQuestion. Options: "Mark done unverified", "Leave open".
 3. On "Leave open": mark this task completed with "left open — user choice". Stop.
 4. Post the Comment field, updated with the wave's actual changes ("Add comment").
-5. Set the Subtask state to done ("Set state").
-6. Jira: use the Done transition from `listJiraIssueTransitions`. None found: ask the user.
-7. Read the Subtask back ("Get by key"). Confirm its state is done.
+5. List the Subtask's children ("List items"). Include children this spec did not create.
+6. Any child not done: leave the Subtask open. Comment the open child keys. Stop.
+7. Set the Subtask state to done ("Set state").
+8. Jira: use the Done transition from `listJiraIssueTransitions`. None found: ask the user.
+9. Read the Subtask back ("Get by key"). Confirm its state is done.
+
+## Final Close Task
+
+One per plan. Title `[<tag>] final.close`. Blocked by every verify and close task. Blocks nothing.
+
+| Field | Content |
+|---|---|
+| Spec | The spec path from Sources. None for a session-only plan. |
+| Story key | The spec's `Tracker Story` key. Empty without a tracker. |
+| Agent | `main-thread` |
+| Procedure | The steps below |
+
+Procedure (operations: `${CLAUDE_PLUGIN_ROOT}/skills/sync-issues/references/issue-tracker.md` part F):
+
+1. Read every stage, verify and close task of the plan in the local tracker.
+2. Any of them not completed: report them. Leave the spec and Story open. Stop.
+3. A verify was skipped or a Subtask left open: ask with AskUserQuestion.
+4. Options: "Mark done", "Leave open". On "Leave open": mark this task completed. Stop.
+5. Spec set: mark it done with `flow:docsmith-doc-author`.
+6. That sets frontmatter `status: implemented` and the plan-index row to `✅ Implemented`.
+7. Run `validate` unscoped. It must print `FAILURES: 0`. Relay every WARN line.
+8. No Story key: mark this task completed. Stop.
+9. List the Story's children ("List items", parent = Story key).
+10. Include children this spec did not create.
+11. Any child not done: leave the Story open. Comment the open child keys. Stop.
+12. Post a summary comment ("Add comment"). Set the Story state to done ("Set state").
+13. Jira: use the Done transition, as in the close procedure.
+14. Read the Story back ("Get by key"). Confirm done. Mark this task completed.
+
+Rule: Never mark a parent done while any child is open, in any tracker.
 
 ## Post-wave Tasks
 
