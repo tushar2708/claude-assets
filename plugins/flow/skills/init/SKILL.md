@@ -1,5 +1,6 @@
 ---
 name: init
+disable-model-invocation: true
 description: "Initialize Flow onboarding: scaffold or refresh docsmith, create the portable roadmap registry, configure task tracking, and write idempotent agent guidance. Use only when explicitly invoked."
 ---
 

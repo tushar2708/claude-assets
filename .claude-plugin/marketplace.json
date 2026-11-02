@@ -10,7 +10,7 @@
     {
       "name": "react-atomic-aesthetics",
       "source": "./plugins/react-atomic-aesthetics",
-      "description": "Canonical React UI/UX aesthetic + atomic-structure rules with a planning architect agent, an implementation agent, and plan/review skills",
+      "description": "Canonical React UI/UX aesthetic + atomic-structure rules with a planning architect agent, an implementation agent, and plan/review-ui skills",
       "author": {
         "name": "Tushar Dwivedi"
       },

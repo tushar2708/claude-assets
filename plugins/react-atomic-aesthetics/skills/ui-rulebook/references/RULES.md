@@ -1,6 +1,6 @@
 # React Atomic Aesthetics — Canonical Rules
 
-Single source of truth for every UI/UX rule in this plugin. The architect and implementer agents and the plan/review skills reference this file by number; they never copy its text. This document is a LIVING document — new rules are appended over time. Target stack: React (JSX/TSX) + Tailwind CSS + shadcn/ui + lucide-react.
+Single source of truth for every UI/UX rule in this plugin. The architect and implementer agents and the plan/review-ui skills reference this file by number; they never copy its text. This document is a LIVING document — new rules are appended over time. Target stack: React (JSX/TSX) + Tailwind CSS + shadcn/ui + lucide-react.
 
 ## Part A — Aesthetic Discipline (Rules A1–A20)
 
@@ -170,7 +170,7 @@ Every agent MUST run its checklist before yielding and report each box as pass/f
 - [ ] E7 — new motion reuses an existing timing value found in the codebase where one exists, rather than an invented number
 - [ ] F1 — no code comment or report claims an existing mechanism/convention was "extended" without having actually found and read it first
 
-### D3. Reviewer audit checklist (react-atomic-aesthetics:review — verify each; findings go in the four category tables)
+### D3. Reviewer audit checklist (react-atomic-aesthetics:review-ui — verify each; findings go in the four category tables)
 
 - [ ] UI/UX category — A2, A6, A7, A8, A11, A12, A16, E1, E2: hierarchy, affordances, states, signature detail, non-generic layout, decorative content relevance and intensity calibration
 - [ ] Micro-interactions category — A13, A14, A15, A17, A21, E4, E7: functional + weight-scaled motion, prefers-reduced-motion fallback, skeleton loading, card hover-lift present on the innermost card (never a full-bleed wrapper), decorative/ambient motion perf-safety, timing-value consistency with the rest of the codebase

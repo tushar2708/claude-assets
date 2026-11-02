@@ -1,5 +1,5 @@
 ---
-name: review
+name: review-ui
 description: |
   Review an existing or just-built React UI for clean, intentional UI/UX against this plugin's canonical rules.
   Use when:

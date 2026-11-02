@@ -43,4 +43,4 @@ Skip re-running the planning analysis if its findings (existing patterns, tokens
 
 ## Step 4 — Hand off
 
-Hand the approved plan to implementation-capable agents or the main agent, depending on host capabilities. See the review skill for post-build review. Do not implement inside this skill.
+Hand the approved plan to implementation-capable agents or the main agent, depending on host capabilities. See the review-ui skill for post-build review. Do not implement inside this skill.
