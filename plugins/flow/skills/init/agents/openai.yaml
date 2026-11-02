@@ -1,5 +1,5 @@
 interface:
   display_name: "Initialize Flow"
-  short_description: "Initialize workflow guidance"
+  short_description: "Onboard a project with docs, roadmap, and guidance"
 policy:
   allow_implicit_invocation: false

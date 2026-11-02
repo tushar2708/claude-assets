@@ -1,5 +1,0 @@
-interface:
-  display_name: "Scaffold Docsmith"
-  short_description: "Set up complete docsmith governance"
-policy:
-  allow_implicit_invocation: false

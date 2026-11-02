@@ -14,7 +14,7 @@ This skill takes the current conversation context and codebase understanding and
 
 > **MANDATORY: document authoring.** Delegate document writing to a configured document-author role when the host provides one; otherwise write the document directly from this skill's template. Re-run validation yourself; never accept an unverified green claim.
 
-0. **Precondition.** Look for `.docsmith/config.json` walking up from the current directory. If it is absent, STOP: tell the user to run `/flow:scaffold` themselves — a user-only command the agent cannot invoke — and wait. Write no doc, index or folder before docsmith is scaffolded.
+0. **Precondition.** Look for `.docsmith/config.json` walking up from the current directory. If it is absent, STOP: tell the user to run `/flow:init` and wait. Write no doc, index or folder before docsmith is scaffolded.
 
 1. Explore the repo to understand the current state of the codebase, if you haven't already. Use the project's domain glossary vocabulary throughout the spec, and respect any ADRs in the area you're touching.
 

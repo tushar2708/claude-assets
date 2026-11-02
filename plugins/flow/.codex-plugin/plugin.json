@@ -2,5 +2,10 @@
   "name": "flow",
   "version": "1.0.0",
   "description": "Portable development workflow skills.",
-  "skills": "./skills/"
+  "skills": "./skills/",
+  "extensions": {
+    "com.openai": {
+      "onboardingSkill": "./skills/init/SKILL.md"
+    }
+  }
 }

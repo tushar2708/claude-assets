@@ -1,56 +1,76 @@
 ---
 name: init
-description: Initialize flow in a project — verify docsmith is scaffolded (the user runs the user-only /flow:scaffold), write the project's AGENTS.md with an idempotent flow-pattern block, and link CLAUDE.md to AGENTS.md so both point at the same flow lifecycle and command names.
-disable-model-invocation: true
+description: "Initialize Flow onboarding: scaffold or refresh docsmith, create the portable roadmap registry, configure task tracking, and write idempotent agent guidance. Use only when explicitly invoked."
 ---
 
-# init
+# Initialize Flow
+
+Make the current repository flow-ready in one onboarding workflow.
 
 ## Unsupported hosts
 
 If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
 
-Make a repository "flow-ready" once the user has run `/flow:scaffold`.
+## Host adapters
 
-> **MANDATORY: writer agent.** This skill writes `AGENTS.md` itself, in the main thread: no purpose-built agent exists for it. NEVER delegate file writing to `general-purpose` or any other generic agent. Documentation files under docs/ are only ever written by the `flow:docsmith-doc-author` agent.
+- **Claude Code:** use `AskUserQuestion`; include the project-level Docsmith PostToolUse hook when selected. Claude users invoke `/flow:init` directly; no Claude onboarding manifest is claimed.
+- **Codex:** use `request_user_input`; do not claim a Docsmith hook adapter. Use portable pre-commit and Makefile policy instead.
+- **Other hosts:** ask concise plain-text questions and use the portable pre-commit and Makefile policy.
 
-## Step 1 — verify docsmith is scaffolded
+## 1. Resolve the repository
 
-`/flow:scaffold` is a user-only command (`disable-model-invocation: true`); you cannot invoke it and must NOT replicate its work by other means. Check whether `.docsmith/config.json` exists. If it exists, go to Step 2. If it does not, tell the user to run `/flow:scaffold` themselves and STOP; resume only after they confirm and you have verified the file now exists.
+Run `git rev-parse --show-toplevel`; if it fails, use the current working directory as `ROOT`. All paths below are relative to `ROOT`.
 
-## Step 2 — the instructions file and the CLAUDE.md soft link
+## 2. Scaffold or refresh Docsmith
 
-Write the agent-facing instructions file and link `CLAUDE.md` to it. Pick and handle the files by this table:
+The engine creates its own scaffold outputs; never hand-write them.
 
-| Starting state | Action |
-| --- | --- |
-| Neither AGENTS.md nor CLAUDE.md exists | Create `AGENTS.md` containing the block between the markers, then from the repo root create the soft link with `ln -s AGENTS.md CLAUDE.md` (relative target) |
-| AGENTS.md exists as a regular file, CLAUDE.md absent | Write or replace the block in AGENTS.md; create the link `ln -s AGENTS.md CLAUDE.md` from the repo root |
-| CLAUDE.md is a link that resolves to AGENTS.md (compare resolved paths, not the `readlink` text) | Leave the link; write or replace the block in AGENTS.md |
-| CLAUDE.md is a link to a missing AGENTS.md | Create `AGENTS.md` with the block; leave the link |
-| AGENTS.md is a link to CLAUDE.md | Leave both; write or replace the block in CLAUDE.md, the real file |
-| CLAUDE.md is a regular file and AGENTS.md is absent | Write the block into CLAUDE.md; create nothing else |
-| Both exist as regular files | STOP and ask the user (AskUserQuestion): write the block into both files, or into AGENTS.md only; NEVER overwrite or replace CLAUDE.md |
-| CLAUDE.md is a link that resolves anywhere else | STOP and ask the user (AskUserQuestion) |
+1. Detect an existing documentation tree (`ROOT/docs/` or Markdown files with YAML frontmatter). Use `--adopt` for an initial scaffold when either exists.
+2. If `ROOT/.docsmith/config.json` exists, refresh the vendored engine with `--sync-engine` without replacing configuration or docmap. Otherwise scaffold the full profile, doc-site, pre-commit wiring, and category directories.
+3. Ask one confirmation for the complete setup. Ask a follow-up only when the user requests customization; all components default to included.
+4. Write `/tmp/docsmith-scaffold-answers.json` with `profile: "full"`, `site_enabled: true`, `wire_precommit: true`, and `install_hook: true` only for Claude Code. Codex and fallback hosts use `install_hook: false`.
+5. Locate `../docs/scripts/docsmith.py` relative to this skill, then run its `scaffold` command with `--project-root "$ROOT" --non-interactive --answers /tmp/docsmith-scaffold-answers.json`, plus initial-scaffold `--adopt` or existing-project `--sync-engine` as applicable. Add `--force` only after explicit user approval.
+6. Report the engine's written, skipped, and notice output. Explain that `make setup` installs the project dependencies and hooks; use `make validate`, `make docs-build`, or `make docs-serve` afterward.
 
-Run `ln -s` from the repo root. If it fails (for example a filesystem without symlinks), STOP and report; do NOT copy the file. Verify the link with `readlink CLAUDE.md` (must print `AGENTS.md`). Re-runs are idempotent: if the markers exist replace the content between them, otherwise append the block at the end; never duplicate the block and never recreate an existing correct link.
+## 3. Initialize the shared roadmap and local tracker
 
-Write the block BETWEEN idempotent markers:
+Read `../../assets/tracking/README.md` before editing `roadmap.md`.
 
-```
+1. Select exactly one local tracker: Claude Code defaults to `claude-tasks` with location `Claude Code session` and integration `native TaskCreate/TaskUpdate`; Codex defaults to `todo-file` with location `docs/tasks/` and integration `filesystem`. On another host, ask the user to select a supported local tracker.
+2. If `ROOT/roadmap.md` is absent, copy the shared template at `../../assets/roadmap/roadmap.md`, replacing `{{LOCAL_TOOL}}`, `{{LOCAL_LOCATION}}`, and `{{LOCAL_INTEGRATION}}` with the selected values.
+3. If `ROOT/roadmap.md` exists, preserve all existing Epic sections and rows. Add the missing `## Task Tracking` heading and its exact table header only when absent. Add one local declaration row only when none exists; never infer or add cloud trackers from available tools.
+4. Keep the tracking table columns exactly `Scope`, `Tool`, `Location`, and `Integration`. Optional cloud declarations use the same table and follow `assets/tracking/README.md`.
+5. Retain the template's `## Epic:` and table format for new Epics. `roadmap.md` remains the cross-tracker Epic and Story index.
+
+## 4. Write portable agent guidance idempotently
+
+Write the Flow block between these exact markers, replacing only marker contents on repeat runs:
+
+```markdown
 <!-- BEGIN flow:pattern -->
-...block content...
+This repository follows the Flow development workflow.
+`grill` → `spec` → `plan-it` → `make-tasks` → `execute` → `review`.
+Use `/flow:init` for onboarding, `/flow:add-to-roadmap` for tracked work, and `/flow:sync-issues` for reconciliation.
+Use `/flow:write-doc`, `/flow:write-adr`, `/flow:write-prd`, and `/flow:update-docs` for documentation.
+Documentation authoring uses the configured documentation-author role; never use a generic writer when that role is available.
 <!-- END flow:pattern -->
 ```
 
-Block content (agent-facing, concise): state that this repo follows the flow dev-workflow, and list the lifecycle + commands:
-- `grill` (interview) → `spec` (governed spec with sub-features) → `plan-it` (wave plan: sub-feature waves → stages → tasks) → `make-tasks` (copies the plan into tasks) → `execute` (runs wave → stage → task) → `review` (read-only three-table review).
-- `/flow:add-to-roadmap` (roadmap entry + its issue in the declared tracker) and `/flow:sync-issues` (reconcile roadmap ↔ tracker).
-- docs commands: `/flow:write-doc`, `/flow:write-adr`, `/flow:write-prd`, `/flow:update-docs`.
-- Documentation files are written only by the `flow:docsmith-doc-author` agent; never use `general-purpose` or any generic agent to write files.
+Handle `AGENTS.md` and `CLAUDE.md` as follows:
 
-This block is AGENT-FACING and belongs in AGENTS.md / CLAUDE.md, NEVER in a README.
+| Starting state | Action |
+| --- | --- |
+| Neither exists | Create `AGENTS.md` with the block and create relative `CLAUDE.md → AGENTS.md` symlink. |
+| AGENTS.md regular; CLAUDE.md absent | Update AGENTS.md block and create that relative symlink. |
+| CLAUDE.md resolves to AGENTS.md | Update AGENTS.md block; preserve link. |
+| CLAUDE.md links to missing AGENTS.md | Create AGENTS.md block; preserve link. |
+| AGENTS.md links to CLAUDE.md | Update the real CLAUDE.md block; preserve links. |
+| CLAUDE.md regular; AGENTS.md absent | Update CLAUDE.md block; create nothing else. |
+| Both regular files | Ask whether to update both or AGENTS.md only; never overwrite either outside its markers. |
+| CLAUDE.md resolves elsewhere | Ask before modifying either file. |
 
-## Report
+Create the symlink from `ROOT` with `ln -s AGENTS.md CLAUDE.md`. If it fails, report and stop; never copy the file. Verify an expected link using `readlink CLAUDE.md` and report its result.
 
-After Step 2, run the project's validator UNSCOPED from the repo root — `uv run .docsmith/engine/docsmith.py validate` — and print its full output. The repository counts as "flow-ready" only when it prints `FAILURES: 0`; otherwise list the findings and tell the user to run `/flow:fix-findings` (user-only). Also print what was verified and written, which file the block was written to, and the result of `readlink CLAUDE.md`. Projects scaffolded before the validator fixes carry an older vendored engine in `.docsmith/engine/`; tell the user to run `/flow:scaffold` and choose the engine refresh (`--sync-engine`) to receive the fixes.
+## 5. Validate and report
+
+Run `uv run "$ROOT/.docsmith/engine/docsmith.py" --project-root "$ROOT" validate` unscoped and print its full output. A repository is flow-ready only when it reports `FAILURES: 0`; otherwise report findings and direct the user to `fix-findings`. State the Docsmith action, selected local tracker, whether roadmap was created or preserved, guidance file action, and symlink result.

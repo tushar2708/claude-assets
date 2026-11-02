@@ -228,7 +228,7 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
     "init": (["skills/init/SKILL.md"], ["ln -s AGENTS.md CLAUDE.md", "readlink"]),
     "spec": (
         ["skills/spec/SKILL.md"],
-        [".docsmith/config.json", "/flow:scaffold", "validate"],
+        [".docsmith/config.json", "/flow:init", "validate"],
     ),
     "author": (
         ["agents/docsmith-doc-author.md"],

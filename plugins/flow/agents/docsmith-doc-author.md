@@ -95,7 +95,7 @@ its existing H1 and table byte-for-byte, and you only add what is missing. Row f
 1. **Resolve config.** Walk up from cwd for `.docsmith/config.json`; read the category's `template`,
    `dir_patterns`, `stale_after_days`, and (decision) `numbering`. If `.docsmith/config.json` is NOT found
    walking up from cwd, STOP immediately, write nothing, and hand back exactly: "docsmith is not
-   scaffolded here; the user must run /flow:scaffold." Never report a validation result you did not obtain.
+   scaffolded here; the user must run /flow:init." Never report a validation result you did not obtain.
 2. **Copy the template.** Copy the category's template from
    `${CLAUDE_PLUGIN_ROOT}/skills/docs/templates/<template>` as the skeleton.
 3. **Author to the template.** Apply R1-R12; delete sections with no content (R10).

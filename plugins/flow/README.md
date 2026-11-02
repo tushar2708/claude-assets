@@ -36,12 +36,10 @@ claude plugin install flow@claude-assets --scope user
 
 ## One-time project setup
 
-1. Run `/flow:scaffold`. It creates `.docsmith/` (config, docmap, and engine), installs the project hook, wires
-   pre-commit, and creates the doc category folders. Only you can run this command; the model cannot.
-2. Run `/flow:init`. It checks that docsmith is scaffolded, writes the flow block in `AGENTS.md`, and links
-   `CLAUDE.md` to `AGENTS.md`.
+1. Run `/flow:init`. It scaffolds or refreshes `.docsmith/`, initializes `roadmap.md` and its local tracker declaration,
+   writes the Flow block in `AGENTS.md`, and links `CLAUDE.md` to `AGENTS.md` where appropriate.
 
-`/flow:spec` stops and asks you to run `/flow:scaffold` when docsmith is not set up.
+`/flow:spec` stops and asks you to run `/flow:init` when docsmith is not set up.
 
 ## The workflow
 
