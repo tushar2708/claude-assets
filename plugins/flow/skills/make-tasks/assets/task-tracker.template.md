@@ -7,17 +7,31 @@ status: active
 
 Plan: [<plan title>](../plans/<plan filename>)
 
-## Task index
+`roadmap.md` is the Epic registry. This file is the local task tracker.
 
-| S. no. | Task | Title | Status | Dependencies | Details |
+## Epic: <epic name> — <epic key or local id>
+
+Roadmap: [<epic name>](../../roadmap.md#epic-<anchor>)
+
+| S. no. | Task | Parent Story | Title | Status | Dependencies | Details |
 | ---: | --- | --- | --- | --- | --- |
-| 1 | W1.T1 | <task title> | `pending` | `none` | [W1.T1](#w1-t1) |
+| 1 | Story SF-1 | — | <story title from roadmap> | ⏳ | `none` | [SF-1](#sf-1) |
+| 2 | W1.T1 | SF-1 | <task title> | ⏳ | `none` | [W1.T1](#w1-t1) |
+| 3 | W1.T2 | SF-1 | <dependent task title> | ⛔ #blocked by #2 | `#2` | [W1.T2](#w1-t2) |
 
 ## Wave 1
 
+### <a id="sf-1"></a>Story SF-1 — <story title>
+
+- Status: ⏳
+- Epic: <epic name>
+- Roadmap row: `<story id>`
+
+<Copy the roadmap Story details verbatim.>
+
 ### <a id="w1-t1"></a>Task W1.T1 — <task title>
 
-- Status: `pending`
+- Status: ⏳
 - Dependencies: `none`
 - Agent: `<planned agent>`
 - Plan sections: `<exact headings>`
@@ -32,3 +46,10 @@ Plan: [<plan title>](../plans/<plan filename>)
 #### Self-check
 
 <Copy the plan's self-check field verbatim.>
+
+### <a id="w1-t2"></a>Task W1.T2 — <dependent task title>
+
+- Status: ⛔ #blocked by #2
+- Blocked by: #2
+
+<Copy every remaining planned field here verbatim.>

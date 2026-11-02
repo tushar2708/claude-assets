@@ -302,14 +302,31 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
     "make-tasks-file-tracker": (
         ["skills/make-tasks/assets/task-tracker.template.md"],
         [
-            "| S. no. | Task | Title | Status | Dependencies | Details |",
+            "| S. no. | Task | Parent Story | Title | Status | Dependencies | Details |",
             "[W1.T1](#w1-t1)",
             "Task W1.T1",
+            "⛔ #blocked by #2",
         ],
     ),
     "make-tasks-file-location": (
         ["skills/make-tasks/SKILL.md"],
-        ["docs/tasks/<plan filename>", "assets/task-tracker.template.md"],
+        [
+            "docs/tasks/<plan filename>",
+            "assets/task-tracker.template.md",
+            "assets/tracking/local/todo-file.md",
+        ],
+    ),
+    "shared-tracker-references": (
+        [
+            "assets/tracking/README.md",
+            "assets/tracking/local/todo-file.md",
+            "assets/tracking/local/claude-tasks.md",
+            "assets/tracking/cloud/jira.md",
+            "assets/tracking/cloud/github.md",
+            "assets/tracking/cloud/asana.md",
+            "assets/tracking/cloud/linear.md",
+        ],
+        ["Epic", "Story", "Subtask"],
     ),
     # contract files are temporary: /tmp is cleared at restart, the plan stays the source of truth
     "wave-model-contract-file-in-tmp": (
