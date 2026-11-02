@@ -4,21 +4,15 @@ Portable skills and plugins for Claude Code and Codex.
 
 ## Claude Code
 
-### Install
+### Install/Update
 
-Install every plugin and standalone skill:
+Installs every plugin and standalone skill. Safe to run on a fresh machine or over an existing install.
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --claude
 ```
 
 Restart Claude Code or run `/reload-plugins` afterwards.
-
-### Update
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --claude update
-```
 
 ### Uninstall
 
@@ -30,21 +24,15 @@ curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/insta
 
 ## Codex
 
-### Install
+### Install/Update
 
-Install every plugin and standalone skill:
+Installs every plugin and standalone skill. Safe to run on a fresh machine or over an existing install.
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --codex
 ```
 
 Start a new Codex session afterwards.
-
-### Update
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --codex update
-```
 
 ### Uninstall
 
@@ -66,17 +54,35 @@ curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/insta
 | Codex skills | Linked from `~/.codex/skills/<name>`. An existing folder is never overwritten. |
 | Preview | Set `DRY_RUN=1` to print the steps only. |
 
-## Skills
-
-| Skill | What it does |
-|---|---|
-
 ## Plugins
 
-| Plugin | What it does |
-|---|---|
-| [`react-atomic-aesthetics`](./plugins/react-atomic-aesthetics) | Atomic-design React/JSX UI plugin enforcing canonical UI/UX aesthetic and structure rules via a planning architect agent, an implementation agent, and plan/review skills. |
-| [`flow`](./plugins/flow) | Dev workflow: interview, spec, plan, tasks, implement, review, docs governance, and roadmap tracking. |
+Each plugin is listed in the marketplace and installed by the commands above. See the plugin's own README for usage.
+
+### [`flow`](./plugins/flow)
+
+A spec-driven development workflow: from an idea to reviewed code.
+
+- **Workflow:** interview (`grill`), spec (`spec`), plan (`plan-it`), tasks (`make-tasks`), execution (`execute`), and review (`review`).
+- **Roadmap and trackers:** `add-to-roadmap` and `sync-issues`, which keep `roadmap.md` in step with Jira, GitHub, Asana, or another tracker.
+- **Documentation:** docsmith-governed docs (`docs`, `write-doc`, `write-adr`, `write-prd`, `update-docs`, `fix-findings`) and `explaining-code` for HTML walkthroughs.
+- **Debugging and prototyping:** `diagnosing-bugs`, `prototype`, `explain-feature`, and `answer-properly`.
+- **Planning and commits:** `create-n-day-plan`, `create-detailed-days`, `create-priming`, `commit`, `commit-no-verify`, and `update-pr`.
+- **Sessions:** `handoff` compacts a conversation for the next agent.
+
+### [`react-atomic-aesthetics`](./plugins/react-atomic-aesthetics)
+
+Rules and agents for building React UI with a consistent look and atomic component structure.
+
+- **Rules:** `ui-rulebook`, the canonical UI and UX rules that the other pieces follow.
+- **Agents:** `architect` plans a UI change against the rules and the existing codebase. `implementer` builds it.
+- **Skills:** `plan` (plan a UI change before coding) and `review` (review an existing or just-built UI).
+
+### [`myhooks`](./plugins/myhooks)
+
+Manages Claude Code hook rules.
+
+- **Skills:** `setup` (install, verify, and test the hooks system), `add-update` (add or change a rule), and `enable-disable` (toggle one rule without touching the others).
+- **Codex:** Codex has no hook adapter. In Codex, these skills explain that and offer a portable policy instead.
 
 ## Attribution
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Install, update, or uninstall every claude-assets plugin and standalone skill.
+# Install or uninstall every claude-assets plugin and standalone skill. Install is idempotent: run it again to update.
 #
 #   curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --claude
 #   curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --codex
-#   ... bash -s -- --claude|--codex update|uninstall
+#   ... bash -s -- --claude|--codex uninstall
 #
 # Env: CLAUDE_ASSETS_DIR (clone path, default ~/.claude-assets), DRY_RUN=1 (print only).
 set -euo pipefail
@@ -50,56 +50,31 @@ plugin_names() {
   grep -o '"\./plugins/[^"]*"' "$manifest" | sed -e 's|"\./plugins/||' -e 's|"$||'
 }
 
-install_claude_plugins() {
-  log "Adding marketplace $REPO"
-  run claude plugin marketplace add "$REPO"
-  # Refresh the registry so it offers the latest commit, otherwise an
-  # already-installed plugin would never see a newer version below.
-  run claude plugin marketplace update "$MARKETPLACE" || true
+# Idempotent: safe on a fresh machine, on an existing install, and when new plugins were added upstream.
+install_plugins() {
   local name
-  for name in $(plugin_names); do
-    log "Installing plugin $name"
-    # `install` exits 0 for an already-installed plugin without upgrading it,
-    # so always follow with `update` to pull the newest marketplace commit.
-    run claude plugin install "$name@$MARKETPLACE" --scope user || true
-    log "Updating plugin $name"
-    run claude plugin update "$name@$MARKETPLACE" || true
-  done
-}
-
-update_claude_plugins() {
-  log "Refreshing marketplace $MARKETPLACE"
-  run claude plugin marketplace add "$REPO"
-  run claude plugin marketplace update "$MARKETPLACE"
-  local name
-  for name in $(plugin_names); do
-    log "Updating plugin $name"
-    run claude plugin update "$name@$MARKETPLACE" \
-      || run claude plugin install "$name@$MARKETPLACE" --scope user
-  done
-}
-
-install_codex_plugins() {
-  log "Adding Codex marketplace $REPO"
-  # The Codex marketplace file lives in .agents/plugins, but its entries point at ./plugins/*.
-  run codex plugin marketplace add "$REPO" --sparse .agents/plugins --sparse plugins
-  local name
-  for name in $(plugin_names); do
-    log "Installing Codex plugin $name"
-    run codex plugin add "$name@$MARKETPLACE"
-  done
-}
-
-update_codex_plugins() {
-  log "Refreshing Codex marketplace $MARKETPLACE"
-  # Remove first: adding a marketplace that exists from another source fails.
-  run codex plugin marketplace remove "$MARKETPLACE" || true
-  run codex plugin marketplace add "$REPO" --sparse .agents/plugins --sparse plugins
-  local name
-  for name in $(plugin_names); do
-    log "Updating Codex plugin $name"
-    run codex plugin add "$name@$MARKETPLACE"
-  done
+  if [ "$HOST" = "--claude" ]; then
+    # Update in place so installed plugins keep their saved data; add only on the first install.
+    log "Refreshing marketplace $MARKETPLACE"
+    run claude plugin marketplace update "$MARKETPLACE" || run claude plugin marketplace add "$REPO"
+    for name in $(plugin_names); do
+      log "Installing plugin $name"
+      # `install` leaves an installed plugin alone and installs a missing one, so `update` always has a target.
+      run claude plugin install "$name@$MARKETPLACE" --scope user
+      log "Updating plugin $name"
+      run claude plugin update "$name@$MARKETPLACE"
+    done
+  else
+    # Remove, then add: Codex refuses to add a marketplace that exists from another source.
+    log "Adding Codex marketplace $REPO"
+    run codex plugin marketplace remove "$MARKETPLACE" || true
+    # The Codex marketplace file lives in .agents/plugins, but its entries point at ./plugins/*.
+    run codex plugin marketplace add "$REPO" --sparse .agents/plugins --sparse plugins
+    for name in $(plugin_names); do
+      log "Installing Codex plugin $name"
+      run codex plugin add "$name@$MARKETPLACE"
+    done
+  fi
 }
 
 uninstall_plugins() {
@@ -177,8 +152,8 @@ main() {
     *) die "Unknown host '$HOST'. Use --claude or --codex." ;;
   esac
   case "$MODE" in
-    install | update | uninstall) ;;
-    *) die "Unknown mode '$MODE'. Use 'install', 'update', or 'uninstall'." ;;
+    install | uninstall) ;;
+    *) die "Unknown mode '$MODE'. Use 'install' or 'uninstall'." ;;
   esac
   require git
   if [ "$HOST" = "--claude" ]; then
@@ -196,15 +171,7 @@ main() {
     log "Uninstalled. The clone at $CLONE_DIR was kept."
     return 0
   fi
-  if [ "$HOST" = "--claude" ] && [ "$MODE" = "install" ]; then
-    install_claude_plugins
-  elif [ "$HOST" = "--claude" ]; then
-    update_claude_plugins
-  elif [ "$MODE" = "update" ]; then
-    update_codex_plugins
-  else
-    install_codex_plugins
-  fi
+  install_plugins
   link_skills
   prune_skills
 
