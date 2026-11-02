@@ -1,0 +1,5 @@
+interface:
+  display_name: "Write ADR"
+  short_description: "Author and validate an architecture decision record"
+policy:
+  allow_implicit_invocation: false

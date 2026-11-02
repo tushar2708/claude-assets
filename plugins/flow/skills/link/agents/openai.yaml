@@ -1,0 +1,5 @@
+interface:
+  display_name: "Link to Code"
+  short_description: "Return a clickable code location"
+policy:
+  allow_implicit_invocation: false

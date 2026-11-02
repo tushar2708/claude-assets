@@ -1,0 +1,5 @@
+interface:
+  display_name: "Create Priming"
+  short_description: "Create portable repository context guides"
+policy:
+  allow_implicit_invocation: false

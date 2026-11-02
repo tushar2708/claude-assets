@@ -1,0 +1,5 @@
+interface:
+  display_name: "Create N-Day Plan"
+  short_description: "Create a sprint-based development plan"
+policy:
+  allow_implicit_invocation: false

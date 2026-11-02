@@ -1,0 +1,5 @@
+interface:
+  display_name: "Update Documentation"
+  short_description: "Process and validate docsmith update tasks"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Answer Properly"
+  short_description: "Explain code through real-world behavior"
+policy:
+  allow_implicit_invocation: false

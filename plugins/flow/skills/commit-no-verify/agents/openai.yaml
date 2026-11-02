@@ -1,0 +1,5 @@
+interface:
+  display_name: "Commit Without Verify"
+  short_description: "Commit staged changes and skip hooks"
+policy:
+  allow_implicit_invocation: false

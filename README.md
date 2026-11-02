@@ -37,15 +37,12 @@ Restart Claude Code or run `/reload-plugins`; start a new Codex session after in
 
 | Skill | What it does |
 |---|---|
-| [`real-browser-debug`](./skills/real-browser-debug) | Drives a real, logged-in Chrome session via Playwright to capture console output, network traffic, and screenshots for debugging. |
-| [`progressive-web-app`](./skills/progressive-web-app) | Guides building and auditing a Progressive Web App (manifest, service worker, installability, responsive/Lighthouse checks) against a strict evidence-based checklist. |
 
 ## Plugins
 
 | Plugin | What it does |
 |---|---|
 | [`react-atomic-aesthetics`](./plugins/react-atomic-aesthetics) | Atomic-design React/JSX UI plugin enforcing canonical UI/UX aesthetic and structure rules via a planning architect agent, an implementation agent, and plan/review skills. |
-| [`react-seo-planner`](./plugins/react-seo-planner) | Plans and audits SEO (and GEO/AI-visibility) for React apps: checklist-driven categories, schema templates, GEO analysis scripts, and specialist GEO agents. |
 | [`flow`](./plugins/flow) | Dev workflow: interview, spec, plan, tasks, implement, review, docs governance, and roadmap tracking. |
 
 ## Attribution

@@ -21,13 +21,15 @@ This skill plans a React UI/UX change against the plugin's canonical rules befor
 
 Call the Skill tool with "ui-rulebook". All planning decisions must comply with its rules. Reference rules by number (A1–A20, B1–B5, Part C, E1–E7, F1–F2).
 
+Also read the canonical planner role at `../../references/roles/architect.md`. It is the sole semantic definition of the planner role.
+
 ## Step 1 — Produce a plan before implementation
 
 Do not implement while planning. Obtain approval for the implementation plan before implementation. Do NOT use this skill for bug fixes or for purely mechanical edits (renames, reference updates, copy-only changes).
 
 ## Step 2 — Plan the UI change
 
-Use a planning-capable agent if the host provides one; otherwise perform this analysis directly. Provide the feature goal, target UI project path, and known constraints. The planner will:
+Use the canonical architect role for this analysis. **Claude Code:** delegate to the named `architect` wrapper; it loads `../../references/roles/architect.md`. **Codex:** read that canonical role file and apply it directly, or give its copied canonical role context to a generic planning worker. **Other hosts:** follow the unsupported-host rule above. Provide the feature goal, target UI project path, and known constraints. The planner will:
 1. Read RULES.md.
 2. Analyze the existing codebase patterns (component structure, design tokens/theme, spacing rhythm, existing atoms/molecules/organisms, AND any existing asset/image pipeline or motion-timing vocabulary — RULES E7, F1) and state which it will match for consistency, verified by actually reading the relevant files, not assumed.
 3. Map the user journey including all four async states (empty, loading, error, success — RULES A16) and accessibility (A18–A19).

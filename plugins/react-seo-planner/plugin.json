@@ -1,7 +1,0 @@
-{
-  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
-  "name": "react-seo-planner",
-  "version": "1.0.0",
-  "description": "SEO and GEO analysis skills for React applications.",
-  "skills": "./skills/"
-}

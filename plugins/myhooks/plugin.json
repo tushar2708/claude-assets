@@ -1,0 +1,7 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "myhooks",
+  "version": "1.0.0",
+  "description": "Portable guidance for managing Claude Code hook rules and their Codex policy alternatives.",
+  "skills": "./skills/"
+}

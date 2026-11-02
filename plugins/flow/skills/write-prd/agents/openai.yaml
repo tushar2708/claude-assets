@@ -1,0 +1,5 @@
+interface:
+  display_name: "Write PRD"
+  short_description: "Author and validate a product requirements document"
+policy:
+  allow_implicit_invocation: false

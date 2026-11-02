@@ -1,0 +1,5 @@
+interface:
+  display_name: "Review Implementation"
+  short_description: "Perform a rigorous read-only code review"
+policy:
+  allow_implicit_invocation: false

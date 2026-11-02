@@ -1,0 +1,5 @@
+interface:
+  display_name: "Explain Feature"
+  short_description: "Explain a feature in runtime order"
+policy:
+  allow_implicit_invocation: false

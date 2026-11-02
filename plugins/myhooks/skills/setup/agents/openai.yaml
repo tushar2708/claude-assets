@@ -1,0 +1,5 @@
+interface:
+  display_name: "Set Up Hooks"
+  short_description: "Set up or verify Claude hook rules"
+policy:
+  allow_implicit_invocation: false

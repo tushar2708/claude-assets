@@ -1,0 +1,5 @@
+interface:
+  display_name: "Fix Doc Findings"
+  short_description: "Mechanically resolve docsmith validation findings"
+policy:
+  allow_implicit_invocation: false

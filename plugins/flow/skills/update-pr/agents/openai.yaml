@@ -1,0 +1,5 @@
+interface:
+  display_name: "Update PR"
+  short_description: "Update a pull request title and description"
+policy:
+  allow_implicit_invocation: false

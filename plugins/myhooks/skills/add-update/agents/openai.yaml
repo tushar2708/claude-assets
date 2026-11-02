@@ -1,0 +1,5 @@
+interface:
+  display_name: "Add or Update"
+  short_description: "Add or update a Claude hook rule"
+policy:
+  allow_implicit_invocation: false

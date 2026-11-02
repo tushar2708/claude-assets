@@ -1,0 +1,5 @@
+interface:
+  display_name: "Enable or Disable"
+  short_description: "Toggle an individual Claude hook rule"
+policy:
+  allow_implicit_invocation: false

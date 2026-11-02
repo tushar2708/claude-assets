@@ -1,0 +1,6 @@
+{
+  "name": "myhooks",
+  "version": "1.0.0",
+  "description": "Manage Claude Code hook rules with portable Codex policy alternatives.",
+  "author": { "name": "Tushar Dwivedi" }
+}

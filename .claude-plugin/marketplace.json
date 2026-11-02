@@ -18,9 +18,9 @@
       "repository": "https://github.com/tushar2708/claude-assets"
     },
     {
-      "name": "react-seo-planner",
-      "source": "./plugins/react-seo-planner",
-      "description": "Combined SEO + GEO (Generative Engine Optimization) audit and fix-planning for React.js applications — a 24-category checklist, schema templates, GEO analysis scripts, and specialist GEO agents.",
+      "name": "flow",
+      "source": "./plugins/flow",
+      "description": "Unified dev-workflow plugin — interview, spec, plan, tasks, implement, review — with docsmith docs governance and roadmap/issue tracking.",
       "author": {
         "name": "Tushar Dwivedi"
       },
@@ -28,9 +28,9 @@
       "repository": "https://github.com/tushar2708/claude-assets"
     },
     {
-      "name": "flow",
-      "source": "./plugins/flow",
-      "description": "Unified dev-workflow plugin — interview, spec, plan, tasks, implement, review — with docsmith docs governance and roadmap/issue tracking.",
+      "name": "myhooks",
+      "source": "./plugins/myhooks",
+      "description": "Manage Claude Code hook rules; Codex has no hook adapter.",
       "author": {
         "name": "Tushar Dwivedi"
       },

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Add to Roadmap"
+  short_description: "Create a roadmap item and tracker issue"
+policy:
+  allow_implicit_invocation: false

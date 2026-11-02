@@ -11,16 +11,17 @@
       "category": "Engineering"
     },
     {
-      "name": "react-seo-planner",
-      "source": { "source": "local", "path": "./plugins/react-seo-planner" },
-      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
-      "category": "Engineering"
-    },
-    {
       "name": "flow",
       "source": { "source": "local", "path": "./plugins/flow" },
       "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
       "category": "Productivity"
+    },
+    {
+      "name": "myhooks",
+      "source": { "source": "local", "path": "./plugins/myhooks" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Engineering",
+      "description": "Manage Claude Code hook rules; Codex has no hook adapter."
     }
   ]
 }

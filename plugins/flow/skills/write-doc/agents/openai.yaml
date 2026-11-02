@@ -1,0 +1,5 @@
+interface:
+  display_name: "Write Documentation"
+  short_description: "Author and validate evergreen documentation"
+policy:
+  allow_implicit_invocation: false
