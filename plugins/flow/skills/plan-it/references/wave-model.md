@@ -1,6 +1,6 @@
 # Wave Model
 
-The one definition of the flow model. Read by `/flow:spec`, `/flow:plan-it`, `/flow:make-tasks`, and `/flow:execute`.
+The one definition of the flow model. Read by `spec`, `plan-it`, `make-tasks`, and `execute`.
 
 ## Hierarchy
 
@@ -87,7 +87,7 @@ All fields are required.
 | Stage | `S1`, `S2`, `S3`, or a sub-stage |
 | Files | Every file the task owns in this stage |
 | Changes | Every edit, per file, with full detail |
-| Shared contracts | In the plan: the wave section names its contract sections by exact heading. In the tracker: `/flow:make-tasks` writes them once per wave to the temporary file `/tmp/flow-make-tasks/<plan file name without .md>/W<n>-contracts.md` (cleared at restart; the plan stays the source of truth), and each task names that file and the plan sections it cites |
+| Shared contracts | In the plan: the wave section names its contract sections by exact heading. In the tracker: `make-tasks` writes them once per wave to the temporary file `/tmp/flow-make-tasks/<plan file name without .md>/W<n>-contracts.md` (cleared at restart; the plan stays the source of truth), and each task names that file and the plan sections it cites |
 | Test cases | Table-driven cases (S2 tasks, and S3 tasks that make them pass) |
 | Self-check | One compile/build command for the touched package. No test suite. Runs without asking. |
 | Agent | An agent name from the agent table, or `main-thread` |
@@ -158,7 +158,7 @@ One per plan. Title `[<tag>] final.close`. Blocked by every verify and close tas
 
 Procedure (operations: `${CLAUDE_PLUGIN_ROOT}/skills/sync-issues/references/issue-tracker.md` part F):
 
-1. Read every stage, verify and close task of the plan in the local tracker.
+1. Read every stage, verify and close task in the native tracker or, where native tasks are unavailable, in `docs/tasks/<plan filename>`.
 2. Any of them not completed: report them. Leave the spec and Story open. Stop.
 3. A verify was skipped or a Subtask left open: ask with AskUserQuestion.
 4. Options: "Mark done", "Leave open". On "Leave open": mark this task completed. Stop.

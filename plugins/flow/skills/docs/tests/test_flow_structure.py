@@ -30,11 +30,11 @@ EXPECTED_SKILLS = [
     "sync-issues",
     "init",
     "plan-it",
+    "make-tasks",
+    "execute",
 ]
 
 EXPECTED_COMMANDS = [
-    "make-tasks.md",
-    "execute.md",
     "review.md",
     "add-to-roadmap.md",
     "write-doc.md",
@@ -193,14 +193,12 @@ def test_no_stale_docsmith_references():
 # text is present, not that the prose is good.
 
 _WRITER_RULE_FILES = [
-    "skills/spec/SKILL.md",
     "skills/init/SKILL.md",
     "commands/write-doc.md",
     "commands/write-adr.md",
     "commands/write-prd.md",
     "commands/update-docs.md",
     "commands/fix-findings.md",
-    "commands/execute.md",
 ]
 
 _QUALIFIED_AGENT_FILES = [
@@ -284,23 +282,34 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
         ["skills/plan-it/SKILL.md"],
         [
             "references/wave-model.md",
-            "End with ExitPlanMode.",
+            "call the Skill tool with `make-tasks`",
             "compliance ledger",
             "Translate every rule that asks for one wave per TDD phase into stages S1/S2/S3 of the sub-feature wave.",
             "references/plan-validation.md",
         ],
     ),
     "make-tasks-wave-model": (
-        ["commands/make-tasks.md"],
+        ["skills/make-tasks/SKILL.md"],
         [
-            "skills/plan-it/references/wave-model.md",
-            "skills/plan-it/references/plan-validation.md",
-            "A file belongs to at most one task in a stage.",
-            "Never use agents to create tasks.",
-            "Never commit.",
+            "run every validation recorded by `plan-it`",
+            "A file belongs to at most one work item in a stage.",
+            "Do not delegate their creation to another agent.",
+            "Never commit or offer to commit.",
             "W<n>-contracts.md",
-            "/tmp/flow-make-tasks/<plan file name without .md>/W<n>-contracts.md",
+            "${TMPDIR:-/tmp}/flow-make-tasks/<plan-name>/W<n>-contracts.md",
         ],
+    ),
+    "make-tasks-file-tracker": (
+        ["skills/make-tasks/assets/task-tracker.template.md"],
+        [
+            "| S. no. | Task | Title | Status | Dependencies | Details |",
+            "[W1.T1](#w1-t1)",
+            "Task W1.T1",
+        ],
+    ),
+    "make-tasks-file-location": (
+        ["skills/make-tasks/SKILL.md"],
+        ["docs/tasks/<plan filename>", "assets/task-tracker.template.md"],
     ),
     # contract files are temporary: /tmp is cleared at restart, the plan stays the source of truth
     "wave-model-contract-file-in-tmp": (
@@ -311,8 +320,8 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
     "plan-validation": (
         ["skills/plan-it/references/plan-validation.md"],
         [
-            "`/flow:plan-it`",
-            "`/flow:make-tasks`",
+            "`plan-it`",
+            "`make-tasks`",
             "| V1 |",
             "| V10 |",
             "| V11 |",
@@ -320,17 +329,17 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
         ],
     ),
     "execute-wave-model": (
-        ["commands/execute.md"],
+        ["skills/execute/SKILL.md"],
         [
-            "skills/plan-it/references/wave-model.md",
-            "Only one stage in progress at a time.",
-            "Never commit. Never offer or suggest a commit. Commit only when the user asks.",
-            "The verify question and the close question are the only planned stops.",
+            "docs/tasks/<plan filename>",
+            "Only one stage is in progress at a time.",
+            "Never commit or offer to commit.",
+            "Only planned verify and close questions may stop execution.",
         ],
     ),
     "spec-sub-features": (
         ["skills/spec/SKILL.md"],
-        ["## Sub-features", "skills/plan-it/references/wave-model.md"],
+        ["## Sub-features", "Call the Skill tool with `plan-it`"],
     ),
     "grill-flow-spec": (["skills/grill/SKILL.md"], ["/flow:spec"]),
     # one tracker reference: roadmap.md declares the tracker, read from disk on every run
@@ -355,8 +364,12 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
     ),
     # both issue commands resolve the tracker only through issue-tracker.md
     "issue-tracker-users": (
-        ["commands/add-to-roadmap.md", "skills/sync-issues/SKILL.md"],
+        ["commands/add-to-roadmap.md"],
         ["${CLAUDE_PLUGIN_ROOT}/skills/sync-issues/references/issue-tracker.md"],
+    ),
+    "portable-issue-tracker-user": (
+        ["skills/sync-issues/SKILL.md"],
+        ["Read `references/issue-tracker.md` first."],
     ),
     # spec offers one Story under an epic, created only through /flow:add-to-roadmap
     "spec-offer-tasks": (
@@ -408,22 +421,22 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
 _FORBIDDEN_TEXT_PINS: dict[str, tuple[str, str]] = {
     "spec-no-init-fallback": ("skills/spec/SKILL.md", "or `/flow:init`"),
     # wave model (spec 186): sub-feature waves -> stages -> tasks
-    "make-tasks-no-one-file-rule": ("commands/make-tasks.md", "One task = one file"),
-    "make-tasks-no-slices": ("commands/make-tasks.md", "ertical slices"),  # "Vertical"/"vertical"
-    "execute-no-todo-cap": ("commands/execute.md", "under 25"),
-    "execute-no-end-commit": ("commands/execute.md", "No intermediate commits"),
+    "make-tasks-no-one-file-rule": ("skills/make-tasks/SKILL.md", "One task = one file"),
+    "make-tasks-no-slices": ("skills/make-tasks/SKILL.md", "ertical slices"),  # "Vertical"/"vertical"
+    "execute-no-todo-cap": ("skills/execute/SKILL.md", "under 25"),
+    "execute-no-end-commit": ("skills/execute/SKILL.md", "No intermediate commits"),
     "grill-no-to-spec": ("skills/grill/SKILL.md", "/to-spec"),
-    "make-tasks-no-absolute": ("commands/make-tasks.md", "ABSOLUTE"),
-    "execute-no-absolute": ("commands/execute.md", "ABSOLUTE"),
+    "make-tasks-no-absolute": ("skills/make-tasks/SKILL.md", "ABSOLUTE"),
+    "execute-no-absolute": ("skills/execute/SKILL.md", "ABSOLUTE"),
     "plan-it-no-absolute": ("skills/plan-it/SKILL.md", "ABSOLUTE"),
     "wave-model-no-absolute": ("skills/plan-it/references/wave-model.md", "ABSOLUTE"),
     # make-tasks validates only through plan-validation.md; the old inline check list must not return
-    "make-tasks-no-inline-checks": ("commands/make-tasks.md", "The compliance ledger is missing."),
+    "make-tasks-no-inline-checks": ("skills/make-tasks/SKILL.md", "The compliance ledger is missing."),
     # shared contracts are written to a contract file, never pasted into every task
-    "make-tasks-no-full-paste": ("commands/make-tasks.md", "including the full shared contracts"),
+    "make-tasks-no-full-paste": ("skills/make-tasks/SKILL.md", "including the full shared contracts"),
     "wave-model-no-full-paste": ("skills/plan-it/references/wave-model.md", "Copied in full from the wave section into every task"),
     # contract files never go next to the plan file; they live in /tmp/flow-make-tasks/
-    "make-tasks-no-plan-dir-contracts": ("commands/make-tasks.md", ".tasks/W<n>-contracts.md"),
+    "make-tasks-no-plan-dir-contracts": ("skills/make-tasks/SKILL.md", ".tasks/W<n>-contracts.md"),
     "wave-model-no-plan-dir-contracts": ("skills/plan-it/references/wave-model.md", ".tasks/W<n>-contracts.md"),
     # issue work follows the tracker that roadmap.md declares; no GitHub-only text may return
     "add-to-roadmap-no-github-step": ("commands/add-to-roadmap.md", "Create the GitHub Issue"),

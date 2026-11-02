@@ -104,7 +104,7 @@ Validation before committing: grep for hardcoded hex (grep -rE "#[0-9a-fA-F]{3,6
 ### B5. INDEX.md inventory
 
 Every UI package root keeps an INDEX.md: each app and each shared component library.
-If it is missing, create it from `${CLAUDE_PLUGIN_ROOT}/templates/INDEX.template.md`.
+If it is missing, create it from `assets/INDEX.template.md` in this skill.
 Read every INDEX.md in the repo before planning or writing a component.
 Reuse a listed component; never re-create it in another package.
 In a monorepo, put generic atoms and molecules in the shared library.
@@ -119,7 +119,7 @@ This plugin targets React + Tailwind CSS + shadcn/ui + lucide-react. Before doin
 
 Every agent MUST run its checklist before yielding and report each box as pass/fail. Each item cites the rule number that defines it (Parts A/B/C/E/F are the single source; these boxes are a terse actionable index, not a re-statement). Rules are APPEND-ONLY — add A21+/B6+/E-next/F-next rather than renumbering, or these citations misalign. A wholly new discipline not covered by any existing Part's letter gets its own new top-level Part with the next unused letter (as Parts E and F were added), rather than being force-fit under an existing one. When you add a rule, add a matching box to the relevant checklist(s) here.
 
-### D1. Architect planning checklist (react-atomic-aesthetics:architect — run before returning a plan)
+### D1. Architect planning checklist (run before returning a plan)
 
 - [ ] A1 — accent chosen by discovering the project's existing tokens (or deliberately picked only if none exist); never a default Tailwind named color
 - [ ] A4 — a real type pairing is specified (not default Inter/system sans)
@@ -145,7 +145,7 @@ Every agent MUST run its checklist before yielding and report each box as pass/f
 - [ ] F2 — if the project has 3+ named theme/mode variants, the plan states the verified (not inferred) mapping from each variant's literal value to its actual palette
 - [ ] Existing-pattern analysis done; the plan states which existing patterns it matches, INCLUDING any existing asset/build/image pipeline (not just component/token patterns)
 
-### D2. Implementer execution checklist (react-atomic-aesthetics:implementer — run before yielding)
+### D2. Implementer execution checklist (run before yielding)
 
 - [ ] A3 — all color flows through semantic tokens; no hardcoded hex, no default named-color accent
 - [ ] A9 — spacing uses scale tokens; no ad-hoc pixel values

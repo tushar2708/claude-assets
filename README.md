@@ -1,28 +1,36 @@
 # claude-assets
 
-Claude Code plugins and skills.
+Portable skills and plugins for Claude Code and Codex.
 
 ## Install
 
-Install every plugin and skill:
+Install every plugin and standalone skill for Claude Code:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --claude
 ```
 
-Update everything:
+Install every plugin and standalone skill for Codex:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- update
+curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --codex
 ```
 
-Then restart Claude Code, or run `/reload-plugins`.
+Update an existing installation by appending `update`:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --claude update
+curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --codex update
+```
+
+Restart Claude Code or run `/reload-plugins`; start a new Codex session after installing.
 
 | Detail | Value |
 |---|---|
-| Needs | `git` and the `claude` CLI on `PATH`. |
+| Needs | `git` and the selected `claude` or `codex` CLI on `PATH`. |
 | Clone path | `~/.claude-assets`. Set `CLAUDE_ASSETS_DIR` to change it. |
-| Skills | Linked from `~/.claude/skills/<name>`. An existing folder is never overwritten. |
+| Claude skills | Linked from `~/.claude/skills/<name>`. An existing folder is never overwritten. |
+| Codex skills | Linked from `~/.codex/skills/<name>`. An existing folder is never overwritten. |
 | Preview | Set `DRY_RUN=1` to print the steps only. |
 
 ## Skills

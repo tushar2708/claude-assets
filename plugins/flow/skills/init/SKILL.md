@@ -6,6 +6,10 @@ disable-model-invocation: true
 
 # init
 
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
+
 Make a repository "flow-ready" once the user has run `/flow:scaffold`.
 
 > **MANDATORY: writer agent.** This skill writes `AGENTS.md` itself, in the main thread: no purpose-built agent exists for it. NEVER delegate file writing to `general-purpose` or any other generic agent. Documentation files under docs/ are only ever written by the `flow:docsmith-doc-author` agent.
@@ -40,7 +44,7 @@ Write the block BETWEEN idempotent markers:
 ```
 
 Block content (agent-facing, concise): state that this repo follows the flow dev-workflow, and list the lifecycle + commands:
-- `/flow:grill` (interview) → `/flow:spec` (governed spec with sub-features) → `/flow:plan-it` (Plan Mode plan: sub-feature waves → stages → tasks) → `/flow:make-tasks` (copies the plan into tasks) → `/flow:execute` (runs wave → stage → task) → `/flow:review` (read-only three-table review).
+- `grill` (interview) → `spec` (governed spec with sub-features) → `plan-it` (wave plan: sub-feature waves → stages → tasks) → `make-tasks` (copies the plan into tasks) → `execute` (runs wave → stage → task) → `review` (read-only three-table review).
 - `/flow:add-to-roadmap` (roadmap entry + its issue in the declared tracker) and `/flow:sync-issues` (reconcile roadmap ↔ tracker).
 - docs commands: `/flow:write-doc`, `/flow:write-adr`, `/flow:write-prd`, `/flow:update-docs`.
 - Documentation files are written only by the `flow:docsmith-doc-author` agent; never use `general-purpose` or any generic agent to write files.

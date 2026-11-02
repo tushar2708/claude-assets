@@ -6,6 +6,10 @@ disable-model-invocation: true
 
 # Prototype
 
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
+
 A prototype is **throwaway code that answers a question**. The question decides the shape.
 
 ## Pick a branch

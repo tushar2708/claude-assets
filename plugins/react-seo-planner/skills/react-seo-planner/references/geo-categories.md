@@ -1,7 +1,7 @@
 # GEO Audit Categories — Categories 17–24
 
 Work through these after completing the 16 traditional SEO categories. These categories require BOTH code-level analysis
-AND live-site analysis using WebFetch.
+AND live-site analysis using the active host's web-research tool.
 
 For live analysis to be possible the project must have a deployed URL. If no deployed URL is known, **record each GEO
 category as "Code-Only Analysis" and note live analysis is blocked.** Still audit everything that can be checked in
@@ -101,7 +101,7 @@ Research from Princeton, Georgia Tech, and IIT Delhi (2024) found that GEO-optim
 visibility** in AI-generated responses. AI systems preferentially extract passages that are 134–167 words,
 self-contained, fact-rich, and answer-first.
 
-**This is a live-site category.** Read content pages using WebFetch and score each.
+**This is a live-site category.** Read content pages using the active host's web-research tool and score each.
 
 ### Scoring Rubric (0-100)
 
@@ -333,7 +333,7 @@ Evaluates brand presence across platforms that AI models rely on for entity reco
 Unlinked brand mentions correlate ~3x more strongly with AI visibility than traditional backlinks (Ahrefs, December
 2025, 75K brands). The platforms where mentions appear matter more than the mentions themselves.
 
-**This is a live-site category.** Use WebFetch to scan each platform.
+**This is a live-site category.** Use the active host's web-research tool to scan each platform.
 
 ### Composite Brand Authority Score Formula
 
@@ -354,7 +354,7 @@ Brand_Authority_Score = (YouTube * 0.25) + (Reddit * 0.25) + (Wikipedia * 0.20) 
 | 10-29  | No channel or empty channel, 1-2 video mentions                                    |
 | 0-9    | No YouTube presence                                                                |
 
-**How to check:** WebFetch search `[brand name] site:youtube.com`; check `youtube.com/@[brand-name]` for official
+**How to check:** Search `[brand name] site:youtube.com`; check `youtube.com/@[brand-name]` for official
 channel.
 
 #### Reddit (25% weight)
@@ -368,7 +368,7 @@ channel.
 | 10-29  | Rare mentions, brand largely unknown                                                            |
 | 0-9    | No Reddit presence                                                                              |
 
-**How to check:** WebFetch search `"[brand name]" site:reddit.com`; check `reddit.com/r/[brand-name]`.
+**How to check:** Search `"[brand name]" site:reddit.com`; check `reddit.com/r/[brand-name]`.
 
 #### Wikipedia / Wikidata (20% weight)
 

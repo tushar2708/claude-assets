@@ -1,16 +1,20 @@
 ---
 name: plan-it
-description: Write a Plan Mode plan split into sub-feature waves, stages, and tasks, from session context, a spec file, or both.
+description: Write an approved plan split into sub-feature waves, stages, and tasks, from session context, a spec file, or both.
 disable-model-invocation: true
 ---
 
-Write a plan in the wave model, ready for `/flow:make-tasks`.
+## Unsupported hosts
 
-Read `${CLAUDE_SKILL_DIR}/references/wave-model.md` first. It defines every term and schema.
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
+
+Write a plan in the wave model, ready for `make-tasks` (`/flow:make-tasks` in Claude Code).
+
+Read `references/wave-model.md` first. It defines every term and schema.
 
 ## Procedure
 
-1. Enter Plan Mode. Write at the plan top: "Re-read `${CLAUDE_SKILL_DIR}/references/wave-model.md` before steps 8 and 11, and `${CLAUDE_SKILL_DIR}/references/plan-validation.md` before step 11."
+1. Create a plan artifact and write at its top: "Re-read `references/wave-model.md` before steps 8 and 11, and `references/plan-validation.md` before step 11."
 2. Read the sources: session context, a spec file, or both.
 3. Set the sub-features. With a spec, keep its order. Split a sub-feature into `SF-<n>a`/`SF-<n>b` when it does not fit one wave. Never merge. Never reorder. Without a spec, derive the sub-features from the session context.
 4. Invoke each skill the user named.
@@ -20,8 +24,8 @@ Read `${CLAUDE_SKILL_DIR}/references/wave-model.md` first. It defines every term
 8. Write the waves, stages, and tasks per the reference. Apply the ownership rule. Apply the sub-stage split rule. Add each wave's close task per the reference.
 9. Set the agent for each task from the agent table.
 10. Plan each wave so that it ends compiling, testing green, and passing pre-commit.
-11. After the plan is written, run every check of `${CLAUDE_SKILL_DIR}/references/plan-validation.md` (the same file `/flow:make-tasks` runs before it creates tasks). Fix each failure. Run all checks again. Repeat until all pass. Then check every rule below.
-12. End with ExitPlanMode.
+11. After the plan is written, run every check of `references/plan-validation.md`. Fix each failure and repeat until all pass.
+12. Obtain the user's approval, then call the Skill tool with `make-tasks`.
 
 ## Rules
 

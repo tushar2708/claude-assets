@@ -1,0 +1,3 @@
+interface:
+  display_name: "llms.txt"
+  short_description: "Audit or generate llms.txt"

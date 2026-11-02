@@ -1,0 +1,5 @@
+interface:
+  display_name: "Make Tasks"
+  short_description: "Create work items from an approved Flow plan"
+policy:
+  allow_implicit_invocation: true

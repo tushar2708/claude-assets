@@ -1,12 +1,17 @@
 ---
 name: geo-platform-optimizer
 description: Platform-specific AI search optimization — audit and optimize for Google AI Overviews, ChatGPT, Perplexity, Gemini, and Bing Copilot individually
-version: 1.0.0
-author: geo-seo-claude
-tags: [geo, ai-search, platform-optimization, chatgpt, perplexity, gemini, aio]
+metadata:
+  author: geo-seo-claude
+  version: "1.0.0"
+  tags: geo, ai-search, platform-optimization, chatgpt, perplexity, gemini, aio
 ---
 
 # GEO Platform Optimizer
+
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
 
 ## Core Insight
 

@@ -1,16 +1,19 @@
 ---
 name: geo-llmstxt
 description: Analyzes and generates llms.txt files -- the emerging standard for helping AI systems understand website structure and content. Can validate existing llms.txt files or generate new ones from scratch by crawling the site.
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - Bash
-  - WebFetch
-  - Write
 ---
 
 # llms.txt Standard Analysis and Generation Skill
+
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
+
+## Host operations
+
+- If running in Claude Code, use `WebFetch` for page retrieval.
+- If running in Codex, use `web.run` with `open`.
+- If neither is available, report the retrieval step as blocked; do not infer results.
 
 ## Purpose
 
@@ -160,7 +163,7 @@ When checking an existing llms.txt file:
 
 ### Step 1: Fetch the File
 
-1. Use WebFetch to retrieve `[domain]/llms.txt`.
+1. Retrieve `[domain]/llms.txt` with the active host's web-research tool.
 2. Also check for `[domain]/llms-full.txt`.
 3. Record HTTP status code:
    - **200:** File exists -- proceed to validation.
@@ -265,7 +268,7 @@ Categorize all discovered pages and select the most important ones:
 
 For each selected page:
 
-1. Fetch the page content using WebFetch.
+1. Fetch the page content using the active host's web-research tool.
 2. Read the H1, meta description, and first 2-3 paragraphs.
 3. Write a description that:
    - Is 10-30 words long

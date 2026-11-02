@@ -1,16 +1,19 @@
 ---
 name: geo-brand-mentions
 description: Brand mention and authority scanner for AI visibility. Analyzes brand presence across platforms that AI models rely on for entity recognition and citation decisions. Produces a Brand Authority Score (0-100) with platform-specific recommendations.
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - Bash
-  - WebFetch
-  - Write
 ---
 
 # Brand Mention Scanner Skill
+
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
+
+## Host operations
+
+- If running in Claude Code, use `WebSearch` and `WebFetch` for web research.
+- If running in Codex, use `web.run` with `search_query` and `open`.
+- If neither is available, report the research step as blocked; do not infer results.
 
 ## Core Insight
 
@@ -223,7 +226,7 @@ Gather the following from the user or from the website:
 
 ### Step 2: Platform Scanning
 
-For each platform, use WebFetch to search and assess presence:
+For each platform, use the active host's web-research tool to search and assess presence:
 
 **YouTube Check:**
 1. Search: `[brand name] site:youtube.com`
@@ -267,8 +270,8 @@ if entities:
 ```
 
 **Method 2 — Direct URL check (backup verification):**
-1. WebFetch: `https://en.wikipedia.org/wiki/[Brand_Name]` — check if the page loads (not a redirect to search)
-2. WebFetch: `https://en.wikipedia.org/wiki/[Founder_Name]` for founder article
+1. Fetch `https://en.wikipedia.org/wiki/[Brand_Name]` — check if the page loads (not a redirect to search)
+2. Fetch `https://en.wikipedia.org/wiki/[Founder_Name]` for founder article
 
 **Method 3 — Search (least reliable, use only for supplemental info):**
 1. Search: `[brand name] site:wikipedia.org`

@@ -5,6 +5,19 @@ description: Checklist-driven, two-level web-app quality skill. LEVEL 1 = respon
 
 # Progressive Web App
 
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
+
+## Host operations
+
+### Ask the user
+
+- If running in Claude Code, use `AskUserQuestion` for structured choices.
+- If running in Codex, use `request_user_input` when available; otherwise ask the
+  same concise question in chat and wait.
+- Do not continue when the answer is required.
+
 This skill takes a web app to production-grade in **two ordered levels**:
 
 - **Level 1 — Responsive foundation**: the app must work on every screen before it is packaged as
@@ -71,7 +84,7 @@ until it is green.
 **2 — Ensure the anchor `ai_skill_anchors/pwa.json` exists** (it is the single source of truth — the scripts
 read every project-specific value from it, so nothing is hardcoded in the scaffolded code). If it does not
 exist, do NOT ask blindly and do NOT default a path silently — first **analyze the project** and form a
-reasonable recommendation for each field, then use the **AskUserQuestion** tool to confirm each with the user:
+reasonable recommendation for each field, then ask through the host operation above to confirm each with the user:
    - `project` — the app's package/display name (read the app's `package.json`).
    - `app_dir` — the Vite app root that holds `index.html` + `package.json` (`verify-pwa.mjs` builds it and
      `audit-lighthouse.mjs` runs from it). Find it by locating `index.html` + `vite.config.*`.
@@ -120,7 +133,7 @@ failure; that is your implementation to-do list.
 re-run (the Honesty rule in `CHECKLIST.md`).
 
 **9 — Offer a production audit.** Once local is green, if `pwa.json` has a `production_url`, use the
-**AskUserQuestion** tool to ask whether to also audit the deployed origin: `make verify-pwa
+host operation above to ask whether to also audit the deployed origin: `make verify-pwa
 PWA_TARGET=<production_url>` — the SAME one command, pointed at production. (Remote runs can flag issues
 the local build can't, e.g. host headers or a locale-specific layout; note the client→server latency
 inflates Lighthouse performance.)

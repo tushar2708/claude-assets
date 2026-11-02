@@ -6,11 +6,15 @@ disable-model-invocation: true
 
 # sync-issues
 
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
+
 Reconcile `roadmap.md` (repo root) with the declared tracker's issues. This skill reconciles; `/flow:add-to-roadmap` is the sole issue creator.
 
 ## Step 0: Resolve the Issue Tracker
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/sync-issues/references/issue-tracker.md` first.
+Read `references/issue-tracker.md` first.
 1. Run its part C on every run, before any other step.
 2. On skip, stop and change nothing.
 3. Read entries only from `## Epic:` sections (part D).

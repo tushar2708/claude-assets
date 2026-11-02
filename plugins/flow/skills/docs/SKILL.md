@@ -5,6 +5,10 @@ description: Deterministic documentation governance for any project. Use when wr
 
 # docsmith
 
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
+
 | Section | What it covers |
 |---------|----------------|
 | [What docsmith is](#what-docsmith-is) | Scope and where per-project state lives |
@@ -74,7 +78,7 @@ Condensed from `references/rules.md` (R1-R12 — read it before writing any doc)
 
 Inside a scaffolded project, run the vendored engine:
 `uv run .docsmith/engine/docsmith.py <subcommand>`. The skill master copy is
-`${CLAUDE_SKILL_DIR}/scripts/docsmith.py`; refresh a project's vendored copy with
+`scripts/docsmith.py`; refresh a project's vendored copy with
 `scaffold --sync-engine`. Exit codes: 0 pass, 1 errors found / threshold failed,
 2 internal error, 3 config not found.
 
@@ -148,4 +152,4 @@ digit-count/renumbering choice with no established convention to follow). The
 ## Testing
 
 Engine or content changes must keep the suite green:
-`bash ${CLAUDE_SKILL_DIR}/scripts/run_tests.sh`
+`bash scripts/run_tests.sh`

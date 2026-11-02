@@ -1,0 +1,5 @@
+interface:
+  display_name: "Plan It"
+  short_description: "Create an approved wave plan"
+policy:
+  allow_implicit_invocation: false

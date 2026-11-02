@@ -1,5 +1,5 @@
 {
-  "_format": "Canonical shape of ai_skill_anchors/pwa.json. Scaffold this into the project and fill the ALL_CAPS placeholders by ANALYZING the project (see SKILL.md Step 2), then confirm every value with the user via AskUserQuestion. Use ONLY these keys — do not invent others. Code reads: reports_root + app_dir (create-reports-directory / verify-pwa / audit-lighthouse) and routes (audit-responsive); the rest is the skill<->project bridge / documentation.",
+  "_format": "Canonical shape of ai_skill_anchors/pwa.json. Scaffold this into the project and fill the ALL_CAPS placeholders by ANALYZING the project (see SKILL.md Step 2), then confirm every value with the user through the active host's question mechanism. Use ONLY these keys — do not invent others. Code reads: reports_root + app_dir (create-reports-directory / verify-pwa / audit-lighthouse) and routes (audit-responsive); the rest is the skill<->project bridge / documentation.",
   "project": "YOUR_PROJECT_NAME (the app's package/display name; read package.json)",
   "skill": "progressive-web-app",
   "production_url": "PRODUCTION_URL_OR_null (deployed origin to optionally audit; ASK THE USER)",

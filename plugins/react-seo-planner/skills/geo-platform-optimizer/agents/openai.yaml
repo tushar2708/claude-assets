@@ -1,0 +1,3 @@
+interface:
+  display_name: "AI Platform Optimizer"
+  short_description: "Assess AI search platform readiness"

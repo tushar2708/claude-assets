@@ -1,0 +1,3 @@
+interface:
+  display_name: "AI Crawler Access"
+  short_description: "Audit robots and AI crawler access"

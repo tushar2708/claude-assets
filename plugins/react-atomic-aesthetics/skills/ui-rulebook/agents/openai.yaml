@@ -1,0 +1,3 @@
+interface:
+  display_name: "UI Rulebook"
+  short_description: "Load canonical atomic UI rules"

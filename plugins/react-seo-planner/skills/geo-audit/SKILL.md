@@ -1,16 +1,19 @@
 ---
 name: geo-audit
 description: Full website GEO+SEO audit with parallel subagent delegation. Orchestrates a comprehensive Generative Engine Optimization audit across AI citability, platform analysis, technical infrastructure, content quality, and schema markup. Produces a composite GEO Score (0-100) with prioritized action plan.
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - Bash
-  - WebFetch
-  - Write
 ---
 
 # GEO Audit Orchestration Skill
+
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
+
+## Host operations
+
+- If running in Claude Code, use `WebSearch` and `WebFetch` for web research.
+- If running in Codex, use `web.run` with `search_query` and `open`.
+- If neither is available, report the research step as blocked; do not infer results.
 
 ## Purpose
 
@@ -28,7 +31,7 @@ Traditional SEO optimizes for search engine rankings. GEO optimizes for AI citat
 
 **Step 1: Fetch Homepage and Detect Business Type**
 
-1. Use WebFetch to retrieve the homepage at the provided URL.
+1. Retrieve the homepage with the active host's web-research tool.
 2. Extract the following signals:
    - Page title, meta description, H1 heading
    - Navigation menu items (reveals site structure)

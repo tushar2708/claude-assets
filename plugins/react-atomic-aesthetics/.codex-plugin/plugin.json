@@ -1,0 +1,6 @@
+{
+  "name": "react-atomic-aesthetics",
+  "version": "1.0.0",
+  "description": "Portable atomic React UI planning, review, and rulebook skills.",
+  "skills": "./skills/"
+}

@@ -111,11 +111,11 @@ Check for JSON-LD blocks in components or the HTML shell.
 | schema.org types | Types reference schema.org (not made-up types) | High |
 | Rich result opportunities | Pages like articles, FAQs, or products have appropriate schemas | Low |
 
-Validate every JSON-LD block via the Rich Results Test API — use WebFetch:
+Validate every JSON-LD block via the active host's web-research tool:
 ```
 https://search.google.com/test/rich-results?url=[ENCODED_PAGE_URL]
 ```
-Or use WebFetch on the Schema Markup Validator:
+Or use the active host's web-research tool on the Schema Markup Validator:
 ```
 https://validator.schema.org/#url=[ENCODED_PAGE_URL]
 ```
@@ -229,7 +229,7 @@ Google's Page Experience ranking signal since 2021. Measure using one of these m
 Use the `lighthouse_audit` tool with `mode: "navigation"` and `device: "desktop"` (then repeat with `device: "mobile"`).
 
 **Option B — PageSpeed Insights API (no browser required):**
-Use WebFetch:
+Use the active host's web-research tool:
 ```
 https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=[ENCODED_URL]&strategy=desktop
 ```
@@ -410,13 +410,13 @@ These categories require a **deployed URL** in addition to codebase analysis. Ru
 | # | Category | Requires Live URL | Key Metric | Agent File |
 |---|----------|------------------|------------|------------|
 | 17 | AI Crawler Access | Yes | Crawler Access Score /100 | — |
-| 18 | AI Citability | Yes | Citability Score /100 | agents/geo-ai-visibility.md |
-| 19 | llms.txt Compliance | Yes | llms.txt Score /100 | agents/geo-ai-visibility.md |
-| 20 | E-E-A-T Content Quality | Yes + code | Content Score /100 | agents/geo-content.md |
-| 21 | Brand Authority | Yes | Brand Mention Score /100 | agents/geo-ai-visibility.md |
-| 22 | Platform-Specific (AIO/ChatGPT/Perplexity/Gemini/Copilot) | Yes | Platform Readiness /100 each | agents/geo-platform-analysis.md |
-| 23 | Structured Data — GEO Extensions | Yes + code | Schema Score /100 | agents/geo-schema.md |
-| 24 | SSR for AI Crawlers | Yes + code | SSR Score /100 | agents/geo-technical.md |
+| 18 | AI Citability | Yes | Citability Score /100 | `geo-citability` |
+| 19 | llms.txt Compliance | Yes | llms.txt Score /100 | `geo-llmstxt` |
+| 20 | E-E-A-T Content Quality | Yes + code | Content Score /100 | `geo-content` |
+| 21 | Brand Authority | Yes | Brand Mention Score /100 | `geo-brand-mentions` |
+| 22 | Platform-Specific (AIO/ChatGPT/Perplexity/Gemini/Copilot) | Yes | Platform Readiness /100 each | `geo-platform-optimizer` |
+| 23 | Structured Data — GEO Extensions | Yes + code | Schema Score /100 | `geo-schema` |
+| 24 | SSR for AI Crawlers | Yes + code | Technical Score /100 | `geo-technical` |
 
 ### AI Visibility Composite Score
 `AI_Visibility = (Citability * 0.35) + (Brand_Mentions * 0.30) + (Crawler_Access * 0.25) + (LLMS_TXT * 0.10)`

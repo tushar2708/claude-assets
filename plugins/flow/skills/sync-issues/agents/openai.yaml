@@ -1,0 +1,5 @@
+interface:
+  display_name: "Sync Issues"
+  short_description: "Reconcile roadmap items with a tracker"
+policy:
+  allow_implicit_invocation: false

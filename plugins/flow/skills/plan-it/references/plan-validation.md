@@ -1,13 +1,13 @@
 # Plan Validation
 
-The one list of plan checks. Read by `/flow:plan-it` and `/flow:make-tasks`. Terms are defined in `wave-model.md`.
+The one list of plan checks. Read by `plan-it` and `make-tasks`. Terms are defined in `wave-model.md`.
 
 | Caller | When | On a failure |
 |---|---|---|
 | `/flow:plan-it` | After it writes the plan, before ExitPlanMode. | Fix the plan. Run all checks again. Repeat until all pass. |
-| `/flow:make-tasks` | Before it creates any task. | STOP. Tell the user which check failed, with the plan line. Create no task. |
+| `make-tasks` | Before it creates any task. | STOP. Tell the user which check failed, with the plan line. Create no task. |
 
-Exception: for `/flow:make-tasks`, a missing close task (V11) is no failure. Its rule M8 adds it.
+Exception: for `make-tasks`, a missing close task (V11) is no failure. Its rule M8 adds it.
 
 ## Checks
 

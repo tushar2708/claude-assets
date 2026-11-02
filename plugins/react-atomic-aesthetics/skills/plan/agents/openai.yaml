@@ -1,0 +1,3 @@
+interface:
+  display_name: "Plan UI"
+  short_description: "Plan a deliberate React UI change"

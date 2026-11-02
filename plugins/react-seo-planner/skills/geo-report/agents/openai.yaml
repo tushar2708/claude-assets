@@ -1,0 +1,3 @@
+interface:
+  display_name: "GEO Client Report"
+  short_description: "Synthesize GEO findings into a report"

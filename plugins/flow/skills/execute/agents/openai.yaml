@@ -1,0 +1,5 @@
+interface:
+  display_name: "Execute Flow Tasks"
+  short_description: "Execute approved Flow work items in order"
+policy:
+  allow_implicit_invocation: true

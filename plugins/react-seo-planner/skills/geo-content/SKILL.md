@@ -1,12 +1,17 @@
 ---
 name: geo-content
 description: Content quality and E-E-A-T assessment for AI citability — evaluate experience, expertise, authoritativeness, trustworthiness, and content structure
-version: 1.0.0
-author: geo-seo-claude
-tags: [geo, content-quality, eeat, citability, ai-content, topical-authority]
+metadata:
+  author: geo-seo-claude
+  version: "1.0.0"
+  tags: geo, content-quality, eeat, citability, ai-content, topical-authority
 ---
 
 # GEO Content Quality & E-E-A-T Assessment
+
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
 
 ## Purpose
 

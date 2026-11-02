@@ -1,0 +1,5 @@
+interface:
+  display_name: "Initialize Flow"
+  short_description: "Initialize workflow guidance"
+policy:
+  allow_implicit_invocation: false

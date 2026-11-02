@@ -1,8 +1,12 @@
 ---
 name: grill
-description: A research-backed, relentless interview to sharpen a feature. First map its business, product, UX, and technical concepts; research industry best practices and pitfalls for each; then interrogate the developer with the AskUserQuestion tool until you reach a shared understanding.
+description: A research-backed, relentless interview to sharpen a feature. Map its concepts, research best practices and pitfalls, then reach a shared understanding with the developer.
 disable-model-invocation: true
 ---
+
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
 
 Run a grilling session that is grounded in research, not just intuition. Move through five phases in order. Do not skip a phase. Do not start writing or implementing anything until the developer confirms a shared understanding at the end.
 
@@ -27,7 +31,7 @@ Rules for this phase:
 
 ## Phase 2 — Ask whether to research, and which domains (mandatory gate)
 
-Always ask the developer, with the **AskUserQuestion tool**, whether to research this feature on the web — and which domains. This gate is mandatory. Never skip it. Never assume the answer. The developer may want no research for a small feature, or only some domains for a focused one.
+Ask the developer whether to research this feature on the web and which domains. In Claude Code use `AskUserQuestion`; in Codex use `request_user_input` when available, otherwise ask in chat. This gate is mandatory.
 
 The tool caps a question at 4 options, and you have 4 research domains, so a single question cannot also hold a "skip" option. Ask in two steps:
 
@@ -66,16 +70,16 @@ Rules for this phase:
 4. Keep only findings that are relevant to this feature. Discard generic advice that does not change a decision.
 5. This research is the fuel for Phase 4. Every question you ask should trace back to a best practice to adopt or a pitfall to avoid.
 
-## Phase 4 — Interrogate with the AskUserQuestion tool
+## Phase 4 — Interrogate the developer
 
-Now grill the developer. Ask questions with the **AskUserQuestion tool** — never as plain inline text. The tool renders a structured picker, so the developer answers fast.
+Now grill the developer. Use the host's structured-question tool when available; otherwise ask concise questions in chat.
 
 Map the feature as a **design tree**: every decision branches into the decisions that hang off it. Work the tree in **rounds**. The **frontier** is every decision whose prerequisites are already settled — the questions you can ask now without guessing at answers you have not heard yet.
 
 Each round:
 
 1. Compute the frontier. A question whose answer depends on another still-open question belongs to a later round, not this one.
-2. Call the AskUserQuestion tool with up to 4 frontier questions (the tool's limit per call). If the frontier holds more than 4 questions, ask the top 4 by impact this round, and ask the rest in the next round.
+2. Ask the frontier questions in the host's supported batch size. If more remain, prioritize by impact and continue next round.
 3. Wait for the answers. Each answer reshapes the tree: settled decisions push the frontier outward and unblock later questions. Recompute the frontier and start the next round.
 
 Rules for every question:

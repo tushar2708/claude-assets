@@ -1,12 +1,17 @@
 ---
 name: geo-report-pdf
 description: Generate a professional PDF report from GEO audit data using ReportLab. Creates a polished, client-ready PDF with score gauges, bar charts, platform readiness visualizations, color-coded tables, and prioritized action plans.
-version: 1.0.0
-author: geo-seo-claude
-tags: [geo, pdf, report, client-deliverable, professional]
+metadata:
+  author: geo-seo-claude
+  version: "1.0.0"
+  tags: geo, pdf, report, client-deliverable, professional
 ---
 
 # GEO PDF Report Generator
+
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
 
 ## Purpose
 
@@ -15,8 +20,8 @@ This skill generates a professional, visually polished PDF report from GEO audit
 ## Prerequisites
 
 - **ReportLab** must be installed: `pip install reportlab`
-- The PDF generation script is located at: `skills/react-seo-planner/scripts/generate_pdf_report.py`
-- Run a full GEO audit first (using `/geo-audit`) to have data to include in the report
+- The PDF generation entry point is `scripts/generate_pdf_report.py`.
+- Run a full GEO audit first (using the `geo-audit` skill) to have data to include.
 
 ## How to Generate a PDF Report
 
@@ -88,7 +93,7 @@ EOF
 Run the PDF generation script:
 
 ```bash
-python3 skills/react-seo-planner/scripts/generate_pdf_report.py /tmp/geo-audit-data.json GEO-REPORT-[brand].pdf
+python3 scripts/generate_pdf_report.py /tmp/geo-audit-data.json GEO-REPORT-[brand].pdf
 ```
 
 The script will produce a professional PDF report with:
@@ -131,14 +136,14 @@ When the user runs this skill, follow this exact sequence:
 
 6. **Run the PDF generator**:
    ```bash
-   python3 skills/react-seo-planner/scripts/generate_pdf_report.py /tmp/geo-audit-data.json "GEO-REPORT-[brand_name].pdf"
+   python3 scripts/generate_pdf_report.py /tmp/geo-audit-data.json "GEO-REPORT-[brand_name].pdf"
    ```
 
 7. **Report success** — Tell the user the PDF was generated, its location, and file size.
 
 ## If the User Provides a URL
 
-If the user runs `/geo-report-pdf https://example.com` with a URL:
+If the user invokes `geo-report-pdf` with a URL:
 1. First run a full audit: invoke the `geo-audit` skill for that URL
 2. Then collect all the audit data from the generated report files
 3. Generate the PDF as described above

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Real Browser Debug"
+  short_description: "Debug a logged-in Chrome session through CDP"

@@ -1,12 +1,17 @@
 ---
 name: geo-technical
 description: Technical SEO audit with GEO-specific checks — crawlability, indexability, security, performance, SSR, and AI crawler access
-version: 1.0.0
-author: geo-seo-claude
-tags: [geo, technical-seo, core-web-vitals, ssr, crawlability, security, performance]
+metadata:
+  author: geo-seo-claude
+  version: "1.0.0"
+  tags: geo, technical-seo, core-web-vitals, ssr, crawlability, security, performance
 ---
 
 # GEO Technical SEO Audit
+
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
 
 ## Purpose
 
@@ -15,7 +20,7 @@ Technical SEO forms the foundation of both traditional search visibility and AI 
 ## How to Use This Skill
 
 1. Collect the target URL (homepage + 2-3 key inner pages)
-2. Fetch each page using curl/WebFetch to get raw HTML and HTTP headers
+2. Fetch each page using the host web-research tool; use curl when raw HTTP headers are required.
 3. Run through each of the 8 audit categories below
 4. Score each category using the rubric
 5. Generate GEO-TECHNICAL-AUDIT.md with results

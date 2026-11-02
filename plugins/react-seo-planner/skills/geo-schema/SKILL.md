@@ -1,12 +1,17 @@
 ---
 name: geo-schema
 description: Schema.org structured data audit and generation optimized for AI discoverability — detect, validate, and generate JSON-LD markup
-version: 1.0.0
-author: geo-seo-claude
-tags: [geo, schema, structured-data, json-ld, entity-recognition, ai-discoverability]
+metadata:
+  author: geo-seo-claude
+  version: "1.0.0"
+  tags: geo, schema, structured-data, json-ld, entity-recognition, ai-discoverability
 ---
 
 # GEO Schema & Structured Data
+
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
 
 ## Purpose
 
@@ -14,7 +19,7 @@ Structured data is the primary machine-readable signal that tells AI systems wha
 
 ## How to Use This Skill
 
-1. Fetch the target page HTML using curl or WebFetch
+1. Fetch the target page HTML using curl or the active host's web-research tool.
 2. Detect all existing structured data (JSON-LD, Microdata, RDFa)
 3. Validate detected schemas against Schema.org specifications
 4. Identify missing recommended schemas based on business type

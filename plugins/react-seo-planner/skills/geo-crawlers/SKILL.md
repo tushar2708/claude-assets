@@ -1,16 +1,19 @@
 ---
 name: geo-crawlers
 description: AI crawler access analysis. Checks robots.txt, meta tags, and HTTP headers to determine which AI crawlers can access the site. Provides a complete access map and recommendations for maximizing AI visibility while maintaining appropriate control.
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - Bash
-  - WebFetch
-  - Write
 ---
 
 # AI Crawler Access Analysis Skill
+
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
+
+## Host operations
+
+- If running in Claude Code, use `WebFetch` for page retrieval.
+- If running in Codex, use `web.run` with `open`.
+- Use `curl` only when raw response headers are required.
 
 ## Purpose
 
@@ -219,7 +222,7 @@ Disallow: /
 
 ### Step 1: Fetch and Parse robots.txt
 
-1. Use WebFetch to retrieve `[domain]/robots.txt`.
+1. Retrieve `[domain]/robots.txt` with the active host's web-research tool.
 2. Parse all User-agent directives and their associated Allow/Disallow rules.
 3. For each AI crawler in the reference list above:
    - Check if there is a specific User-agent block for that crawler

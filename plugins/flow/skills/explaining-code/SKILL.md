@@ -6,6 +6,10 @@ disable-model-invocation: false
 
 # Explaining Code
 
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
+
 Build a documentation site (or a single page) that explains a codebase so a newcomer can follow it. The output is HTML with hand-drawn diagrams. Every sentence is traced to the real source; nothing is guessed.
 
 This skill works in **seven phases, in order**. Each phase has one job and one exit condition. You do not start a phase's work until you have created its task; you do not leave a phase until its exit condition holds. Phase 7 runs a set of gates **one at a time** — a document that fails any gate is not finished.
@@ -28,7 +32,7 @@ If you catch yourself writing a sentence you cannot back with a file:line, stop 
 
 ## The task tree (mandatory — create tasks as you go)
 
-This skill is driven by a task list. **Before you begin a phase, create its top-level task** (`Phase 1: …`, `Phase 2: …`, through `Phase 7: …`). When a phase has internal steps, **create numbered sub-tasks as you enter it** (`2.1`, `2.2`, `2.3`, …) and complete them one by one before moving on. Use whatever task tool the host provides (e.g. `TaskCreate`/`TaskUpdate`). The point is that you — and the user watching — always see exactly which phase and sub-step is active, and nothing is silently skipped.
+This skill is driven by a task list. Before each phase, record its top-level task and numbered sub-tasks. In Claude Code use its task tools; in Codex use available task tracking or maintain the checklist in the plan artifact. Complete each item before moving on.
 
 Example shape for one run:
 

@@ -1,0 +1,26 @@
+{
+  "name": "claude-assets",
+  "interface": {
+    "displayName": "Claude Assets"
+  },
+  "plugins": [
+    {
+      "name": "react-atomic-aesthetics",
+      "source": { "source": "local", "path": "./plugins/react-atomic-aesthetics" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Engineering"
+    },
+    {
+      "name": "react-seo-planner",
+      "source": { "source": "local", "path": "./plugins/react-seo-planner" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Engineering"
+    },
+    {
+      "name": "flow",
+      "source": { "source": "local", "path": "./plugins/flow" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Productivity"
+    }
+  ]
+}

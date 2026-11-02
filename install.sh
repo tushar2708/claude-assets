@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Install or update every claude-assets plugin and skill for Claude Code.
+# Install or update every claude-assets plugin and standalone skill.
 #
-#   curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash
-#   curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- update
+#   curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --claude
+#   curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --codex
 #
 # Env: CLAUDE_ASSETS_DIR (clone path, default ~/.claude-assets), DRY_RUN=1 (print only).
 set -euo pipefail
@@ -11,8 +11,8 @@ REPO="tushar2708/claude-assets"
 REPO_URL="https://github.com/${REPO}.git"
 MARKETPLACE="claude-assets"
 CLONE_DIR="${CLAUDE_ASSETS_DIR:-$HOME/.claude-assets}"
-SKILLS_DIR="$HOME/.claude/skills"
-MODE="${1:-install}"
+HOST="${1:-}"
+MODE="${2:-install}"
 
 log() { printf '==> %s\n' "$*"; }
 warn() { printf 'warning: %s\n' "$*" >&2; }
@@ -49,7 +49,7 @@ plugin_names() {
   grep -o '"\./plugins/[^"]*"' "$manifest" | sed -e 's|"\./plugins/||' -e 's|"$||'
 }
 
-install_plugins() {
+install_claude_plugins() {
   log "Adding marketplace $REPO"
   run claude plugin marketplace add "$REPO"
   # Refresh the registry so it offers the latest commit, otherwise an
@@ -66,7 +66,7 @@ install_plugins() {
   done
 }
 
-update_plugins() {
+update_claude_plugins() {
   log "Refreshing marketplace $MARKETPLACE"
   run claude plugin marketplace add "$REPO"
   run claude plugin marketplace update "$MARKETPLACE"
@@ -75,6 +75,16 @@ update_plugins() {
     log "Updating plugin $name"
     run claude plugin update "$name@$MARKETPLACE" \
       || run claude plugin install "$name@$MARKETPLACE" --scope user
+  done
+}
+
+install_codex_plugins() {
+  log "Adding Codex marketplace $REPO"
+  run codex plugin marketplace add "$REPO" --sparse .agents/plugins
+  local name
+  for name in $(plugin_names); do
+    log "Installing Codex plugin $name"
+    run codex plugin add "$name@$MARKETPLACE"
   done
 }
 
@@ -116,23 +126,42 @@ prune_skills() {
 }
 
 main() {
+  case "$HOST" in
+    --claude | --codex) ;;
+    "") die "Choose a host: --claude or --codex." ;;
+    *) die "Unknown host '$HOST'. Use --claude or --codex." ;;
+  esac
   case "$MODE" in
     install | update) ;;
     *) die "Unknown mode '$MODE'. Use 'install' or 'update'." ;;
   esac
   require git
-  require claude
+  if [ "$HOST" = "--claude" ]; then
+    require claude
+    SKILLS_DIR="$HOME/.claude/skills"
+  else
+    require codex
+    SKILLS_DIR="$HOME/.codex/skills"
+  fi
 
   sync_clone
-  if [ "$MODE" = "install" ]; then
-    install_plugins
+  if [ "$HOST" = "--claude" ] && [ "$MODE" = "install" ]; then
+    install_claude_plugins
+  elif [ "$HOST" = "--claude" ]; then
+    update_claude_plugins
   else
-    update_plugins
+    # Codex refreshes installed marketplace plugins at startup. Re-adding the
+    # plugins is idempotent and installs anything added since the prior run.
+    install_codex_plugins
   fi
   link_skills
   prune_skills
 
-  log "Done. Restart Claude Code, or run /reload-plugins in a session."
+  if [ "$HOST" = "--claude" ]; then
+    log "Done. Restart Claude Code, or run /reload-plugins in a session."
+  else
+    log "Done. Start a new Codex session so it discovers the installed plugins and skills."
+  fi
 }
 
 main "$@"

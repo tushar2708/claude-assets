@@ -1,0 +1,3 @@
+interface:
+  display_name: "Progressive Web App"
+  short_description: "Audit responsive and PWA readiness"

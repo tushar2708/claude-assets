@@ -7,12 +7,25 @@ description: >
   in the user's own logged-in session, or capture real network responses (incl. failing 4xx/5xx
   bodies) and console from a logged-in page. The skill handles self-signed cert bypass (our own
   sites) and a "log in alongside the user" handshake: it drives the browser to the login screen,
-  asks the user (via AskUserQuestion) to complete Google login, waits for confirmation, then
+  asks the user to complete Google login, waits for confirmation, then
   continues. Trigger when a task needs a genuine authenticated browser window, not a fresh
   automation profile that Google OAuth rejects.
 ---
 
 # real-browser-debug
+
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
+
+## Host operations
+
+### Ask the user
+
+- If running in Claude Code, use `AskUserQuestion` for structured choices.
+- If running in Codex, use `request_user_input` when available; otherwise ask the
+  same concise question in chat and wait.
+- Do not continue when the answer is required.
 
 Debug and operate a **real Chrome window the user is (or will be) logged into**, by attaching
 Playwright to it over the Chrome DevTools Protocol (CDP). This is the ONLY reliable way to work
@@ -51,8 +64,8 @@ inside an authenticated dashboard, because:
    - runtime: on Chrome's "Your connection is not private" interstitial, type `thisisunsafe`
      (the scripts do this automatically in `bypassCertIfNeeded`).
 4. **Log in alongside the user.** If a page redirects to the login screen, do NOT try to automate
-   Google OAuth (it will be rejected). Instead drive to the login page, then use **AskUserQuestion**
-   to ask the user to complete the login manually, wait for their confirmation, then continue.
+   Google OAuth (it will be rejected). Instead drive to the login page, then ask the user using
+   the host operation above to complete the login manually, wait for confirmation, then continue.
 5. **Every automated operation is real.** This skill is for doing things (click/fill/navigate/
    screenshot), not only reading the DOM.
 6. **ONE action per call — always. This is how it MUST be done.** Debug interactively like a human
@@ -87,7 +100,7 @@ idempotent (no-ops if already resolvable) and installs `playwright-core` into th
 — we attach to the user's real Chrome):
 
 ```bash
-bash .claude/skills/real-browser-debug/scripts/ensure-playwright.sh
+bash scripts/ensure-playwright.sh
 ```
 
 > Note: this needs only the `playwright-core` **npm package** — not the Playwright **MCP server**.
@@ -98,7 +111,7 @@ bash .claude/skills/real-browser-debug/scripts/ensure-playwright.sh
 Run the launcher (idempotent — no-ops if CDP is already live):
 
 ```bash
-bash .claude/skills/real-browser-debug/scripts/launch-chrome.sh "https://localhost:3000"
+bash scripts/launch-chrome.sh "https://localhost:3000"
 ```
 
 Environment overrides: `CDP_PORT` (default 9222), `CHROME_DEBUG_PROFILE`
@@ -114,7 +127,7 @@ curl -s http://localhost:9222/json/version | head -c 200
 
 ### 2. Probe the current state (read-only)
 ```bash
-node .claude/skills/real-browser-debug/scripts/probe.js
+node scripts/probe.js
 ```
 Reports: open pages, the active URL, `navigator.serviceWorker.getRegistrations()` (settles any
 service-worker question), and auth-token localStorage keys (a login signal).
@@ -124,13 +137,13 @@ If the probe shows the active URL is the login screen (e.g. `/auth/login`) or no
 
 1. Make sure the login page is on screen (drive a `goto` to the app root if needed — the app will
    redirect to login itself).
-2. Call **AskUserQuestion**:
+2. Ask the user through the host operation above:
    - question: "A Google login is required in the Chrome window I opened. Please complete the login
      there, then confirm. Have you finished logging in?"
    - header: "Browser login"
    - options: `["Yes, I'm logged in", "Not yet / it failed"]`
 3. **STOP and wait** for the answer. Do not proceed on your own.
-4. On "Yes", re-run `probe.js` to confirm the auth token is present and you're past the login screen.
+4. On "Yes", re-run `scripts/probe.js` to confirm the auth token is present and you're past the login screen.
    On "Not yet", surface any error and offer email/password login (`/auth/register` → `/auth/login`),
    which is NOT subject to Google's automation block.
 
@@ -141,9 +154,9 @@ each real result (URL, screenshot, captured 500 body) informs the next single ca
 
 ```bash
 # one action, then STOP and read the output before the next call
-node .claude/skills/real-browser-debug/scripts/drive.js '{"action":"screenshot","path":"/tmp/now.png"}'
-node .claude/skills/real-browser-debug/scripts/drive.js '{"action":"click","selector":"button:has-text(\"Authorize Card\")"}'
-node .claude/skills/real-browser-debug/scripts/drive.js '{"action":"url"}'
+node scripts/drive.js '{"action":"screenshot","path":"/tmp/now.png"}'
+node scripts/drive.js '{"action":"click","selector":"button:has-text(\"Authorize Card\")"}'
+node scripts/drive.js '{"action":"url"}'
 ```
 
 `drive.js` operates on the existing logged-in tab, auto-bypasses self-signed certs, and **always
@@ -194,7 +207,7 @@ assumptions.
 - **Google OAuth + remote-debugging:** Google sometimes shows "browser may not be secure" for a
   remote-debug Chrome. A persistent (non-default) `--user-data-dir` reduces this; if it still blocks,
   the user can retry, or use email/password login (unaffected by Google's check).
-- **One-off, no permanent config change:** this skill needs **zero** MCP-config edits. It does not
-  touch `~/.claude.json`. (Adding `--cdp-endpoint` to the Playwright MCP would permanently force it to
+- **One-off, no permanent config change:** this skill needs **zero** MCP-config edits. Do not modify host
+  configuration. (Adding `--cdp-endpoint` to the Playwright MCP would permanently force it to
   attach and break the default fresh-browser behavior — avoid that.)
 - **Do not `newContext()`** — it creates a logged-out isolated session and defeats the purpose.

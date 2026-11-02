@@ -1,16 +1,19 @@
 ---
 name: geo-citability
 description: AI citability scoring and optimization. Analyzes web page content to determine how likely AI systems (ChatGPT, Claude, Perplexity, Gemini) are to cite or quote passages from the page. Provides a citability score (0-100) with specific rewrite suggestions.
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - Bash
-  - WebFetch
-  - Write
 ---
 
 # AI Citability Scoring Skill
+
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
+
+## Host operations
+
+- If running in Claude Code, use `WebFetch` for page retrieval.
+- If running in Codex, use `web.run` with `open`.
+- If neither is available, report the retrieval step as blocked; do not infer results.
 
 ## Core Insight
 
@@ -171,7 +174,7 @@ This measures whether the content provides information that AI systems cannot fi
 
 ### Step 1: Fetch and Parse Page Content
 
-1. Use WebFetch to retrieve the target URL.
+1. Retrieve the target URL with the active host's web-research tool.
 2. Extract the main content area (exclude navigation, footer, sidebar, ads).
 3. Preserve heading structure (H1-H6 tags).
 4. Preserve paragraph boundaries, lists, and tables.

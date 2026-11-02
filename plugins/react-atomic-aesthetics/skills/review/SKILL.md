@@ -6,37 +6,41 @@ description: |
   (1) Auditing a React screen/component for visual quality and consistency
   (2) Checking a just-implemented UI before calling it done
   (3) Asked to "review the UI", "does this look generic", or "check the frontend aesthetics"
-  Runs a READ-ONLY two-lens audit (design + code) against RULES.md and consolidates findings into four
+  Runs a READ-ONLY two-lens audit (design + code) against the canonical UI rules and consolidates findings into four
   all-P0 category tables: UI/UX, micro-interactions, a11y, responsive.
 ---
 
 # Review UI
 
-Audit a React UI for UI/UX quality against this plugin's canonical rules, and consolidate the findings into four category tables. You (the main agent) orchestrate two specialist reviewers — the react-atomic-aesthetics:architect and the react-atomic-aesthetics:implementer agents — then VERIFY their findings yourself. This is a READ-ONLY audit: observe and report, never change code.
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
+
+Audit a React UI for UI/UX quality against this plugin's canonical rules, and consolidate the findings into four category tables. Use design/journey and component/code review lenses, then verify their findings yourself. This is a READ-ONLY audit: observe and report, never change code.
 
 ARGUMENTS: an optional scope hint (a path, route, screen, or component). If none is given, default the scope to the project's web frontend root. If the argument names something that does not exist, say so and ask for the correct scope instead of guessing.
 
 ## Step −1 — Read-only guardrails (MANDATORY — obey before anything else)
 
-1. **READ-ONLY. Touch NOTHING.** Do not edit, create, delete, `Write`, `Edit`, format, stage, unstage, revert, or run any migration/build/format command that mutates files. The ONLY thing you write is your report. Every fix you find is DESCRIBED, never applied. If the user wants fixes applied, that is a separate follow-up (hand off to react-atomic-aesthetics:implementer).
+1. **READ-ONLY. Touch NOTHING.** Do not edit, create, delete, format, stage, unstage, revert, or run any migration/build/format command that mutates files. The ONLY thing you write is your report. Every fix you find is DESCRIBED, never applied. If the user wants fixes applied, that is a separate follow-up.
 2. **Do NOT run the app, tests, linters, or a build to "verify".** Verify findings by reading the actual source (components, the theme/tokens file, the design system). A command you broke is your mistake, not a finding.
-3. **Both reviewer agents are ALSO read-only.** Tell each explicitly: "You are reviewing, not implementing. Do not edit, create, or delete any file, and run no shell/build/test/format command. Read the code and return findings only."
+3. **Every reviewer is ALSO read-only.** Tell each explicitly: "You are reviewing, not implementing. Do not edit, create, or delete any file, and run no shell/build/test/format command. Read the code and return findings only."
 4. **Stay in scope.** Review only files under the resolved scope (Step 0). Do not comment on backend code or unrelated config.
 
 ## Step 0 — Resolve scope and load the rule sources
 
 1. **Resolve scope** from ARGUMENTS; print the exact directory/files you will review.
 2. **Read the rule sources** (read the ACTUAL files, not memory):
-   - `${CLAUDE_PLUGIN_ROOT}/RULES.md` — the plugin's canonical UI/UX + atomic-structure rules (A1–A20, B1–B5, Part C, E1–E7, F1–F2). These are the authoritative rules; cite rule numbers. You MUST verify every box of checklist D3 (Reviewer audit checklist) in RULES.md — each box maps to one of the four categories below, and its findings go in that category's table.
-   - Every `CLAUDE.md` that governs the frontend (project root + any nested app-level one), and any `.claude/rules/` files touching the frontend.
+   - Call the Skill tool with "ui-rulebook" — its canonical UI/UX + atomic-structure rules (A1–A20, B1–B5, Part C, E1–E7, F1–F2) are authoritative. Cite rule numbers. You MUST verify every box of checklist D3 — each box maps to one of the four categories below, and its findings go in that category's table.
+   - Every `AGENTS.md` and `CLAUDE.md` that governs the frontend (project root + any nested app-level one), and any `.claude/rules/` files touching the frontend.
    - The project's real theme/design tokens (e.g. `globals.css` / `theme.css` / the Tailwind config): learn the actual token names, keyframes, and any `prefers-reduced-motion` block BEFORE flagging a color/motion issue — never invent a token. This is RULES F1 in practice: never assume a convention (a reduced-motion block, a specific token) exists without having read the file. If the project has 3+ named theme/mode variants, verify which literal value maps to which palette by reading the CSS directly, never by inferring from the variant's name (RULES F2) — a reviewer who inherits this exact mistake from a flawed plan must still catch it here.
 
 ## Step 1 — Launch the two reviewers (in parallel)
 
-Launch **both** agents in a single message so they run concurrently. Give EACH the resolved scope, the four categories below, RULES.md, and the read-only instruction from Step −1.3. Ask each for a structured findings list; for every finding: exact `file:line`, its category, the specific rule/heuristic violated (name or quote it, with the RULES rule number where it maps), and the single concrete fix.
+When the host supports parallel workers, launch both review lenses concurrently. Otherwise run them sequentially. Give each the resolved scope, the four categories below, the ui-rulebook, and the read-only instruction from Step −1.3. Ask each for a structured findings list; for every finding: exact `file:line`, its category, the specific rule/heuristic violated (name or quote it, with the UI rulebook rule number where it maps), and the single concrete fix.
 
-- **react-atomic-aesthetics:architect** (design/journey lens): reviews the SCREENS and FLOWS in scope — broken or confusing journeys, missing empty/loading/error states (A16), weak affordances/signifiers, poor visual hierarchy (A6–A8), inconsistent patterns across screens, generic/templated layout (A12), journey-level a11y/responsive gaps, whether any decorative imagery depicts a real concept and its ornamental intensity fits the moment (E1–E2), and whether any inspiration source cited in prior planning/commit context had its provenance disclosed (E5). Looks at the experience, not one component.
-- **react-atomic-aesthetics:implementer** (component/code lens): reviews the COMPONENTS in scope at code level — markup, Tailwind classes and semantic tokens (A1–A3, A9), event handlers, ARIA attributes (A18), focus handling, transition/animation classes (A13–A15), breakpoint utilities, touch-target sizing, atomic classification (B1), `cn()`/state boundaries (B2, including Rule 9 decorative-media support), decorative image/animation `aria-hidden` markup and compositor-safe animated properties (E3–E4), and whether new motion timing values match an existing pattern in the codebase rather than being invented (E7). Flags the exact class or attribute that is wrong or missing.
+- **Design/journey lens**: reviews the SCREENS and FLOWS in scope — broken or confusing journeys, missing empty/loading/error states (A16), weak affordances/signifiers, poor visual hierarchy (A6–A8), inconsistent patterns across screens, generic/templated layout (A12), journey-level a11y/responsive gaps, whether any decorative imagery depicts a real concept and its ornamental intensity fits the moment (E1–E2), and whether any inspiration source cited in prior planning/commit context had its provenance disclosed (E5). Looks at the experience, not one component.
+- **Component/code lens**: reviews the COMPONENTS in scope at code level — markup, Tailwind classes and semantic tokens (A1–A3, A9), event handlers, ARIA attributes (A18), focus handling, transition/animation classes (A13–A15), breakpoint utilities, touch-target sizing, atomic classification (B1), `cn()`/state boundaries (B2, including Rule 9 decorative-media support), decorative image/animation `aria-hidden` markup and compositor-safe animated properties (E3–E4), and whether new motion timing values match an existing pattern in the codebase rather than being invented (E7). Flags the exact class or attribute that is wrong or missing.
 
 Both must map every finding to one of these four categories:
 

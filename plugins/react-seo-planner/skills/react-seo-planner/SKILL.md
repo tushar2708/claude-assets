@@ -21,6 +21,17 @@ description: |
 
 # React SEO + GEO Planner
 
+## Unsupported hosts
+
+If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
+
+## Host operations
+
+- If running in Claude Code, use `WebSearch` and `WebFetch` for web research.
+- If running in Codex, use `web.run` with `search_query` and `open`.
+- Use `curl` only where raw HTTP response headers are required.
+- Invoke the named GEO skills below; do not read or dispatch host-specific agent prompts.
+
 ## Mandatory Chain-of-Thought Process
 
 Before ANY audit work, execute these steps IN ORDER. Do not skip or reorder.
@@ -142,7 +153,7 @@ This step activates the 8 GEO categories (17–24). Without a live URL, mark Cat
 
 **2.5a — Fetch the live page:**
 
-Use `WebFetch` to retrieve the deployed URL. Record:
+Use the active host's web-research tool to retrieve the deployed URL. Record:
 - Whether the HTML body contains actual content tags (`<h1>`, `<h2>`, `<p>`, `<article>`) — if only `<div id="root"></div>` is visible, the site is 100% client-side rendered (CRITICAL GEO issue: AI crawlers see NOTHING)
 - Business type detected (SaaS, local business, blog, e-commerce, portfolio)
 - Canonical URL structure
@@ -183,12 +194,12 @@ For robots.txt, check ALL 14 AI crawlers organized by tier:
 - cohere-ai (Cohere training — context-dependent)
 
 Also check for:
-- HTTP `X-Robots-Tag` headers on 3-5 key pages (can block AI access at page level). WebFetch does NOT return HTTP headers — use:
+- HTTP `X-Robots-Tag` headers on 3-5 key pages (can block AI access at page level). Use curl for raw headers:
   ```bash
   curl -sI [PAGE_URL] | grep -i "x-robots-tag"
   ```
   If output is present, it's a potential AI crawler block. No output = header absent (safe).
-- `<meta name="robots" content="noai">` tags on key pages (check in the HTML fetched by WebFetch)
+- `<meta name="robots" content="noai">` tags on key pages (check the retrieved HTML)
 
 **2.5b.1 — Multi-Page Sitemap Crawl (up to 50 pages):**
 
@@ -210,13 +221,13 @@ Also check for:
 
 Invoke all 6 GEO agents in the order below, reading each agent file for the full execution protocol. Agents reference scripts in `scripts/` and schema templates in `schema/`.
 
-1. Read and execute [geo-technical.md](agents/geo-technical.md) → writes `reports/seo_geo_scores/GEO-TECHNICAL.md`
-2. Read and execute [geo-crawlers.md](agents/geo-crawlers.md) → writes `reports/seo_geo_scores/GEO-CRAWLERS.md`
-3. Read and execute [geo-ai-visibility.md](agents/geo-ai-visibility.md) → writes `reports/seo_geo_scores/GEO-CITABILITY.md` + `reports/seo_geo_scores/GEO-LLMSTXT.md`
-4. Read and execute [geo-content.md](agents/geo-content.md) → writes `reports/seo_geo_scores/GEO-CONTENT.md`
-5. Read and execute [geo-schema.md](agents/geo-schema.md) → writes `reports/seo_geo_scores/GEO-SCHEMA.md`
-6. Read and execute [geo-platform-analysis.md](agents/geo-platform-analysis.md) → writes `reports/seo_geo_scores/GEO-PLATFORM.md`
-7. Read and execute [geo-client-report.md](agents/geo-client-report.md) → writes `reports/seo_geo_scores/GEO-CLIENT-REPORT.md` (runs LAST — reads all other output files to synthesize the client deliverable)
+1. Call the Skill tool with `geo-technical` → writes `reports/seo_geo_scores/GEO-TECHNICAL.md`.
+2. Call the Skill tool with `geo-crawlers` → writes `reports/seo_geo_scores/GEO-CRAWLERS.md`.
+3. Call the Skill tool with `geo-citability`, `geo-llmstxt`, and `geo-brand-mentions` → writes their GEO reports.
+4. Call the Skill tool with `geo-content` → writes `reports/seo_geo_scores/GEO-CONTENT.md`.
+5. Call the Skill tool with `geo-schema` → writes `reports/seo_geo_scores/GEO-SCHEMA.md`.
+6. Call the Skill tool with `geo-platform-optimizer` → writes `reports/seo_geo_scores/GEO-PLATFORM.md`.
+7. Call the Skill tool with `geo-report` last; it reads the other reports and synthesizes `GEO-CLIENT-REPORT.md`.
 
 Each agent writes its output file directly. Collect all scores from those files for the report.
 
@@ -697,13 +708,13 @@ Script output data must be incorporated into the corresponding GEO report files 
 - [Tools, Analytics & GA4 Setup](references/tools-and-analytics.md) — Free SEO/GEO tools, web-vitals, GA4 walkthrough, GEO scripts
 - [SEO Report Format](references/report-format.md) — Template and status codes for reports/seo_geo_scores/ files
 - [GEO Agents](agents/) — 6 specialist agents for GEO sub-analysis:
-  - [geo-technical.md](agents/geo-technical.md) — SSR detection, security headers, CWV field data → GEO-TECHNICAL.md
-  - [geo-crawlers.md](agents/geo-crawlers.md) — 14-crawler access map, robots.txt template → GEO-CRAWLERS.md
-  - [geo-ai-visibility.md](agents/geo-ai-visibility.md) — Block-level citability, llms.txt/llms-full.txt/ai.txt → GEO-CITABILITY.md + GEO-LLMSTXT.md
-  - [geo-content.md](agents/geo-content.md) — E-E-A-T, readability, brand presence → GEO-CONTENT.md
-  - [geo-schema.md](agents/geo-schema.md) — Schema detection, validation, JSON-LD generation → GEO-SCHEMA.md
-  - [geo-platform-analysis.md](agents/geo-platform-analysis.md) — 5-platform readiness scores → GEO-PLATFORM.md
-  - [geo-client-report.md](agents/geo-client-report.md) — Client-facing report synthesis → GEO-CLIENT-REPORT.md (runs last; reads all other output files)
+  - `geo-technical` — SSR detection, security headers, CWV field data → GEO-TECHNICAL.md
+  - `geo-crawlers` — 14-crawler access map, robots.txt template → GEO-CRAWLERS.md
+  - `geo-citability`, `geo-llmstxt`, `geo-brand-mentions` — AI-visibility reports
+  - `geo-content` — E-E-A-T, readability, brand presence → GEO-CONTENT.md
+  - `geo-schema` — Schema detection, validation, JSON-LD generation → GEO-SCHEMA.md
+  - `geo-platform-optimizer` — 5-platform readiness scores → GEO-PLATFORM.md
+  - `geo-report` — Client-facing report synthesis → GEO-CLIENT-REPORT.md (runs last)
 - [Schema Templates](schema/) — Ready-to-use JSON-LD templates (organization, article, product, local-business, SaaS, website-searchaction)
 - [Python Scripts](scripts/) — GEO analysis scripts (citability_scorer.py, brand_scanner.py, fetch_page.py, llmstxt_generator.py, generate_pdf_report.py — PDF generation from reports/seo_geo_scores/ folder)
 

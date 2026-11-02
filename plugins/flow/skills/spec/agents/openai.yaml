@@ -1,0 +1,5 @@
+interface:
+  display_name: "Write Specification"
+  short_description: "Create a governed specification"
+policy:
+  allow_implicit_invocation: false

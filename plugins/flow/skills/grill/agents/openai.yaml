@@ -1,0 +1,5 @@
+interface:
+  display_name: "Grill a Feature"
+  short_description: "Research and sharpen a feature through interview"
+policy:
+  allow_implicit_invocation: false
