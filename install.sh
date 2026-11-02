@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Install or update every claude-assets plugin and standalone skill.
+# Install, update, or uninstall every claude-assets plugin and standalone skill.
 #
 #   curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --claude
 #   curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --codex
+#   ... bash -s -- --claude|--codex update|uninstall
 #
 # Env: CLAUDE_ASSETS_DIR (clone path, default ~/.claude-assets), DRY_RUN=1 (print only).
 set -euo pipefail
@@ -80,12 +81,42 @@ update_claude_plugins() {
 
 install_codex_plugins() {
   log "Adding Codex marketplace $REPO"
-  run codex plugin marketplace add "$REPO" --sparse .agents/plugins
+  # The Codex marketplace file lives in .agents/plugins, but its entries point at ./plugins/*.
+  run codex plugin marketplace add "$REPO" --sparse .agents/plugins --sparse plugins
   local name
   for name in $(plugin_names); do
     log "Installing Codex plugin $name"
     run codex plugin add "$name@$MARKETPLACE"
   done
+}
+
+update_codex_plugins() {
+  log "Refreshing Codex marketplace $MARKETPLACE"
+  # Remove first: adding a marketplace that exists from another source fails.
+  run codex plugin marketplace remove "$MARKETPLACE" || true
+  run codex plugin marketplace add "$REPO" --sparse .agents/plugins --sparse plugins
+  local name
+  for name in $(plugin_names); do
+    log "Updating Codex plugin $name"
+    run codex plugin add "$name@$MARKETPLACE"
+  done
+}
+
+uninstall_plugins() {
+  local name
+  if [ "$HOST" = "--claude" ]; then
+    for name in $(plugin_names); do
+      log "Uninstalling plugin $name"
+      run claude plugin uninstall "$name@$MARKETPLACE" --scope user || true
+    done
+    run claude plugin marketplace remove "$MARKETPLACE" || true
+  else
+    for name in $(plugin_names); do
+      log "Uninstalling Codex plugin $name"
+      run codex plugin remove "$name@$MARKETPLACE" || true
+    done
+    run codex plugin marketplace remove "$MARKETPLACE" || true
+  fi
 }
 
 # Each skill is a symlink into the clone, so a git pull updates it.
@@ -125,6 +156,20 @@ prune_skills() {
   done
 }
 
+# Remove every skill link this script manages, whether or not upstream still has it.
+unlink_skills() {
+  local link
+  for link in "$SKILLS_DIR"/*; do
+    [ -L "$link" ] || continue
+    case "$(readlink "$link")" in
+      "$CLONE_DIR"/skills/*)
+        log "Unlinking skill $(basename "$link")"
+        run rm "$link"
+        ;;
+    esac
+  done
+}
+
 main() {
   case "$HOST" in
     --claude | --codex) ;;
@@ -132,8 +177,8 @@ main() {
     *) die "Unknown host '$HOST'. Use --claude or --codex." ;;
   esac
   case "$MODE" in
-    install | update) ;;
-    *) die "Unknown mode '$MODE'. Use 'install' or 'update'." ;;
+    install | update | uninstall) ;;
+    *) die "Unknown mode '$MODE'. Use 'install', 'update', or 'uninstall'." ;;
   esac
   require git
   if [ "$HOST" = "--claude" ]; then
@@ -145,13 +190,19 @@ main() {
   fi
 
   sync_clone
+  if [ "$MODE" = "uninstall" ]; then
+    uninstall_plugins
+    unlink_skills
+    log "Uninstalled. The clone at $CLONE_DIR was kept."
+    return 0
+  fi
   if [ "$HOST" = "--claude" ] && [ "$MODE" = "install" ]; then
     install_claude_plugins
   elif [ "$HOST" = "--claude" ]; then
     update_claude_plugins
+  elif [ "$MODE" = "update" ]; then
+    update_codex_plugins
   else
-    # Codex refreshes installed marketplace plugins at startup. Re-adding the
-    # plugins is idempotent and installs anything added since the prior run.
     install_codex_plugins
   fi
   link_skills

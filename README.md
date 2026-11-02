@@ -2,28 +2,61 @@
 
 Portable skills and plugins for Claude Code and Codex.
 
-## Install
+## Claude Code
 
-Install every plugin and standalone skill for Claude Code:
+### Install
+
+Install every plugin and standalone skill:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --claude
 ```
 
-Install every plugin and standalone skill for Codex:
+Restart Claude Code or run `/reload-plugins` afterwards.
+
+### Update
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --claude update
+```
+
+### Uninstall
+
+Removes the plugins, the marketplace, and the skill links.
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --claude uninstall
+```
+
+## Codex
+
+### Install
+
+Install every plugin and standalone skill:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --codex
 ```
 
-Update an existing installation by appending `update`:
+Start a new Codex session afterwards.
+
+### Update
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --claude update
 curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --codex update
 ```
 
-Restart Claude Code or run `/reload-plugins`; start a new Codex session after installing.
+### Uninstall
+
+Removes the plugins, the marketplace, and the skill links.
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --codex uninstall
+```
+
+## Notes
+
+- Uninstall keeps the local clone at `~/.claude-assets`. Delete that folder yourself if you no longer need it.
 
 | Detail | Value |
 |---|---|
