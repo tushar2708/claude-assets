@@ -52,6 +52,7 @@ Example shape for one run:
 7  Run the gates
    7.1  Verification gate   7.2  Vagueness gate   7.3  Personification gate
    7.4  Term-consistency gate   7.5  Undefined-term gate   7.6  Continuity gate   7.7  Attribution gate
+   7.8  Link-integrity gate
 ```
 
 Create sub-tasks for Phases 4, 5, and 6 too — one per section of the document, so each section is tracked through writing and the consistency pass.
@@ -62,8 +63,8 @@ Create sub-tasks for Phases 4, 5, and 6 too — one per section of the document,
 
 **Goal:** know exactly what you are explaining and set up the two artifacts the later phases depend on.
 
-1. Pin the scope with the user if unclear: a single feature/function, one subsystem, or the whole repository. Whole-repo → a multi-page site; one feature → a single page. Both use the same shell.
-2. Choose **one running example** drawn from the repo's own data (a real request, a real test input, a real record). You will thread this one example through every section so the reader follows concrete values, not abstractions.
+1. Pin the scope with the user if unclear: a single feature/function, one subsystem, the whole repository, or a **branching process** (one entry that forks into parallel paths — e.g. a deploy flow that splits by target). One feature → a single page; whole-repo or branching process → a multi-page site. Both use the same shell.
+2. Choose **one running example** drawn from the repo's own data (a real request, a real test input, a real record) or, for a process, **one concrete run** (one real deploy, one real job, with its real ids/hosts/values). You will thread this one example through every section so the reader follows concrete values, not abstractions.
 3. Create two working artifacts you will fill as you go (keep them in your scratch space, not in the output):
    - a **Term Ledger** (the vocabulary source of truth) — see `references/term-ledger.md`.
    - a **Verification Log** — a flat list of `claim → file:line`.
@@ -116,7 +117,7 @@ Every sentence must satisfy both rules from `references/writing-rules.md`:
 - **Content contract:** name the *actor* that acts, the *data structure* it acts on, the *concrete value or operation*, and the *source line*. Give a verb only to an actor that can perform it.
 - **Continuity (given → new):** begin each sentence from something already introduced and add exactly one new fact; the output of one step is the subject of the next; never introduce a noun that the previous sentence did not set up.
 
-Use the shared diagram grammar in `references/diagram-grammar.md`: hand-authored inline SVG (not a diagram library), fixed colors/shapes per node kind, every stage box clickable to its section, and **real values shown, never placeholders alone**. Thread the running example through text and diagrams.
+Use the shared diagram grammar in `references/diagram-grammar.md`: hand-authored inline SVG (not a diagram library), fixed colors/shapes per node kind, every stage box clickable to its section or detail page, and **real values shown, never placeholders alone**. Pick the diagram type by what you are explaining: a **pipeline/flow** (with branch, parallel, and external-service nodes for control flow), a **sequence/collaboration** diagram for numbered runtime interactions across actors, or a **state-transition table** for retries, idempotency, and resume. Thread the running example through text and diagrams.
 
 **Exit condition:** every section filled; every factual sentence maps to a Verification Log line; the running example appears throughout.
 
@@ -144,8 +145,9 @@ Read the **entire finished document** top to bottom, as a reader with no prior c
 5. **Undefined-term gate** — every ledger term's first occurrence is its definition.
 6. **Continuity gate** — spot-read: every sentence picks up from the previous one.
 7. **Attribution gate** — each action is credited to the actor that performs it (the code vs an LLM vs the graph library vs the store).
+8. **Link-integrity gate** — every clickable node, breadcrumb, and nav link resolves to a page that exists and an anchor that exists in it.
 
-**Exit condition:** all seven gates pass. Only now do you show the user the file path and a one-line summary.
+**Exit condition:** all eight gates pass. Only now do you show the user the file path and a one-line summary.
 
 ---
 
@@ -153,6 +155,7 @@ Read the **entire finished document** top to bottom, as a reader with no prior c
 
 - **Whole repository** → a small static site: `index.html` (orientation + nav + one end-to-end diagram) and one page per subsystem, all linking the shared `style.css`.
 - **One feature** → a single page with the same shell: title bar, abstract, the objects it touches, one pipeline diagram, the exact steps with the running example, one comparison, and a source table.
+- **Branching process** → a hierarchical site: `index.html` shows one entry that forks into the parallel paths (a branch node), each path linking to a path-overview page; each big box on a path links to its own subsystem page; a subsystem page may link to **one** further level. Cap the tree at **three levels** — deeper nesting loses the reader (NN/g). Pages below the landing carry a breadcrumb trail (`Home › Path › Subsystem`) in the top bar, not just prev/next.
 
 Keep the structure, sentence style, diagram grammar, and look-and-feel identical across every document you produce, so a reader who has seen one of your pages can read any other without relearning.
 
@@ -160,8 +163,8 @@ Keep the structure, sentence style, diagram grammar, and look-and-feel identical
 
 - `references/writing-rules.md` — the content contract, the continuity (given→new) rule, and the term-switch bridge rule, with examples. Read in Phase 3; apply in Phase 5–7.
 - `references/term-ledger.md` — the Term Ledger template and how to build it. Read in Phase 2.
-- `references/gates.md` — the seven gates with exact grep commands and pass/fail criteria. Read in Phase 7.
-- `references/diagram-grammar.md` — the inline-SVG diagram grammar (colors, shapes, clickable stages, real values). Read in Phase 4–5.
+- `references/gates.md` — the eight gates with exact grep commands and pass/fail criteria. Read in Phase 7.
+- `references/diagram-grammar.md` — the inline-SVG diagram grammar (colors, shapes, control-flow and sequence and state types, clickable stages, real values). Read in Phase 4–5.
 
 ## Assets (the shared shell — copy, do not reinvent)
 

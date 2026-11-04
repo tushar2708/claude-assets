@@ -81,6 +81,10 @@ A claim is verified only when you have **opened the exact lines that implement i
 
 If a claim cannot be verified from the source, either leave it out or mark it explicitly as an open question for the user — never present it as fact.
 
+### Declarative sources (Ansible, systemd units, CloudFormation, Bicep, Terraform)
+
+For a declarative file the **resource or task declaration is the behavior** — there is no imperative body to read past it, so the declaration is the verified source (cite its `file:line`). But order and side effects are **not** the line order: trace them through the mechanism. In Ansible, a task that changes a file and `notify`s a handler only restarts the service when the handler runs — follow `notify → handler → meta: flush_handlers` to know *when*. In CloudFormation/Bicep, resource order follows `DependsOn`/references, not file position. Verify the trigger chain, not the top-to-bottom reading.
+
 ---
 
 ## Altitude: abstract, then exact

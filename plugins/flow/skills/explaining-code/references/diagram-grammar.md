@@ -19,14 +19,23 @@ Reuse these for the same meaning every time (the CSS tokens match `assets/style.
 | A highlighted/seed element | circle/rect | red `#fde7e7` / `#c62828` | the thing the current step acts on |
 | A result/output | rounded rect | green `#e6f4ea` / `#2e7d32` | what the flow returns |
 | A persisted store/graph | rounded rect | amber `#ffe3c2` / `#e07a1f` | an on-disk artifact |
+| A process step/stage | rounded rect | slate `#eef0f4` / `#5a5a66` | one control-flow step (a CLI step, an Ansible task, a deploy scope) |
+| A decision/branch | diamond (polygon) | yellow `#fff4e0` / `#a35a00` | a branch point (an `if`, a preset/condition that forks the flow) |
+| A parallel fan-out | thin bar + fanned arrows | grey `#5a5a66` | steps that run concurrently from one point |
+| An external service | rounded rect, 2px double stroke | teal `#e0f3f1` / `#0f766e` | a third-party/cloud system the code calls (App Runner, Cloudflare, Secrets Manager) |
+| An actor/role lane | labelled band behind nodes | grey `#f2f2f5` / `#d0d0d8` | the host, role, or service the enclosed steps belong to (a swimlane) |
 
 Keep a tiny legend on any diagram whose colors are not obvious from labels.
+
+## Name the mechanism, label every arrow (C4 rigor)
+
+Every box names **what kind of thing it is**, not just what it does: an Ansible role, a CloudFormation stack, a systemd unit, an HTTP call, a CLI step. Every arrow is **labelled** (what passes, or what triggers the next step) and **unidirectional** — a return is its own labelled arrow, never a double-headed line. A box with no type, or an unlabelled arrow, hides exactly the fact the reader needs.
 
 ## Show real values, never placeholders alone
 
 Every node and edge carries a concrete label from the running example: the real id (`entry-9f3c…`), the real number (`weight = 2.0`), the real operation (`P = 0.5 × 3/5 = 0.30`). A diagram of empty boxes teaches nothing. Where an id is long, show a truncated-but-real prefix and say so once.
 
-## The three diagram types you will reuse
+## The diagram types you will reuse
 
 ### 1. The end-to-end pipeline (vertical)
 
@@ -46,6 +55,14 @@ To show exactly what one record, struct, or array slot holds. Draw it as a label
 ### 3. The node-and-edge diagram
 
 To show how concepts connect (e.g. a record becomes an edge between two other nodes). Draw the nodes with the fixed shapes/colors, label every edge with its kind and weight, and highlight the one element the current step touches.
+
+### 4. The sequence / collaboration diagram (runtime interactions)
+
+To show how separate actors collaborate at runtime for one story — a request, a deploy, a job — when the interesting thing is the **order of calls between components**, not one component's internals. This is the C4 *dynamic* diagram. Draw one lane (actor/role lane) per actor and **number every interaction** (`1`, `2`, `2.1`) so the order is explicit; label each arrow with the call and show the real value it carries; draw a return as its own numbered, labelled arrow. Use it **sparingly** — only where a set of interactions is genuinely complicated or recurring (c4model.com/diagrams/dynamic); a straight-line flow belongs in the pipeline diagram instead.
+
+### 5. The state-transition table (retries, idempotency, resume)
+
+To show behavior that depends on **state and events**, not a straight line — a retry loop, an idempotent step that skips when already done, a checkpoint the process resumes from. Prefer a table with one row per transition and these columns: **State · Trigger (the event) · Guard (the condition) · Next state · Action**. Document the trigger **and** the guard on every transition, not just the state. Pair the table with a small state diagram only when there are ~6 states or fewer; above that, split into independent sub-machines rather than one unreadable diagram.
 
 ## Clickable stages
 

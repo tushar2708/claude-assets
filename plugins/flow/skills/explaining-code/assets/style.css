@@ -5,6 +5,9 @@
   --primary:#2f6fde; --secondary:#7a4fd0; --rel:#e07a1f; --bad:#c62828; --ok:#2e7d32;
   --def:#2e7d32; --cmp:#a35a00; --warn:#c62828;
   --code-bg:#f1f1f5; --accent:#0d47a1;
+  /* control-flow node kinds (match references/diagram-grammar.md) */
+  --step:#5a5a66; --step-bg:#eef0f4; --branch:#a35a00; --branch-bg:#fff4e0;
+  --ext:#0f766e; --ext-bg:#e0f3f1; --lane:#d0d0d8; --lane-bg:#f2f2f5;
   color-scheme: light;
 }
 * { box-sizing: border-box; }
@@ -26,6 +29,10 @@ p, li { color: var(--fg); }
 .bar a { color: var(--accent); text-decoration:none; }
 .bar a:hover { text-decoration:underline; }
 .bar .crumb { font-weight:600; }
+/* breadcrumb trail for pages deeper than one level: Home › Path › Subsystem */
+.bar .trail { color:var(--muted); font-weight:400; }
+.bar .trail .sep { color:var(--line); margin:0 4px; }
+.bar .trail b { color:var(--fg); font-weight:600; }
 
 /* landing-page navigation cards */
 .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:12px; margin-top:14px; }

@@ -1,6 +1,6 @@
-# The seven gates
+# The eight gates
 
-Phase 7 runs these gates **one at a time**, each as its own sub-task. A gate that fails sends you back to fix the document, after which you re-run that gate. You present nothing until all seven pass. The gates are mechanical on purpose: they catch the failures that judgment alone misses once a document is long.
+Phase 7 runs these gates **one at a time**, each as its own sub-task. A gate that fails sends you back to fix the document, after which you re-run that gate. You present nothing until all eight pass. The gates are mechanical on purpose: they catch the failures that judgment alone misses once a document is long.
 
 Set `DOCS` to the folder (or file) you are checking, e.g. `DOCS=docs/<topic>`.
 
@@ -79,8 +79,22 @@ Each action is credited to the actor that performs it.
 
 **Pass:** no action is credited to a component that cannot perform it.
 
+## Gate 7.8 — Link integrity
+
+Every clickable node, breadcrumb, and navigation link points to a page that exists and an anchor that exists in it. A dead drill-down link is the one defect that silently breaks the "zoom into detail" promise of a multi-page site.
+
+- Extract every `href` from the document (diagram `<a href>`, nav cards, breadcrumbs, prev/next).
+- For each, confirm the target file exists in the output folder; if it has a `#anchor`, confirm an element with that `id` exists in the target.
+
+```bash
+# list every href target, then eyeball (or script) that each file + anchor exists
+grep -rhoE 'href="[^"]+"' "$DOCS" | sed -E 's/href="//; s/"$//' | sort -u
+```
+
+**Pass:** every internal link resolves to an existing page and, where present, an existing anchor; no `href` points at a missing file or `#id`.
+
 ---
 
-## After all seven pass
+## After all eight pass
 
 Open the document in a browser once to confirm diagrams render and links work, then tell the user the file path and a one-line summary of what the document covers. Do not ask the user to proofread for the problems these gates check — that is your job, done here.
