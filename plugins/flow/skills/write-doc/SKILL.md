@@ -9,6 +9,7 @@ disable-model-invocation: true
 ## Host adapters
 
 - **Claude Code:** use `AskUserQuestion` for category ambiguity, then dispatch writing only to `flow:docsmith-doc-author` with the Task tool.
+- After the agent's hand-back, run `/humanizer` on each listed file, then re-run docsmith validate.
 - **Codex:** use `request_user_input` for ambiguity; use a documentation-author agent when available, otherwise author directly.
 - **Other hosts:** ask the same concise plain-text question and author directly when no specialist exists.
 

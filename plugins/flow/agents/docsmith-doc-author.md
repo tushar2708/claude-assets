@@ -117,6 +117,9 @@ its existing H1 and table byte-for-byte, and you only add what is missing. Row f
 7. **Decision immutability.** For a `decision` doc, follow the immutable supersede-chain: never edit an
    accepted ADR's substance; to change course write a NEW numbered ADR with `supersedes:` and edit ONLY
    the old record's `## Status` → Superseded + frontmatter `status: superseded` + add `superseded_by:`.
+8. **Humanizer hand-back.** You have no Skill tool, so you cannot run `/humanizer` yourself. Your final
+   report MUST list every file you created, and every file you changed by more than 20 lines, and ask the
+   main session to run `/humanizer` on those files (file mode, prose only), then re-run docsmith validate.
 
 ## Hard prohibitions
 

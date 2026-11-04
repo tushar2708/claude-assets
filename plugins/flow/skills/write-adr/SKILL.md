@@ -9,6 +9,7 @@ disable-model-invocation: true
 ## Host adapters
 
 - **Claude Code:** use `AskUserQuestion` to confirm the absolute ADR directory, then dispatch writing only to `flow:docsmith-doc-author` with the Task tool.
+- After the agent's hand-back, run `/humanizer` on each listed file, then re-run docsmith validate.
 - **Codex:** use `request_user_input` to confirm the directory; use a documentation-author agent when available, otherwise author the ADR directly.
 - **Other hosts:** obtain the same confirmation in plain text; author directly when no specialist exists.
 

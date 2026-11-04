@@ -11,6 +11,7 @@ Read `../docs/references/autofix-patterns.md` first. It is the authority for eac
 ## Host adapters
 
 - **Claude Code:** use `AskUserQuestion` for a reference-defined blocking choice; dispatch documentation edits only to `flow:docsmith-doc-author` when direct work is not appropriate.
+- After the agent's hand-back, run `/humanizer` on each listed file, then re-run docsmith validate.
 - **Codex:** use `request_user_input` for that choice; use an available documentation-author agent, otherwise perform the mechanical documentation edit directly.
 - **Other hosts:** ask concise plain-text questions; make direct mechanical documentation edits when no specialized agent exists.
 

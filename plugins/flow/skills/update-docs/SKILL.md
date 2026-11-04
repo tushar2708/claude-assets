@@ -9,6 +9,7 @@ disable-model-invocation: true
 ## Host adapters
 
 - **Claude Code:** read its session task list; dispatch each document rewrite only to `flow:docsmith-doc-author` using the Task tool. Use `AskUserQuestion` if that agent is unavailable.
+- After the agent's hand-back, run `/humanizer` on each listed file, then re-run docsmith validate.
 - **Codex:** inspect the active task context; use a documentation-author agent when available, otherwise rewrite the document directly. Use `request_user_input` for required input.
 - **Other hosts:** inspect the available task list or user-supplied tasks; make the rewrite directly if no dedicated author agent exists.
 
