@@ -8,9 +8,18 @@ disable-model-invocation: true
 
 If the active host is neither Claude Code nor Codex, tell the user this skill has no validated integration there and suggest opening a support ticket at https://github.com/tushar2708/claude-assets/issues/new.
 
+
+## Strict SOP
+
 Run a grilling session that is grounded in research, not just intuition. Move through five phases in order. Do not skip a phase. Do not start writing or implementing anything until the developer confirms a shared understanding at the end.
 
 The unit of work is the **feature** the developer wants to build or the decision they want to make. Everything below serves one goal: expose every hidden assumption before a line of code is written.
+
+Every question that you ask the user must use the available question tool in the harness. For Claude Code, it would be "AskUserQuestion", And in the case of Codex, it would be "request_user_input". In the case of Codex, if the tool is not available, without going into plan mode, either go to plan mode on your own or share the limitation with the user and ask them to put you in plan mode. 
+
+But under no condition are you allowed to ask questions in chat without using the question tool available in the harness. If you are using any other harness (then Claude Code or Codex), figure out what ask question tool exists in that harness. And you can only ask any question in chat if You have verified each and every available tool, and confirmed with the user If any such tool exists or not. Only once you have actively verified each and every option are you allowed to ask any question in chat? (Apart from asking the user what tool to use )
+
+This applies to each and every question that you are asking at every stage of the interview. In Codex, add a suffix to every question. "This harness does not support multi-select questions, so use the option "Other" to mention multiple choices if you want to."
 
 ## Phase 1 — Map the concepts
 
