@@ -1,7 +1,6 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "flow",
-  "version": "1.0.0",
   "description": "Portable development workflow skills.",
   "skills": "./skills/"
 }

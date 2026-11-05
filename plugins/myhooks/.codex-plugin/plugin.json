@@ -1,6 +1,5 @@
 {
   "name": "myhooks",
-  "version": "1.0.0",
   "description": "Portable guidance for managing Claude Code hook rules and Codex policy alternatives.",
   "skills": "./skills/"
 }

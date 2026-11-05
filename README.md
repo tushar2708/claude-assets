@@ -45,6 +45,7 @@ curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/insta
 ## Notes
 
 - Uninstall keeps the local clone at `~/.claude-assets`. Delete that folder yourself if you no longer need it.
+- Plugins carry no version number. Every commit is a new version, so re-run the installer to update in place.
 
 | Detail | Value |
 |---|---|
