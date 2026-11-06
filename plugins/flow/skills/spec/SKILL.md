@@ -28,12 +28,12 @@ Check with the user that these seams match their expectations.
    After every `flow:docsmith-doc-author` hand-back, run `/humanizer` on each listed file (file mode, prose only), then re-run docsmith validate.
 Do NOT publish to a tracker or apply a triage label yourself. Create issues only through `/flow:add-to-roadmap` in step 7.
 6. **Verify (orchestrator, never delegated).** From the repo root run `uv run .docsmith/engine/docsmith.py validate` UNSCOPED (no `--paths`). It must print `FAILURES: 0`. Relay every WARN line to the user. If there are failures, re-dispatch `flow:docsmith-doc-author` with the exact findings; do not fix them yourself. Quote the validator output in your report.
-7. **Offer a story.** Run only after step 6 prints `FAILURES: 0`. Ask through the active host's question mechanism.
-   1. Ask: "Create the Jira story now?" Yes or no. On no, stop.
+7. **Offer task tracking.** Run only after step 6 prints `FAILURES: 0`. Ask through the active host's question mechanism.
+   1. Ask: "Add this spec to task tracking?" Yes or no. On no, stop.
    2. Ask the epic: existing epic (ask its key or URL) or new epic.
-   3. Invoke the Skill tool with skill `flow:add-to-roadmap`.
-   4. Pass in `args`: spec path, spec title, epic choice, and the SF list.
-   5. It creates one Story and one Subtask per `SF-<n>`. It writes their keys into the spec.
+   3. Ask the user to run `/flow:add-to-roadmap` now. Do not invoke it yourself; it is user-invoked only.
+   4. Give the user the arguments to pass: spec path, spec title, epic choice, and the SF list.
+   5. That skill creates one Story and one Subtask per `SF-<n>`, and writes their keys into the spec.
    6. Create no item or roadmap row yourself. Leave the `docs/plans/INDEX.md` row as is.
 
 <spec-template>

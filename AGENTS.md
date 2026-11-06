@@ -60,11 +60,11 @@ The repo is a marketplace of three plugins, published to Claude Code and Codex f
 
 - **Two marketplace files:** `.claude-plugin/marketplace.json` for Claude Code and `.agents/plugins/marketplace.json` for Codex. Both point at `./plugins/<name>`.
 - **Two manifests per plugin:** `plugins/<name>/.claude-plugin/plugin.json` and `plugins/<name>/.codex-plugin/plugin.json`. A root `plugins/<name>/plugin.json` also exists.
-- **Installer:** `install.sh` clones the repo to `~/.claude-assets` and calls `claude plugin marketplace` and `claude plugin install`, or the Codex equivalents. Its standalone-skill linking loops over a top-level `skills/` directory. This repo has none, so that step links nothing today.
+- **Installer:** `install.sh` clones the repo to `~/.claude-assets` and calls `claude plugin marketplace` and `claude plugin install`, or the Codex equivalents. Its standalone-skill linking loops over a top-level *skills/* directory. This repo has none, so that step links nothing today.
 
 ### Plugins
 
-- **`flow`:** a spec-driven workflow plus the docsmith documentation engine. The engine is `plugins/flow/skills/docs/scripts/docsmith.py` with its `docsmith_lib/` package. Hooks are declared in `plugins/flow/hooks/hooks.json`: a docs hook on edits (`skills/docs/scripts/hook/docsmith_hook.py`) and a plan-to-tasks hook on `ExitPlanMode`. The `project_templates/Makefile` under that skill is copied into other projects. It is not this repo's Makefile.
+- **`flow`:** a spec-driven workflow plus the docsmith documentation engine. The engine is `plugins/flow/skills/docs/scripts/docsmith.py` with its *docsmith_lib/* package. Hooks are declared in `plugins/flow/hooks/hooks.json`: a docs hook on edits (`plugins/flow/skills/docs/scripts/hook/docsmith_hook.py`) and a plan-to-tasks hook on `ExitPlanMode`. The `plugins/flow/skills/docs/scripts/project_templates/Makefile` is copied into other projects. It is not this repo's Makefile.
 - **`myhooks`:** manages Claude Code hook rules. The hook scripts (`pretooluse_bash.py`, `pretooluse_file.py`, `posttooluse_file.py`) import the shared `custom_hooks` package:
   - `utils`: payload loading and the `allow`, `block`, and `warn` responses.
   - `dispatcher`: command categorization and rule application.
@@ -72,9 +72,17 @@ The repo is a marketplace of three plugins, published to Claude Code and Codex f
   - `registry`: register, enable, and disable named hooks.
 
   The hooks run from a venv at `plugins/myhooks/hooks/.venv`. `setup.sh` creates it and checks that the user's `settings.json` points at it. Tests pipe a payload into the real script and assert the exit code: 0 allows, 2 blocks.
-- **`react-atomic-aesthetics`:** rules in `skills/ui-rulebook/references/RULES.md` and two agents, `architect` (plans) and `implementer` (builds). The `plan` and `review-ui` skills use the same rules.
+- **`react-atomic-aesthetics`:** rules in `plugins/react-atomic-aesthetics/skills/ui-rulebook/references/RULES.md` and two agents, `architect` (plans) and `implementer` (builds). The `plan` and `review-ui` skills use the same rules.
 
 ### Where behavior lives
 
 - Skill behavior is in each `SKILL.md`. Host-specific wording sits in its "Host adapters" section, which is why Claude Code and Codex variants appear side by side.
 - Plugin docs sit in each plugin's `README.md`. The root `README.md` covers installation only.
+
+<!-- BEGIN flow:pattern -->
+This repository follows the Flow development workflow.
+`grill` → `spec` → `plan-it` → `make-tasks` → `execute` → `review`.
+Use `/flow:init` for onboarding, `/flow:add-to-roadmap` for tracked work, and `/flow:sync-issues` for reconciliation.
+Use `/flow:write-doc`, `/flow:write-adr`, `/flow:write-prd`, and `/flow:update-docs` for documentation.
+Documentation authoring uses the configured documentation-author role; never use a generic writer when that role is available.
+<!-- END flow:pattern -->

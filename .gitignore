@@ -1,3 +1,7 @@
 node_modules/
 __pycache__/
 *.pyc
+.docsmith/state.json
+.docsmith/site/autogen/
+.docsmith/site/.venv/
+.docsmith/site/site/

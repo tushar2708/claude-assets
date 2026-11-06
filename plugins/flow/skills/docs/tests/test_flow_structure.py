@@ -34,15 +34,15 @@ EXPECTED_SKILLS = [
     "execute",
 ]
 
-EXPECTED_COMMANDS = [
-    "review.md",
-    "add-to-roadmap.md",
-    "write-doc.md",
-    "write-adr.md",
-    "write-prd.md",
-    "update-docs.md",
-    "scaffold.md",
-    "fix-findings.md",
+# Former commands, now skills. scaffold was folded into init.
+EXPECTED_COMMAND_SKILLS = [
+    "review",
+    "add-to-roadmap",
+    "write-doc",
+    "write-adr",
+    "write-prd",
+    "update-docs",
+    "fix-findings",
 ]
 
 # Commands removed on purpose; /flow:spec and /flow:plan-it write plans.
@@ -81,18 +81,10 @@ def test_expected_skills_present_with_valid_frontmatter():
         assert fm.get("description"), f"{skill_md} frontmatter missing non-empty description"
 
 
-def test_expected_commands_present_and_frontmatter_parses():
-    commands_dir = PLUGIN_ROOT / "commands"
-    present = {p.name for p in commands_dir.glob("*.md")}
-    for name in EXPECTED_COMMANDS:
-        assert name in present, f"command missing: {name}"
-    for cmd in commands_dir.glob("*.md"):
-        text = cmd.read_text(encoding="utf-8")
-        assert text.strip(), f"{cmd} is empty"
-        if text.startswith("---"):
-            parts = text.split("---", 2)
-            assert len(parts) >= 3, f"{cmd} frontmatter is not closed"
-            assert isinstance(yaml.safe_load(parts[1]), dict), f"{cmd} frontmatter invalid"
+@pytest.mark.parametrize("name", EXPECTED_COMMAND_SKILLS)
+def test_former_commands_present_as_skills(name: str):
+    fm = _parse_frontmatter(PLUGIN_ROOT / "skills" / name / "SKILL.md")
+    assert fm.get("name"), f"skill {name} frontmatter missing name"
 
 
 @pytest.mark.parametrize("name", RETIRED_COMMANDS)
@@ -150,21 +142,6 @@ def test_exit_plan_hook_output(needle: str):
     assert needle in out["additionalContext"]
 
 
-# Commands another flow skill invokes through the Skill tool. The model sees a
-# command as a skill only when it has a description and does not disable model
-# invocation (/flow:spec step 7 invokes /flow:add-to-roadmap).
-MODEL_INVOKED_COMMANDS = ["add-to-roadmap.md"]
-
-
-@pytest.mark.parametrize("name", MODEL_INVOKED_COMMANDS)
-def test_model_invoked_commands_are_invocable(name: str):
-    fm = _parse_frontmatter(PLUGIN_ROOT / "commands" / name)
-    assert fm.get("description"), f"command {name} needs a non-empty description"
-    assert fm.get("disable-model-invocation") is not True, (
-        f"command {name} must not set disable-model-invocation: true"
-    )
-
-
 def test_no_stale_docsmith_references():
     stale = ["skills/docsmith", "/docsmith:"]
     self_path = Path(__file__).resolve()
@@ -193,37 +170,35 @@ def test_no_stale_docsmith_references():
 # text is present, not that the prose is good.
 
 _WRITER_RULE_FILES = [
-    "skills/init/SKILL.md",
-    "commands/write-doc.md",
-    "commands/write-adr.md",
-    "commands/write-prd.md",
-    "commands/update-docs.md",
-    "commands/fix-findings.md",
+    "skills/write-doc/SKILL.md",
+    "skills/write-adr/SKILL.md",
+    "skills/write-prd/SKILL.md",
+    "skills/update-docs/SKILL.md",
+    "skills/fix-findings/SKILL.md",
 ]
 
 _QUALIFIED_AGENT_FILES = [
     "skills/spec/SKILL.md",
-    "commands/write-doc.md",
-    "commands/write-adr.md",
-    "commands/write-prd.md",
-    "commands/update-docs.md",
+    "skills/write-doc/SKILL.md",
+    "skills/write-adr/SKILL.md",
+    "skills/write-prd/SKILL.md",
+    "skills/update-docs/SKILL.md",
 ]
 
 _FAILURES_ZERO_COMMAND_FILES = [
-    "commands/write-doc.md",
-    "commands/write-adr.md",
-    "commands/write-prd.md",
-    "commands/update-docs.md",
+    "skills/write-doc/SKILL.md",
+    "skills/write-adr/SKILL.md",
+    "skills/write-prd/SKILL.md",
 ]
 
 # rule name -> (PLUGIN_ROOT-relative files, substrings EACH file must contain)
 _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
-    "writer-rule": (_WRITER_RULE_FILES, ["MANDATORY: writer agent", "general-purpose"]),
+    "writer-rule": (_WRITER_RULE_FILES, ["flow:docsmith-doc-author"]),
+    "writer-rule-init": (["skills/init/SKILL.md"], ["never use a generic writer"]),
     "brevity-rule": (
-        ["commands/update-docs.md", "agents/docsmith-doc-author.md"],
+        ["agents/docsmith-doc-author.md"],
         ["Keep every sentence under 15 words. Table cells count.", "A small update adds at most 3 lines."],
     ),
-    "update-docs-brevity-check": (["commands/update-docs.md"], ["15 or more: send it back"]),
     "qualified-agent": (_QUALIFIED_AGENT_FILES, ["flow:docsmith-doc-author"]),
     "init": (["skills/init/SKILL.md"], ["ln -s AGENTS.md CLAUDE.md", "readlink"]),
     "spec": (
@@ -242,15 +217,15 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
     "init-link-cases": (
         ["skills/init/SKILL.md"],
         [
-            "AGENTS.md is a link to CLAUDE.md",
-            "CLAUDE.md is a link to a missing AGENTS.md",
-            "Both exist as regular files",
-            "repo root",
-            "do NOT copy the file",
+            "AGENTS.md links to CLAUDE.md",
+            "CLAUDE.md links to missing AGENTS.md",
+            "Both regular files",
+            "git rev-parse --show-toplevel",
+            "never copy the file",
             "--sync-engine",
         ],
     ),
-    "scaffold-sync-engine": (["commands/scaffold.md"], ["--sync-engine"]),
+    "scaffold-sync-engine": (["skills/init/SKILL.md"], ["--sync-engine"]),
     # wave model (spec 186): sub-feature waves -> stages -> tasks
     "wave-model": (
         ["skills/plan-it/references/wave-model.md"],
@@ -381,8 +356,8 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
     ),
     # both issue commands resolve the tracker only through issue-tracker.md
     "issue-tracker-users": (
-        ["commands/add-to-roadmap.md"],
-        ["${CLAUDE_PLUGIN_ROOT}/skills/sync-issues/references/issue-tracker.md"],
+        ["skills/add-to-roadmap/SKILL.md"],
+        ["../sync-issues/references/issue-tracker.md"],
     ),
     "portable-issue-tracker-user": (
         ["skills/sync-issues/SKILL.md"],
@@ -395,8 +370,8 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
     ),
     # add-to-roadmap has a spec mode that links every item to its epic
     "add-to-roadmap-epic-mode": (
-        ["commands/add-to-roadmap.md"],
-        ["Set parent", "Invoked from /flow:spec"],
+        ["skills/add-to-roadmap/SKILL.md"],
+        ["parent operations", "When `spec` supplies"],
     ),
     # roadmap.md groups items by epic sections; items are typed Story, Task, or Bug
     "epic-sections": (
@@ -404,28 +379,28 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
         ["## Epic:"],
     ),
     "item-types": (
-        ["commands/add-to-roadmap.md", "skills/sync-issues/references/issue-tracker.md"],
+        ["skills/sync-issues/references/issue-tracker.md"],
         ["Story, Task, or Bug", "Subtask"],
     ),
     # given inputs are used as-is; only missing fields are asked
     "add-to-roadmap-inputs": (
-        ["commands/add-to-roadmap.md"],
-        ["## Inputs", "Never ask for a given field.", "Ask only missing or unclear fields"],
+        ["skills/add-to-roadmap/SKILL.md"],
+        ["Given values win", "ask only missing or unclear fields"],
     ),
     # a spec Story starts in the Spec Created status; other items use the default
     "spec-created-status": (
-        ["commands/add-to-roadmap.md", "skills/sync-issues/references/issue-tracker.md"],
+        ["skills/add-to-roadmap/SKILL.md", "skills/sync-issues/references/issue-tracker.md"],
         ["`Spec Created`"],
     ),
     # roadmap rows stay brief; details live in the tracker item
     "row-brevity": (
-        ["commands/add-to-roadmap.md", "skills/sync-issues/references/issue-tracker.md"],
-        ["under 10 words", "under 15 words"],
+        ["skills/add-to-roadmap/SKILL.md"],
+        ["under ten words", "under fifteen words"],
     ),
     # a GitHub issue beside a non-GitHub tracker is created only on request
     "github-on-request": (
-        ["commands/add-to-roadmap.md", "skills/sync-issues/references/issue-tracker.md"],
-        ["only when the user explicitly asks"],
+        ["skills/add-to-roadmap/SKILL.md"],
+        ["only when explicitly requested"],
     ),
     # one place defines the per-tool epic operations
     "issue-tracker-epics": (
@@ -456,17 +431,17 @@ _FORBIDDEN_TEXT_PINS: dict[str, tuple[str, str]] = {
     "make-tasks-no-plan-dir-contracts": ("skills/make-tasks/SKILL.md", ".tasks/W<n>-contracts.md"),
     "wave-model-no-plan-dir-contracts": ("skills/plan-it/references/wave-model.md", ".tasks/W<n>-contracts.md"),
     # issue work follows the tracker that roadmap.md declares; no GitHub-only text may return
-    "add-to-roadmap-no-github-step": ("commands/add-to-roadmap.md", "Create the GitHub Issue"),
-    "add-to-roadmap-no-inline-gh": ("commands/add-to-roadmap.md", "gh issue create"),
+    "add-to-roadmap-no-github-step": ("skills/add-to-roadmap/SKILL.md", "Create the GitHub Issue"),
+    "add-to-roadmap-no-inline-gh": ("skills/add-to-roadmap/SKILL.md", "gh issue create"),
     "sync-issues-no-github-only": ("skills/sync-issues/SKILL.md", "All GitHub reads/writes use `gh`"),
     "init-no-github-issue": ("skills/init/SKILL.md", "the one GitHub issue"),
     "spec-no-github-issue-owner": ("skills/spec/SKILL.md", "GitHub-issue creation"),
     # the per-type sections and their ID schemes are gone; items live in epic sections
-    "add-to-roadmap-no-id-schemes": ("commands/add-to-roadmap.md", '"## Tech Debt"  → TD<n>'),
+    "add-to-roadmap-no-id-schemes": ("skills/add-to-roadmap/SKILL.md", '"## Tech Debt"  → TD<n>'),
     # spec always creates one Story with one Subtask per sub-feature
     "spec-no-task-per-sub-feature": ("skills/spec/SKILL.md", "one task per sub-feature"),
     # the long Description-cell format moved into the tracker item body
-    "add-to-roadmap-no-long-row": ("commands/add-to-roadmap.md", "Write the Description cell in this order"),
+    "add-to-roadmap-no-long-row": ("skills/add-to-roadmap/SKILL.md", "Write the Description cell in this order"),
 }
 
 _REQUIRED_TEXT_CASES = [
@@ -490,8 +465,7 @@ _FORBIDDEN_TEXT_CASES = [
 _BARE_AGENT_RE = re.compile(r"subagent_type[\s:=\"'`*]*docsmith-doc-author")
 
 _PROSE_FILES = (
-    sorted(PLUGIN_ROOT.glob("commands/*.md"))
-    + sorted(PLUGIN_ROOT.glob("skills/*/SKILL.md"))
+    sorted(PLUGIN_ROOT.glob("skills/*/SKILL.md"))
     + sorted(PLUGIN_ROOT.glob("agents/*.md"))
     + sorted(PLUGIN_ROOT.glob("skills/docs/references/*.md"))
 )
