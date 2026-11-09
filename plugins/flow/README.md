@@ -67,7 +67,8 @@ flowchart TD
     %% Hidden spacer on the left balances the optional branch on the right, so spec stays above plan-it.
     spec ~~~ spacer["/flow:add-to-roadmap<br/>Story + one Subtask per sub-feature<br/>in your tracker"]:::hidden
     spec --> planit["/flow:plan-it (Plan Mode)<br/>One wave per sub-feature<br/>Stages: S1 contracts → S2 tests → S3 implementation<br/>Verify gate after every wave<br/>Also applies any planning skills you name"]
-    planit -->|you approve the plan| hook{{"ExitPlanMode hook<br/>Checks the plan against your project rules,<br/>then triggers make-tasks"}}
+    planit --> prehook{{"ExitPlanMode pre-hook — nudge<br/>Before approval: reminds the agent to verify the plan<br/>against the skills that built it.<br/>Non-blocking; a compliance marker silences it"}}
+    prehook -->|you approve the plan| hook{{"ExitPlanMode post-hook<br/>After approval: checks the plan against<br/>your project rules, then triggers make-tasks"}}
     hook --> maketasks["/flow:make-tasks<br/>(auto, or run it manually)<br/>Tasks in wave → stage → task order<br/>with blockedBy wiring. And all tasks created with a common prefix tag (say. [fancy-feature])"]
     maketasks --> execute
 
@@ -172,6 +173,7 @@ Each command validates its output until docsmith reports no failures.
 | Event                                     | What happens                                                                                                                               |
 | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | After a file edit                         | When the edited code is mapped in `.docsmith/docmap.json`, flow reminds you to update the docs that describe it.                           |
-| After you approve a plan (`ExitPlanMode`) | flow checks the plan against your `CLAUDE.md`, `AGENTS.md`, and `.claude/rules/`, asks about each violation, then runs `/flow:make-tasks`. |
+| Before a plan is finalized (`ExitPlanMode`, pre-tool) | If the plan carries a `Planned-with-skill:` stamp, flow nudges you to re-verify it against that skill's rules before approval. Non-blocking; a `Skill-compliance: verified` marker in the plan silences it. |
+| After you approve a plan (`ExitPlanMode`, post-tool) | flow checks the plan against your `CLAUDE.md`, `AGENTS.md`, and `.claude/rules/`, asks about each violation, then runs `/flow:make-tasks`. |
 
 

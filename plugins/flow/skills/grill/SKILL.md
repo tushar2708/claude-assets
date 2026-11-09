@@ -19,7 +19,7 @@ Every question that you ask the user must use the available question tool in the
 
 But under no condition are you allowed to ask questions in chat without using the question tool available in the harness. If you are using any other harness (then Claude Code or Codex), figure out what ask question tool exists in that harness. And you can only ask any question in chat if You have verified each and every available tool, and confirmed with the user If any such tool exists or not. Only once you have actively verified each and every option are you allowed to ask any question in chat? (Apart from asking the user what tool to use )
 
-This applies to each and every question that you are asking at every stage of the interview. In Codex, add a suffix to every question. "This harness does not support multi-select questions, so use the option "Other" to mention multiple choices if you want to."
+This applies to each and every question that you are asking at every stage of the interview. In Codex, add a suffix to every question where you need multiple selection answers. "This question may need more htan one responses, but this harness does not support multi-select questions, so use the option "Other" to mention multiple choices if you want to."
 
 ## Phase 1 — Map the concepts
 
