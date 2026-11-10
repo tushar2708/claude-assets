@@ -54,6 +54,11 @@ Current state, verified by running the targets:
 
 No lint configuration exists at the repo root. Do not assume a lint command.
 
+## No tests that verify skill content
+
+Never add a test that verifies the content of a skill. This covers its words, headings, structure and frontmatter. It also covers the text of its references, templates and agent files.
+Test code verifies only other code, such as scripts, hooks and engines.
+
 ## Architecture
 
 The repo is a marketplace of three plugins, published to Claude Code and Codex from the same tree.
