@@ -15,8 +15,6 @@ Run a grilling session that is grounded in research, not just intuition. Move th
 
 The unit of work is the **feature** the developer wants to build or the decision they want to make. Everything below serves one goal: expose every hidden assumption before a line of code is written.
 
-Every question that you ask the user, in every phase, follows the rule for asking questions in the `grilling` skill (section "Asking questions"). Call the Skill tool with `grilling` before Phase 1 to load it. Do not start its interview yet: the interview starts in Phase 4.
-
 ## Phase 1 — Map the concepts
 
 Identify the concepts the feature touches, split across four domains. Name the concepts explicitly; do not stay vague.
@@ -36,7 +34,7 @@ Rules for this phase:
 
 ## Phase 2 — Ask whether to research, and which domains (mandatory gate)
 
-Ask the developer whether to research this feature on the web and which domains, using the question tool as the rule from the `grilling` skill requires. This gate is mandatory.
+Ask the developer whether to research this feature on the web and which domains. In Claude Code use `AskUserQuestion`; in Codex use `request_user_input`. This gate is mandatory.
 
 The tool caps a question at 4 options, and you have 4 research domains, so a single question cannot also hold a "skip" option. Ask in two steps:
 
@@ -81,15 +79,15 @@ Phase 4 does not start until `research-output.md` is saved and validated. This s
 
 1. **Precondition.** Look for `.docsmith/config.json` walking up from the current directory. If it is absent, STOP: tell the user to run `/flow:init` and wait. Write no doc or folder before docsmith is scaffolded.
 2. **Create the spec folder** `docs/specs/spec-NN-<use-case>/`. NN is the next-of-largest existing numeric prefix among the `spec-<NN>-*` folders in `docs/specs/`, zero-padded to the width of the existing prefixes (2 digits when none exist). Find the largest with `ls docs/specs/ | sed -n 's/^spec-\([0-9][0-9]*\)-.*/\1/p' | sort -n | tail -1`. `<use-case>` is a kebab-case slug of the feature from Phase 1. `/flow:spec` later writes the spec into this same folder.
-3. **Write the file.** Dispatch `flow:docsmith-doc-author` (Task tool, `subagent_type: flow:docsmith-doc-author`), once, with category `research`. It saves `research-output.md` in that folder, with `type: research` frontmatter, and validates to green. Pass it the folder, and:
+3. **Write the file.** By default, use the `flow:docsmith-doc-author` agent, once, with category `research`. If that agent is not available in the harness, or the user prefers another way, write the file yourself from the `research` template. Either way, `research-output.md` goes in that folder with `type: research` frontmatter, and it must validate to green. Give the writer the folder, and:
    - **Researched ("Yes")**: the briefs from rule 3 and every URL you consulted. Tell it to record every finding as one table row with its type, source link and recommendation, and to leave the Decision cell empty.
    - **Declined ("No")**: tell it to write the declined variant of the template. The file states that the developer declined research for this spec at the Phase 2 gate. It has no domain sections.
-4. **Verify.** After the hand-back, run `/humanizer` on `research-output.md` (file mode, prose only). From the repo root, run `uv run .docsmith/engine/docsmith.py validate` unscoped (no `--paths`). It must print `FAILURES: 0`. Relay every WARN line to the user. If there are failures, re-dispatch `flow:docsmith-doc-author` with the exact findings; do not fix them yourself.
+4. **Verify.** After the file is written, run `/humanizer` on `research-output.md` (file mode, prose only). From the repo root, run `uv run .docsmith/engine/docsmith.py validate` unscoped (no `--paths`). It must print `FAILURES: 0`. Relay every WARN line to the user. If there are failures and you used `flow:docsmith-doc-author`, re-dispatch it with the exact findings; do not fix them yourself. If you wrote the file yourself, fix the findings and run `validate` again.
 5. Only then start Phase 4.
 
 ## Phase 4 — Interrogate the developer
 
-Continue with the `grilling` skill. It runs the interview, so ask no question yourself in this phase. If its text is no longer in your context (for example after a compaction), call the Skill tool with `grilling` again. Give it what this session built: the concepts from Phase 1, the research briefs from Phase 3, and the path of `research-output.md`.
+Call the Skill tool with `grilling`. It runs the interview, so ask no question yourself in this phase. If its text is no longer in your context (for example after a compaction), call it again. Give it what this session built: the concepts from Phase 1, the research briefs from Phase 3, and the path of `research-output.md`.
 
 ## Phase 5 — Converge
 
