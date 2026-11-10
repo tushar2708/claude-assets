@@ -31,7 +31,7 @@ The engine creates its own scaffold outputs; never hand-write them.
 3. Ask one confirmation for the complete setup. Ask a follow-up only when the user requests customization; all components default to included.
 4. Write `/tmp/docsmith-scaffold-answers.json` with `profile: "full"`, `site_enabled: true`, `wire_precommit: true`, and `install_hook: true` only for Claude Code. Codex and fallback hosts use `install_hook: false`.
 5. Locate `../docs/scripts/docsmith.py` relative to this skill, then run its `scaffold` command with `--project-root "$ROOT" --non-interactive --answers /tmp/docsmith-scaffold-answers.json`, plus initial-scaffold `--adopt` or existing-project `--sync-engine` as applicable. Add `--force` only after explicit user approval.
-6. Report the engine's written, skipped, and notice output. Explain that `make setup` installs the project dependencies and hooks; use `make validate`, `make docs-build`, or `make docs-serve` afterward.
+6. Report the engine's written, skipped, and notice output. Then run the bootstrap immediately with `bash "$ROOT/.docsmith/setup.sh"`. It installs uv if missing, creates the doc-site venv at `.docsmith/site/.venv`, installs `.docsmith/site-requirements.txt` (mkdocs, its plugins, and their dependencies), and installs pre-commit with its git hook. Report its full output. A non-zero exit stops init and is reported as a failure. Afterward, `make validate`, `make docs-build`, and `make docs-serve` are available.
 
 ## 3. Initialize the shared roadmap and local tracker
 
