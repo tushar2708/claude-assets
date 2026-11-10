@@ -11,11 +11,12 @@ tags:
 ---
 
 <!-- This doc is ephemeral: after the category's ttl_days (default 45) past terminal status
-     it belongs in the category's archive_dir (default docs/plans/archive/). Live statuses:
+     it belongs in the category's archive_dir (default docs/specs/archive/). Live statuses:
      draft, partially-implemented (some of the scope is built). Terminal statuses:
      implemented (fully built), stable (executed, kept as record), superseded/deprecated
      (replaced/abandoned).
-     File name gets a numbered prefix: {NN}-{slug}.md, next-of-largest existing prefix. -->
+     The spec is saved as docs/specs/spec-{NN}-{slug}/spec-{NN}-{slug}.md; NN is the next-of-largest
+     numeric prefix among the spec-<NN>-* folders in docs/specs/, zero-padded. -->
 
 # Plan: <Title>
 

@@ -53,7 +53,7 @@ flowchart TD
         direction TB
         grill["Map the feature's concepts<br/>in four domains"]
         domains["Architecture · Product · UI/UX · Business"]
-        research["Optional web research per chosen domain:<br/>best practices and pitfalls"]
+        research["Optional web research per chosen domain:<br/>best practices and pitfalls<br/>saved to research-output.md"]
         rounds["Interview in rounds<br/>(up to 4 questions per round)"]
         open{"Open decisions<br/>left?"}
         converge["Shared understanding:<br/>decisions, adopted practices,<br/>avoided pitfalls, open risks"]
@@ -63,7 +63,7 @@ flowchart TD
     end
 
     %% Main path. Declared first so it stays in the central column.
-    converge -->|you confirm the summary| spec["/flow:spec<br/>Write a numbered, validated spec<br/>docs/plans/NN-slug.md<br/>with ordered sub-features SF-1..n"]
+    converge -->|you confirm the summary| spec["/flow:spec<br/>Write a numbered, validated spec<br/>docs/specs/spec-NN-use-case/spec-NN-use-case.md<br/>with ordered sub-features SF-1..n"]
     %% Hidden spacer on the left balances the optional branch on the right, so spec stays above plan-it.
     spec ~~~ spacer["/flow:add-to-roadmap<br/>Story + one Subtask per sub-feature<br/>in your tracker"]:::hidden
     spec --> planit["/flow:plan-it (Plan Mode)<br/>One wave per sub-feature<br/>Stages: S1 contracts → S2 tests → S3 implementation<br/>Verify gate after every wave<br/>Also applies any planning skills you name"]
@@ -104,8 +104,8 @@ Dashed arrows are optional. They need a declared tracker and a reachable MCP ser
 
 | Step | Command                | What it does                                                                                                                                                                                                                                                                                                                                      |
 | ---- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1    | `/flow:grill`          | Maps the feature's concepts across architecture, product, UI/UX, and business. Asks whether to research the web, and which domains. Then interviews you in rounds until no decision is open. Ends with a summary that you confirm.                                                                                                                |
-| 2    | `/flow:spec`           | Writes the discussion into a spec, with no new interview. The spec lists ordered sub-features (`SF-<n>`), each with behavior, user stories, dependencies, and done-when criteria. It is saved as `docs/plans/NN-slug.md` and validated by docsmith.                                                                                               |
+| 1    | `/flow:grill`          | Maps the feature's concepts across architecture, product, UI/UX, and business. Asks whether to research the web, and which domains. It saves each finding with its source, a recommendation and an empty decision column to `research-output.md` in the spec's folder, or records that you declined research. Then interviews you in rounds until no decision is open. Ends with a summary that you confirm.                                                                                                                |
+| 2    | `/flow:spec`           | Writes the discussion into a spec, with no new interview. The spec lists ordered sub-features (`SF-<n>`), each with behavior, user stories, dependencies, and done-when criteria. It is saved as `docs/specs/spec-NN-<use-case>/spec-NN-<use-case>.md` and validated by docsmith.                                                                                               |
 | 2a   | `/flow:add-to-roadmap` | Optional. Creates one Story under an epic and one Subtask per sub-feature in your tracker, and records them in `roadmap.md`. `/flow:spec` offers to run it for you. Run without a spec, it creates one item.                                                                                                                                      |
 | 3    | `/flow:plan-it`        | In Plan Mode, turns the spec (or the session) into a wave plan: one wave per sub-feature, each with contract, test, and implementation stages, a verify gate, and a close task when the sub-feature has a tracker Subtask. It also invokes any planning skills you name, and the skills they require, and records how each of their rules is met. |
 | 4    | `/flow:make-tasks`     | Runs automatically after you approve the plan, or when you call it. Validates the plan, then creates the tasks in wave → stage → task order and wires their dependencies. It makes no design decision.                                                                                                                                            |

@@ -87,14 +87,14 @@ def test_subsystem_first_grouping(fixture_project):
     _enable_site(fixture_project)
     _add_doc(
         fixture_project,
-        "docs/plans/archive/00-archived-plan.md",
+        "docs/specs/archive/spec-00-archived-plan/spec-00-archived-plan.md",
         "plan",
         "Archived Plan",
         "draft",
     )
     _add_doc(
         fixture_project,
-        "docs/plans/02-superseded-plan.md",
+        "docs/specs/spec-02-superseded-plan/spec-02-superseded-plan.md",
         "plan",
         "Superseded Plan",
         "superseded",
@@ -153,7 +153,7 @@ def test_subsystem_first_grouping(fixture_project):
     # Plans: active plan present; archived + superseded plans excluded.
     plans = next(s for s in sections if s["title"] == "Plans")
     plan_paths = _leaf_paths(plans["nav_items"])
-    assert "product/plans/01-old-plan.md" in plan_paths
+    assert "product/specs/spec-01-old-plan/spec-01-old-plan.md" in plan_paths
     assert not any("archive" in path for path in plan_paths)
     assert not any("superseded" in path for path in plan_paths)
     plans_index = (ctx.autogen_docs_dir / "plans-index.md").read_text(encoding="utf-8")
@@ -176,6 +176,29 @@ def test_subsystem_first_grouping(fixture_project):
         entry["output_path"] for entry in entries if entry["output_path"] not in excluded_paths
     )
     assert sorted(_doc_leaf_paths(sections)) == expected
+
+
+def test_research_doc_beside_spec_is_a_subsystem_doc_not_a_plan(fixture_project):
+    _enable_site(fixture_project)
+    _add_doc(
+        fixture_project,
+        "docs/specs/spec-01-old-plan/research-output.md",
+        "research",
+        "Old Plan Research",
+        "draft",
+    )
+    _ctx, entries, sections = _render(fixture_project)
+
+    research_path = "product/specs/spec-01-old-plan/research-output.md"
+    research = next(e for e in entries if e["output_path"] == research_path)
+    assert research["category"] == "research"
+
+    # The spec stays the only entry in Plans; the research doc is never dropped
+    # and lands in the subsystem section of its folder.
+    plans = next(s for s in sections if s["title"] == "Plans")
+    assert research_path not in _leaf_paths(plans["nav_items"])
+    specs = next(s for s in sections if s["title"] == "Specs")
+    assert research_path in _leaf_paths(specs["nav_items"])
 
 
 def test_section_order_pinning(fixture_project):

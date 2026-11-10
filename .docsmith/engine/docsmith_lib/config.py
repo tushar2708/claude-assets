@@ -88,7 +88,7 @@ PROFILES: dict[str, dict[str, dict[str, Any]]] = {
 }
 
 
-# The 9 built-in documentation categories. Dict order matters: dir_pattern
+# The 10 built-in documentation categories. Dict order matters: dir_pattern
 # resolution (resolve_category step 3) walks categories in this order.
 DEFAULT_CATEGORIES: dict[str, dict[str, Any]] = {
     "tutorial": {
@@ -157,12 +157,20 @@ DEFAULT_CATEGORIES: dict[str, dict[str, Any]] = {
     "plan": {
         "enabled": True,
         "lifecycle": "ephemeral",
-        "dir_patterns": ["docs/plans/**"],
+        "dir_patterns": ["docs/specs/**"],
         "type_aliases": ["Plan"],
         "template": "plan.md",
         "site": {"include": True},
         "ttl_days": 45,
-        "archive_dir": "docs/plans/archive",
+        "archive_dir": "docs/specs/archive",
+    },
+    "research": {
+        "enabled": True,
+        "lifecycle": "ephemeral",
+        "dir_patterns": [],
+        "type_aliases": ["Research"],
+        "template": "research.md",
+        "site": {"include": True},
     },
     "external": {
         "enabled": True,

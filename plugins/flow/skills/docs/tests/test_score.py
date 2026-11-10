@@ -7,6 +7,8 @@ commit backdated to 2026-01-01) and drives the real CLI via run_cli.
 import json
 import re
 
+import pytest
+
 OVERVIEW = "docs/pipeline/overview.md"
 BROKEN = "docs/pipeline/broken.md"
 UTIL_REF = "docs/reference/util-reference.md"
@@ -128,11 +130,26 @@ def test_doc_flag_restricts_scored_set(git_project, run_cli):
     assert [doc["path"] for doc in payload["docs"]] == [OVERVIEW]
 
 
-def test_doc_flag_outside_scored_set_exits_2(git_project, run_cli):
-    # The plan is ephemeral, so it is never in the scored set.
+@pytest.mark.parametrize(
+    "doc_rel",
+    [
+        pytest.param(
+            "docs/specs/spec-01-old-plan/spec-01-old-plan.md", id="plan-is-ephemeral"
+        ),
+        pytest.param(
+            "docs/specs/spec-01-old-plan/research-output.md", id="research-is-ephemeral"
+        ),
+    ],
+)
+def test_doc_flag_outside_scored_set_exits_2(git_project, run_cli, doc_rel):
+    # Plan and research docs are ephemeral, so they are never in the scored set.
+    research = git_project.root / "docs/specs/spec-01-old-plan/research-output.md"
+    research.write_text(
+        "---\ntype: research\ntitle: Research\nstatus: draft\n---\n\n# Research\n",
+        encoding="utf-8",
+    )
     exit_code, _ = run_cli(
-        git_project.root, "score", "--doc", "docs/plans/01-old-plan.md",
-        expect_json=False,
+        git_project.root, "score", "--doc", doc_rel, expect_json=False
     )
     assert exit_code == 2
 

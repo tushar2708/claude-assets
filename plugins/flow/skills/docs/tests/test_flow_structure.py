@@ -211,7 +211,7 @@ _REQUIRED_TEXT_PINS: dict[str, tuple[list[str], list[str]]] = {
     ),
     "spec-index": (
         ["skills/spec/SKILL.md"],
-        ["FAILURES: 0", "docs/plans/INDEX.md", "Never hand-write the index"],
+        ["FAILURES: 0", "docs/specs/INDEX.md", "Never hand-write the index"],
     ),
     "writer-failures-zero": (_FAILURES_ZERO_COMMAND_FILES, ["FAILURES: 0"]),
     "init-link-cases": (

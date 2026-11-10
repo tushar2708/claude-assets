@@ -67,12 +67,12 @@
     "plan": {
       "enabled": true,
       "lifecycle": "ephemeral",
-      "dir_patterns": ["docs/plans/**"],
+      "dir_patterns": ["docs/specs/**"],
       "type_aliases": ["Plan"],
       "template": "plan.md",
       "site": {"include": true},
       "ttl_days": 45,
-      "archive_dir": "docs/plans/archive"
+      "archive_dir": "docs/specs/archive"
     },
     "external": {
       "enabled": true,

@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from docsmith_lib.config import (
+    DEFAULT_CATEGORIES,
     PROFILES,
     ConfigNotFoundError,
     find_project_root,
@@ -105,3 +106,85 @@ def test_resolve_category(fixture_project):
     assert resolve_category("docs/tutorials/deep/intro.md", None, config) == "tutorial"
     # 4. Nothing matches.
     assert resolve_category("notes/random.md", None, config) is None
+
+
+@pytest.mark.parametrize(
+    "rel_path, fm_type, expected",
+    [
+        pytest.param("docs/anything.md", "research", "research", id="type-research"),
+        pytest.param("docs/anything.md", "Research", "research", id="alias-Research"),
+        pytest.param("docs/anything.md", "plan", "plan", id="type-plan"),
+        pytest.param("docs/anything.md", "Plan", "plan", id="alias-Plan"),
+        pytest.param(
+            "docs/specs/spec-01-x/research-output.md", "research", "research",
+            id="research-in-a-spec-folder-resolves-by-type",
+        ),
+        pytest.param(
+            "docs/specs/spec-01-x/spec-01-x.md", None, "plan",
+            id="spec-doc-resolves-by-path",
+        ),
+        pytest.param(
+            "docs/specs/INDEX.md", "Reference", "reference",
+            id="specs-index-resolves-by-type-alias-not-path",
+        ),
+        pytest.param(
+            "docs/specs/spec-01-x/research-output.md", None, "plan",
+            id="untyped-doc-in-a-spec-folder-falls-back-to-plan",
+        ),
+        pytest.param(
+            "docs/plans/x.md", None, None, id="old-plans-dir-is-no-longer-a-plan-dir"
+        ),
+        pytest.param(
+            "docs/pipeline/research-output.md", None, None,
+            id="research-has-no-dir-pattern",
+        ),
+    ],
+)
+def test_resolve_category_plan_and_research_on_defaults(
+    tmp_path, rel_path, fm_type, expected
+):
+    _write_config(tmp_path, {"docsmith_version": 1})
+    _, config = load_config(project_root=tmp_path)
+    assert resolve_category(rel_path, fm_type, config) == expected
+
+
+@pytest.mark.parametrize(
+    "category, expected",
+    [
+        pytest.param(
+            "plan",
+            {
+                "enabled": True,
+                "lifecycle": "ephemeral",
+                "dir_patterns": ["docs/specs/**"],
+                "type_aliases": ["Plan"],
+                "template": "plan.md",
+                "site": {"include": True},
+                "ttl_days": 45,
+                "archive_dir": "docs/specs/archive",
+            },
+            id="plan-lives-under-docs-specs",
+        ),
+        pytest.param(
+            "research",
+            {
+                "enabled": True,
+                "lifecycle": "ephemeral",
+                "dir_patterns": [],
+                "type_aliases": ["Research"],
+                "template": "research.md",
+                "site": {"include": True},
+            },
+            id="research-is-type-only-and-has-no-ttl",
+        ),
+    ],
+)
+def test_default_categories_plan_and_research(category, expected):
+    assert DEFAULT_CATEGORIES[category] == expected
+
+
+def test_default_categories_order_puts_research_between_plan_and_external():
+    names = list(DEFAULT_CATEGORIES)
+    assert names.index("plan") + 1 == names.index("research")
+    assert names.index("research") + 1 == names.index("external")
+    assert len(names) == 10

@@ -30,7 +30,7 @@ Each work item must contain every plan field verbatim, followed by its contract-
 
 ## File tracker
 
-When the host has no native dependency-aware task tracker, create `docs/tasks/<plan filename>` beside the plan's `docs/plans/<plan filename>`. For example, `docs/plans/042-search.md` maps to `docs/tasks/042-search.md`.
+When the host has no native dependency-aware task tracker, create `docs/tasks/<plan filename>` beside the plan's `docs/specs/<plan filename without .md>/<plan filename>`. For example, `docs/specs/spec-42-search/spec-42-search.md` maps to `docs/tasks/spec-42-search.md`.
 
 Create `docs/tasks/` in the project if necessary. Follow `assets/tracking/local/todo-file.md` and start from `assets/task-tracker.template.md`. Create one Epic table for every matching Epic section in `roadmap.md`; each roadmap row is a Story and each planned work item is that Story's Subtask. Replace every placeholder and create one table row and one linked Markdown section for every Story, planned task, verify task, close task, and final close task. Keep the table and section status, title, dependencies, and task text synchronized. The plan remains the source of design decisions.
 

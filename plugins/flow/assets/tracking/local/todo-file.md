@@ -4,7 +4,7 @@ Use this tracker in Codex and any host without a native dependency-aware task tr
 
 ## Location and shape
 
-For `docs/plans/<plan filename>`, create `docs/tasks/<plan filename>`. Read `roadmap.md`, then create one `## Epic:` section and table in the task file for every Epic that the plan touches.
+For `docs/specs/<plan filename without .md>/<plan filename>`, create `docs/tasks/<plan filename>`. Read `roadmap.md`, then create one `## Epic:` section and table in the task file for every Epic that the plan touches.
 
 | Flow concept | Todo-file representation |
 | --- | --- |

@@ -127,7 +127,7 @@
       "enabled": true,
       "lifecycle": "ephemeral",
       "dir_patterns": [
-        "docs/plans/**"
+        "docs/specs/**"
       ],
       "type_aliases": [
         "Plan"
@@ -137,7 +137,19 @@
         "include": true
       },
       "ttl_days": 45,
-      "archive_dir": "docs/plans/archive"
+      "archive_dir": "docs/specs/archive"
+    },
+    "research": {
+      "enabled": true,
+      "lifecycle": "ephemeral",
+      "dir_patterns": [],
+      "type_aliases": [
+        "Research"
+      ],
+      "template": "research.md",
+      "site": {
+        "include": true
+      }
     },
     "external": {
       "enabled": true,

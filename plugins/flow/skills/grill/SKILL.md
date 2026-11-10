@@ -15,11 +15,7 @@ Run a grilling session that is grounded in research, not just intuition. Move th
 
 The unit of work is the **feature** the developer wants to build or the decision they want to make. Everything below serves one goal: expose every hidden assumption before a line of code is written.
 
-Every question that you ask the user must use the available question tool in the harness. For Claude Code, it would be "AskUserQuestion", And in the case of Codex, it would be "request_user_input". In the case of Codex, if the tool is not available, without going into plan mode, either go to plan mode on your own or share the limitation with the user and ask them to put you in plan mode. 
-
-But under no condition are you allowed to ask questions in chat without using the question tool available in the harness. If you are using any other harness (then Claude Code or Codex), figure out what ask question tool exists in that harness. And you can only ask any question in chat if You have verified each and every available tool, and confirmed with the user If any such tool exists or not. Only once you have actively verified each and every option are you allowed to ask any question in chat? (Apart from asking the user what tool to use )
-
-This applies to each and every question that you are asking at every stage of the interview. In Codex, add a suffix to every question where you need multiple selection answers. "This question may need more htan one responses, but this harness does not support multi-select questions, so use the option "Other" to mention multiple choices if you want to."
+Every question that you ask the user, in every phase, follows the rule for asking questions in the `grilling` skill (section "Asking questions"). Call the Skill tool with `grilling` before Phase 1 to load it. Do not start its interview yet: the interview starts in Phase 4.
 
 ## Phase 1 — Map the concepts
 
@@ -40,7 +36,7 @@ Rules for this phase:
 
 ## Phase 2 — Ask whether to research, and which domains (mandatory gate)
 
-Ask the developer whether to research this feature on the web and which domains. In Claude Code use `AskUserQuestion`; in Codex use `request_user_input` when available, otherwise ask in chat. This gate is mandatory.
+Ask the developer whether to research this feature on the web and which domains, using the question tool as the rule from the `grilling` skill requires. This gate is mandatory.
 
 The tool caps a question at 4 options, and you have 4 research domains, so a single question cannot also hold a "skip" option. Ask in two steps:
 
@@ -49,7 +45,7 @@ The tool caps a question at 4 options, and you have 4 research domains, so a sin
 - "Yes — let me choose the research domains (Recommended)"
 - "No — skip research and go straight to the questions"
 
-If the developer chooses "No", skip Phase 3 entirely and go to Phase 4.
+If the developer chooses "No", skip the research in Phase 3, run "Save the research" in its declined form, then go to Phase 4.
 
 **Step 2 — the domain picker (multi-select), only if Step 1 was "Yes".** Ask one question with `multiSelect: true`: "Which research do you want?" Offer exactly these four options, **none pre-selected**:
 
@@ -73,37 +69,28 @@ For the key concepts from Phase 1, search the web for two things per domain: the
 
 Rules for this phase:
 
-1. Research only the domains the developer selected in Phase 2. Skip every domain they did not select. If they chose "No" at the gate, skip this phase entirely.
+1. Research only the domains the developer selected in Phase 2. Skip every domain they did not select. If they chose "No" at the gate, skip rules 2 to 5 and run only "Save the research".
 2. Run searches in parallel across the selected domains where the concepts are independent. Fetch a source page when the search snippet is not enough.
-3. For each selected domain, write a compact brief: 3 to 6 bullets of best practices, and 3 to 6 bullets of common pitfalls, each with the source. Cite the source domain next to every claim.
+3. For each selected domain, write a compact brief: 3 to 6 bullets of best practices, and 3 to 6 bullets of common pitfalls, each with the source. Cite the source domain next to every claim, and keep the page URL. Give every finding a one-line recommendation: what this feature should do with it.
 4. Keep only findings that are relevant to this feature. Discard generic advice that does not change a decision.
 5. This research is the fuel for Phase 4. Every question you ask should trace back to a best practice to adopt or a pitfall to avoid.
 
+### Save the research
+
+Phase 4 does not start until `research-output.md` is saved and validated. This section runs whether the developer chose "Yes" or "No" at the gate. Run these steps once: after the briefs are written, or straight after the gate on "No".
+
+1. **Precondition.** Look for `.docsmith/config.json` walking up from the current directory. If it is absent, STOP: tell the user to run `/flow:init` and wait. Write no doc or folder before docsmith is scaffolded.
+2. **Create the spec folder** `docs/specs/spec-NN-<use-case>/`. NN is the next-of-largest existing numeric prefix among the `spec-<NN>-*` folders in `docs/specs/`, zero-padded to the width of the existing prefixes (2 digits when none exist). Find the largest with `ls docs/specs/ | sed -n 's/^spec-\([0-9][0-9]*\)-.*/\1/p' | sort -n | tail -1`. `<use-case>` is a kebab-case slug of the feature from Phase 1. `/flow:spec` later writes the spec into this same folder.
+3. **Write the file.** Dispatch `flow:docsmith-doc-author` (Task tool, `subagent_type: flow:docsmith-doc-author`), once, with category `research`. It saves `research-output.md` in that folder, with `type: research` frontmatter, and validates to green. Pass it the folder, and:
+   - **Researched ("Yes")**: the briefs from rule 3 and every URL you consulted. Tell it to record every finding as one table row with its type, source link and recommendation, and to leave the Decision cell empty.
+   - **Declined ("No")**: tell it to write the declined variant of the template. The file states that the developer declined research for this spec at the Phase 2 gate. It has no domain sections.
+4. **Verify.** After the hand-back, run `/humanizer` on `research-output.md` (file mode, prose only). From the repo root, run `uv run .docsmith/engine/docsmith.py validate` unscoped (no `--paths`). It must print `FAILURES: 0`. Relay every WARN line to the user. If there are failures, re-dispatch `flow:docsmith-doc-author` with the exact findings; do not fix them yourself.
+5. Only then start Phase 4.
+
 ## Phase 4 — Interrogate the developer
 
-Now grill the developer. Use the host's structured-question tool when available; otherwise ask concise questions in chat.
-
-Map the feature as a **design tree**: every decision branches into the decisions that hang off it. Work the tree in **rounds**. The **frontier** is every decision whose prerequisites are already settled — the questions you can ask now without guessing at answers you have not heard yet.
-
-Each round:
-
-1. Compute the frontier. A question whose answer depends on another still-open question belongs to a later round, not this one.
-2. Ask the frontier questions in the host's supported batch size. If more remain, prioritize by impact and continue next round.
-3. Wait for the answers. Each answer reshapes the tree: settled decisions push the frontier outward and unblock later questions. Recompute the frontier and start the next round.
-
-Rules for every question:
-
-1. Ground the question in your Phase 1 concepts and Phase 3 research. If the developer skipped a domain (or all research), ground those questions in the Phase 1 concepts and your own reasoning instead. State the best practice or the pitfall that makes the question matter, inside the option descriptions.
-2. Give each question 2 to 4 options. Put your **recommended option first** and add "(Recommended)" to the end of its label. Explain the trade-off of each option in its description, and reference the research (for example: "NN/g warns this pattern causes error blindness").
-3. Never pre-select or pre-check any option, including in multi-select questions. Let the developer choose.
-4. Set `multiSelect: true` only when the choices are genuinely not mutually exclusive.
-5. Keep asking decisions, not facts. If a question turns out to be a fact, stop, look it up with a sub-agent, and drop the question.
-6. Keep each `header` short (the tool caps it near 12 characters).
-
-The session is done when the frontier is empty: every branch of the design tree visited, nothing left silently assumed.
+Continue with the `grilling` skill. It runs the interview, so ask no question yourself in this phase. If its text is no longer in your context (for example after a compaction), call the Skill tool with `grilling` again. Give it what this session built: the concepts from Phase 1, the research briefs from Phase 3, and the path of `research-output.md`.
 
 ## Phase 5 — Converge
 
-1. Summarise the shared understanding: the decisions made, the best practices adopted, the pitfalls now avoided, and the open risks that remain.
-2. Do not act on the feature until the developer confirms this summary.
-3. When they confirm, offer only `/flow:spec`, in the same conversation, to turn it into a governed spec — no fresh session, the value is the context you just built.
+The `grilling` skill runs this phase too: the summary, the developer's confirmation, and the offer of `/flow:spec`. Add nothing of your own.

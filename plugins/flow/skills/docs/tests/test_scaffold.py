@@ -120,10 +120,54 @@ def test_fresh_scaffold_creates_everything(tmp_path):
         "docs/explanation",
         "docs/runbooks",
         "docs/decisions",
-        "docs/plans",
-        "docs/plans/archive",
+        "docs/specs",
+        "docs/specs/archive",
     ):
         assert (root / rel / ".gitkeep").is_file(), rel
+
+
+@pytest.mark.parametrize(
+    "rel, expect_gitkeep",
+    [
+        pytest.param("docs/specs", True, id="specs-dir-created"),
+        pytest.param("docs/specs/archive", True, id="specs-archive-dir-created"),
+        pytest.param("docs/plans", False, id="old-plans-dir-not-created"),
+        pytest.param("docs/research", False, id="research-has-no-dir"),
+    ],
+)
+def test_fresh_scaffold_spec_and_research_dirs(tmp_path, rel, expect_gitkeep):
+    root = _make_repo(tmp_path)
+    proc = _scaffold(root)
+    assert proc.returncode == 0, proc.stderr
+
+    assert (root / rel / ".gitkeep").is_file() is expect_gitkeep
+    if not expect_gitkeep:
+        assert not (root / rel).exists()
+
+
+def test_fresh_scaffold_docs_dirs_are_exactly_the_category_dirs(tmp_path):
+    """Pins the full set of created directories: the plan category lives under
+    docs/specs, and the type-only categories (external, research) create none."""
+    root = _make_repo(tmp_path)
+    proc = _scaffold(root)
+    assert proc.returncode == 0, proc.stderr
+
+    created = sorted(
+        path.relative_to(root).as_posix()
+        for path in (root / "docs").rglob("*")
+        if path.is_dir()
+    )
+    assert created == [
+        "docs/decisions",
+        "docs/explanation",
+        "docs/how-to",
+        "docs/prd",
+        "docs/reference",
+        "docs/runbooks",
+        "docs/specs",
+        "docs/specs/archive",
+        "docs/tutorials",
+    ]
 
 
 def test_rerun_without_force_exits_2(tmp_path):

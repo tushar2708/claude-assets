@@ -37,14 +37,14 @@ generated:
 ```
 
 - `type` must equal a category key (`tutorial`, `how-to`, `reference`, `explanation`,
-  `runbook`, `decision`, `plan`, `external`) or one of that category's `type_aliases` in
+  `runbook`, `decision`, `plan`, `research`, `external`) or one of that category's `type_aliases` in
   `.docsmith/config.json` — check the config, don't guess an alias.
 - A file physically outside every category's `dir_patterns` still resolves via an explicit
   `type:` — this is the only way an `external`-category doc resolves, and it's also how you
   tag a file without moving it (see [Coverage: dead glob](#coverage-dead-glob) sibling case:
   moving isn't always required — an explicit `type:` is enough when relocation isn't in scope).
-- `decision` and `plan` categories omit `stale_after`.
-- Index docs such as `docs/plans/INDEX.md` use `type: Reference` (alias) with the standard
+- `decision`, `plan` and `research` categories omit `stale_after`.
+- Index docs such as `docs/specs/INDEX.md` use `type: Reference` (alias) with the standard
   block; keep their table untouched.
 - Category ambiguous from filename alone → read the doc's actual content before picking.
   Rationale/design-intent content → `explanation`. Exhaustive facts/schema/flags →

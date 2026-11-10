@@ -9,7 +9,7 @@ Run approved work items in wave, stage, and task order. Make no design decision.
 
 ## Resolve the task source
 
-1. Identify the approved plan at `docs/plans/<plan filename>`.
+1. Identify the approved plan at `docs/specs/<plan filename without .md>/<plan filename>`.
 2. Read the shared plugin resource `assets/tracking/README.md` and resolve exactly one local tracker plus every configured cloud tracker.
 3. In Claude Code, read the native Flow work items with `TaskGet` and update them with the native task operations.
 4. In Codex, or any host without a native dependency-aware task tracker, read `docs/tasks/<plan filename>`. Stop and ask the user to run `make-tasks` if the file does not exist.

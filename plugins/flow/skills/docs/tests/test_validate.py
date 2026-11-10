@@ -515,6 +515,12 @@ def test_coverage_warns_only_for_unmatched_project_added_patterns(
 
 # --- V6 plan-ttl (needs git history) -----------------------------------------
 
+_SPEC = "docs/specs/spec-01-old-plan/spec-01-old-plan.md"
+_RESEARCH_FRONTMATTER = (
+    "---\ntype: research\ntitle: Old Plan Research\nstatus: draft\ntags:\n  - research\n---\n\n"
+    "# Old Plan Research\n"
+)
+
 
 def test_plan_ttl_expired_warning(git_project, run_cli):
     # Initial commit is backdated to 2026-01-01; the plan category ttl is
@@ -522,20 +528,115 @@ def test_plan_ttl_expired_warning(git_project, run_cli):
     exit_code, payload = run_cli(git_project.root, "validate", "--only", "plan-ttl")
     assert exit_code == 0  # warnings only
     warnings = _results(payload, check="plan-ttl", severity="warning")
-    assert [r["path"] for r in warnings] == ["docs/plans/01-old-plan.md"]
+    assert [r["path"] for r in warnings] == [_SPEC]
     assert "plan expired" in warnings[0]["message"]
-    assert "docs/plans/archive" in warnings[0]["message"]
+    assert "docs/specs/archive" in warnings[0]["message"]
 
 
 def test_plan_ttl_skips_archived_plans(git_project, run_cli):
     root = git_project.root
     shutil.move(
-        str(root / "docs" / "plans" / "01-old-plan.md"),
-        str(root / "docs" / "plans" / "archive" / "01-old-plan.md"),
+        str(root / "docs" / "specs" / "spec-01-old-plan"),
+        str(root / "docs" / "specs" / "archive" / "spec-01-old-plan"),
     )
     git_project.commit_at("2026-01-01T00:00:00", "archive the plan")
     _, payload = run_cli(root, "validate", "--only", "plan-ttl")
     assert _results(payload, check="plan-ttl") == []
+
+
+@pytest.mark.parametrize(
+    "research_rel",
+    [
+        pytest.param(
+            "docs/specs/spec-01-old-plan/research-output.md", id="beside-the-spec"
+        ),
+        pytest.param("docs/pipeline/research-output.md", id="outside-docs-specs"),
+    ],
+)
+def test_plan_ttl_never_applies_to_old_research_docs(
+    git_project, run_cli, research_rel
+):
+    # research is ephemeral but has no ttl_days, so even a long-expired
+    # research doc yields no plan-ttl warning; only the plan itself does.
+    root = git_project.root
+    (root / research_rel).write_text(_RESEARCH_FRONTMATTER, encoding="utf-8")
+    git_project.commit_at("2026-01-01T00:00:00", "add research")
+
+    _, payload = run_cli(root, "validate", "--only", "plan-ttl")
+
+    assert [r["path"] for r in _results(payload, check="plan-ttl")] == [_SPEC]
+
+
+# --- research docs and category resolution -----------------------------------
+
+
+@pytest.mark.parametrize(
+    "profile",
+    [
+        pytest.param("full", id="full-profile"),
+        pytest.param("standard", id="standard-profile"),
+    ],
+)
+@pytest.mark.parametrize(
+    "research_rel",
+    [
+        pytest.param(
+            "docs/specs/spec-01-x/research-output.md", id="in-a-spec-folder"
+        ),
+        pytest.param("docs/pipeline/research-output.md", id="outside-docs-specs"),
+    ],
+)
+def test_research_doc_without_index_table_or_stale_after_is_clean(
+    fixture_project, run_cli, research_rel, profile
+):
+    # The fixture's overrides force validate.require_index_table to true under
+    # either profile, so an evergreen doc without the table would warn.
+    cfg_path = fixture_project / ".docsmith" / "config.json"
+    cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+    cfg["profile"] = profile
+    cfg_path.write_text(json.dumps(cfg), encoding="utf-8")
+    research = fixture_project / research_rel
+    research.parent.mkdir(parents=True, exist_ok=True)
+    research.write_text(_RESEARCH_FRONTMATTER, encoding="utf-8")
+
+    exit_code, payload = run_cli(fixture_project, "validate", "--paths", research_rel)
+
+    assert exit_code == 0
+    assert payload["summary"]["checked"] == 1
+    assert _results(payload, path=research_rel) == []
+
+
+@pytest.mark.parametrize(
+    "rel_path, expect_unresolved",
+    [
+        pytest.param("docs/pipeline/bogus.md", True, id="outside-docs-specs"),
+        pytest.param("docs/plans/bogus.md", True, id="old-plans-dir-no-longer-a-plan-dir"),
+        pytest.param(
+            "docs/specs/spec-01-x/bogus.md", False, id="inside-docs-specs-falls-back-to-plan"
+        ),
+    ],
+)
+def test_unknown_type_resolves_only_through_the_specs_dir_pattern(
+    fixture_project, run_cli, rel_path, expect_unresolved
+):
+    doc = fixture_project / rel_path
+    doc.parent.mkdir(parents=True, exist_ok=True)
+    doc.write_text(
+        "---\ntype: bogus\ntitle: Bogus\nstatus: draft\n---\n\n# Bogus\n",
+        encoding="utf-8",
+    )
+
+    exit_code, payload = run_cli(fixture_project, "validate", "--paths", rel_path)
+
+    errors = _results(payload, check="frontmatter", severity="error", path=rel_path)
+    if expect_unresolved:
+        assert exit_code == 1
+        assert [r["message"] for r in errors] == [
+            "type 'bogus' does not resolve to any category"
+        ]
+    else:
+        assert exit_code == 0
+        assert errors == []
 
 
 # --- V7 decisions ------------------------------------------------------------

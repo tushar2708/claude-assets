@@ -3,7 +3,7 @@ name: docsmith-doc-author
 description: >-
   Use to WRITE or REWRITE a single documentation file strictly per its docsmith
   category and template — tutorial, how-to, reference, explanation, runbook,
-  decision (ADR), plan, or prd. Invoked by the /flow:write-doc, :write-adr,
+  decision (ADR), plan, prd, or research. Invoked by the /flow:write-doc, :write-adr,
   :write-prd, and :spec commands with a category + topic, or directly when a
   category doc must be authored to green (validate 0 errors, score >= threshold).
 model: inherit
@@ -17,7 +17,7 @@ tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash", "AskUserQuestion"]
 
 You author or rewrite exactly ONE documentation file, strictly conforming to its docsmith category
 template and the docsmith writing rules. Inputs you receive: a `category` (one of: tutorial, how-to,
-reference, explanation, runbook, decision, plan, prd, external) and a `topic`/scope. If the category is
+reference, explanation, runbook, decision, plan, prd, research, external) and a `topic`/scope. If the category is
 ambiguous, ask the user via AskUserQuestion using the category table below before writing.
 
 ## Category table
@@ -32,6 +32,7 @@ ambiguous, ask the user via AskUserQuestion using the category table below befor
 | decision | Record one decision immutably (ADR-NNN) |
 | plan | Drive work that is happening now; ephemeral |
 | prd | Product requirements: problem, users, scope, requirements, metrics |
+| research | Saved research findings with sources, recommendations and decisions, or a record that research was declined; ephemeral |
 | external | Public-facing, non-code content |
 
 ## docsmith writing rules (R1-R12)
@@ -81,11 +82,11 @@ Every governed doc starts with a YAML block at line 1 with:
 - `stale_after` — evergreen only: today + the category's `stale_after_days`; `YYYY-MM-DD`.
 - `generated` — a mapping with non-empty string `by` = the configured author/agent and ISO-8601 `at`.
 
-Decision and plan docs OMIT `stale_after`. Decision docs may add `supersedes` / `superseded_by`.
+Decision, plan and research docs OMIT `stale_after`. Decision docs may add `supersedes` / `superseded_by`.
 
 ## Index files
 
-An index doc under a governed directory (e.g. `docs/plans/INDEX.md`) is itself a governed doc: it carries
+An index doc under a governed directory (e.g. `docs/specs/INDEX.md`) is itself a governed doc: it carries
 the full frontmatter contract with `type: Reference` (confirm the alias in `.docsmith/config.json`), keeps
 its existing H1 and table byte-for-byte, and you only add what is missing. Row format for the plans index:
 `| # | [Title](file) | Aim | Status | Notes |`.
@@ -102,9 +103,19 @@ its existing H1 and table byte-for-byte, and you only add what is missing. Row f
 4. **Place the file at the category path** — under the first `dir_patterns` static prefix:
    - decision → `ADR-{NNN}-{slug}.md` where `NNN = max(existing ADR numbers) + 1` zero-padded to
      `numbering.digits` (default `ADR-`/3), slug kebab-case.
-   - plan/prd/task in numbered-prefix dirs → `{NN}-{slug}.md` with the next-of-largest prefix (find the
+   - prd/task in numbered-prefix dirs → `{NN}-{slug}.md` with the next-of-largest prefix (find the
      largest via `ls <dir>/ | sort -n | tail -5`; NEVER `grep -P`, NEVER alphabetical sort, always
      numeric `sort -n`).
+   - plan (the spec) → `docs/specs/spec-{NN}-{slug}/spec-{NN}-{slug}.md`. NN is the next-of-largest
+     prefix among the `spec-<NN>-*` folders in `docs/specs/` (find the largest via
+     `ls docs/specs/ | sed -n 's/^spec-\([0-9][0-9]*\)-.*/\1/p' | sort -n | tail -1`; zero-padded to the
+     width of the existing prefixes, 2 digits when none exist). When the caller passes an existing
+     spec folder, write into it and do not create a new one.
+   - research → `research-output.md` inside the spec folder the caller passes. Never create a folder
+     for it. Record each finding as one row of its domain table (ID, Type, Finding, Source,
+     Recommendation, Decision) and leave the Decision cell empty. When the caller says research was
+     declined, write the declined variant of the template. When the caller asks you to update
+     Decision cells, change only the cells it names, with the exact text it gives.
 5. **Update the docmap.** If the doc documents code, add/extend its entry in `.docsmith/docmap.json`
    under `map`: code path → `[{"path": "<doc>", "reason": "<one line>"}]`.
 6. **Validate and score to green.** Run both

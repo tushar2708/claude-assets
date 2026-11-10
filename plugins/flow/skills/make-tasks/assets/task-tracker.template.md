@@ -1,11 +1,11 @@
 ---
-plan: "../plans/<plan filename>"
+plan: "../specs/<plan filename without .md>/<plan filename>"
 status: active
 ---
 
 # Tasks — <plan title>
 
-Plan: [<plan title>](../plans/<plan filename>)
+Plan: [<plan title>](../specs/<plan filename without .md>/<plan filename>)
 
 `roadmap.md` is the Epic registry. This file is the local task tracker.
 

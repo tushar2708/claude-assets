@@ -9,6 +9,7 @@
 | [runbook](#runbook) | Operate under pressure: terse steps plus rollback |
 | [decision](#decision) | Record one decision immutably (ADR-NNN) |
 | [plan](#plan) | Drive work that is happening now; ephemeral |
+| [research](#research) | Saved research findings with sources, recommendations and decisions, or a record that research was declined; ephemeral |
 | [external](#external) | Public-facing, non-code content |
 
 Category names, `type_aliases`, `dir_patterns`, numbering, and TTLs all come from the
@@ -104,10 +105,12 @@ Defaults below are the engine defaults.
   replaced or abandoned). No `stale_after`.
 - **Lifecycle**: **ephemeral TTL + archive** — after the category's `ttl_days` (default 45)
   past terminal status, the file belongs in the category's `archive_dir` (default
-  `docs/plans/archive/`). The validator's plan-ttl check warns on any live
+  `docs/specs/archive/`). The validator's plan-ttl check warns on any live
   (`draft`/`stable`/`partially-implemented`) plan whose last commit is older than the TTL:
   finish it, move it to the archive, or mark it superseded.
-- **Naming — numbered prefix (apply without being asked)**: plans get a `{NN}-{slug}.md`
+- **Naming — numbered prefix (apply without being asked)**: a spec (plan category) is saved as
+  `docs/specs/spec-{NN}-{slug}/spec-{NN}-{slug}.md`. NN is the next-of-largest prefix among the
+  `spec-<NN>-*` folders in `docs/specs/`. Other numbered directories use a `{NN}-{slug}.md`
   name. If the doc is to be created in plans/ todos/ or any similar directory that has
   numbered-prefixed files, always add your file with a prefix of next-of-largest existing
   prefix (eg. 01-<>.md, 07-<>.md, 11-<>.md, etc). Do it without asking, or being asked
@@ -117,6 +120,19 @@ Defaults below are the engine defaults.
   - To find the largest existing numeric prefix, use `ls <dir>/ | sort -n | tail -5` and
     read the last entry's prefix. NEVER use `grep -P` (not available on macOS). NEVER use
     alphabetical sort, which puts `99` after `100`. Always use numeric sort (`sort -n`).
+
+## research
+
+- **Purpose**: record the web research of one grilling session — best practices and pitfalls,
+  each with its source, a recommendation and a Decision column the interview fills in. When the
+  developer declines research, the file records that instead.
+- **Vs neighbors**: explanation describes the current design; research holds external
+  findings gathered for one spec. A plan drives work; research is its input.
+- **Frontmatter**: `type: research` (default alias `Research`); `status: draft`. No
+  `stale_after`. The category has no `dir_patterns` by default, so the frontmatter type is
+  the only way a doc resolves to it.
+- **Lifecycle**: ephemeral snapshot — no `ttl_days`, no `archive_dir`.
+- **Naming**: `research-output.md` inside the spec folder `docs/specs/spec-{NN}-{slug}/`.
 
 ## external
 

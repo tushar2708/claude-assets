@@ -1,6 +1,6 @@
 ---
 name: spec
-description: Turn the current conversation into a governed spec saved as a numbered docs/plans/NN doc (docsmith plan frontmatter + validation) — no interview, just synthesis of what you've already discussed.
+description: Turn the current conversation into a governed spec saved in its own numbered docs/specs/spec-NN-<use-case> folder (docsmith plan frontmatter + validation) — no interview, just synthesis of what you've already discussed.
 disable-model-invocation: true
 ---
 
@@ -23,8 +23,8 @@ This skill takes the current conversation context and codebase understanding and
 Check with the user that these seams match their expectations.
 
 3. Use the references/wave-model.md from the `plan-it` skill before writing the spec. (Read the file from the skill. Do not try to invoke it. It will be blocked. )
-4. Stamp docsmith `plan`-category frontmatter and tags on the spec — `type: plan`, `status: draft`, and a `tags:` list that includes `plan` — then route authoring through the `flow:docsmith-doc-author` subagent (Task tool, `subagent_type: flow:docsmith-doc-author`) with validate-to-green — one dispatch per file. The agent saves the spec as a numbered `docs/plans/NN-slug.md` (NN = next-of-largest existing numeric prefix in that folder).
-5. Have `flow:docsmith-doc-author` write the plan index too (one dispatch per file). If `docs/plans/INDEX.md` (or the project's equivalent index) does not exist, the agent creates it WITH docsmith frontmatter (`type: Reference` — confirm the alias in `.docsmith/config.json` `type_aliases`; `title`; `status: draft`; 2-4 kebab-case tags as a YAML block list; `stale_after` per the evergreen contract; `generated: {by, at}`), an H1, and the table header `| # | [Title](file) | Aim | Status | Notes |` with its rows, then adds the new row. If it exists, the agent appends the row, matching the existing row format `| # | [Title](file) | Aim | Status | Notes |` with Status `❌ Not Implemented`. Never hand-write the index in the main thread.
+4. Stamp docsmith `plan`-category frontmatter and tags on the spec — `type: plan`, `status: draft`, and a `tags:` list that includes `plan` — then route authoring through the `flow:docsmith-doc-author` subagent (Task tool, `subagent_type: flow:docsmith-doc-author`) with validate-to-green — one dispatch per file. The agent saves the spec as `docs/specs/spec-NN-<use-case>/spec-NN-<use-case>.md` (NN = next-of-largest existing numeric prefix among the `spec-<NN>-*` folders in `docs/specs/`; `<use-case>` = kebab-case slug of the feature). If `/flow:grill` already created the spec folder for this feature in this conversation (the folder that holds `research-output.md`), pass that folder to the agent and write the spec into it. Otherwise the agent creates the folder.
+5. Have `flow:docsmith-doc-author` write the plan index too (one dispatch per file). If `docs/specs/INDEX.md` (or the project's equivalent index) does not exist, the agent creates it WITH docsmith frontmatter (`type: Reference` — confirm the alias in `.docsmith/config.json` `type_aliases`; `title`; `status: draft`; 2-4 kebab-case tags as a YAML block list; `stale_after` per the evergreen contract; `generated: {by, at}`), an H1, and the table header `| # | [Title](file) | Aim | Status | Notes |` with its rows, then adds the new row. If it exists, the agent appends the row, matching the existing row format `| # | [Title](file) | Aim | Status | Notes |` with Status `❌ Not Implemented`. Never hand-write the index in the main thread.
    After every `flow:docsmith-doc-author` hand-back, run `/humanizer` on each listed file (file mode, prose only), then re-run docsmith validate.
 Do NOT publish to a tracker or apply a triage label yourself. Create issues only through `/flow:add-to-roadmap` in step 7.
 6. **Verify (orchestrator, never delegated).** From the repo root run `uv run .docsmith/engine/docsmith.py validate` UNSCOPED (no `--paths`). It must print `FAILURES: 0`. Relay every WARN line to the user. If there are failures, re-dispatch `flow:docsmith-doc-author` with the exact findings; do not fix them yourself. Quote the validator output in your report.
@@ -34,7 +34,7 @@ Do NOT publish to a tracker or apply a triage label yourself. Create issues only
    3. Ask the user to run `/flow:add-to-roadmap` now. Do not invoke it yourself; it is user-invoked only.
    4. Give the user the arguments to pass: spec path, spec title, epic choice, and the SF list.
    5. That skill creates one Story and one Subtask per `SF-<n>`, and writes their keys into the spec.
-   6. Create no item or roadmap row yourself. Leave the `docs/plans/INDEX.md` row as is.
+   6. Create no item or roadmap row yourself. Leave the `docs/specs/INDEX.md` row as is.
 
 <spec-template>
 
