@@ -12,7 +12,8 @@ tags:
 
 <!-- This doc is ephemeral: after the category's ttl_days (default 45) past terminal status
      it belongs in the category's archive_dir (default docs/specs/archive/). Live statuses:
-     draft, partially-implemented (some of the scope is built). Terminal statuses:
+     draft (open items may remain), ready (every open item is decided, nothing built yet),
+     partially-implemented (some of the scope is built). Terminal statuses:
      implemented (fully built), stable (executed, kept as record), superseded/deprecated
      (replaced/abandoned).
      The spec is saved as docs/specs/spec-{NN}-{slug}/spec-{NN}-{slug}.md; NN is the next-of-largest

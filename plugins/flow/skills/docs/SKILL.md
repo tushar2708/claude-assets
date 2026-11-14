@@ -12,7 +12,7 @@ If the active host is neither Claude Code nor Codex, tell the user this skill ha
 | Section | What it covers |
 |---------|----------------|
 | [What docsmith is](#what-docsmith-is) | Scope and where per-project state lives |
-| [Categories](#categories) | The 9 doc categories, lifecycles, and templates |
+| [Categories](#categories) | The 11 doc categories, lifecycles, and templates |
 | [Evergreen writing rules](#evergreen-writing-rules) | Condensed R-rules for all doc work |
 | [CLI](#cli) | Subcommands, engine locations, exit codes |
 | [State files](#state-files) | config.json / docmap.json / state.json |
@@ -41,6 +41,7 @@ write ONLY at project level; they never modify user-level or machine-global stat
 | decision | immutable | never edited in substance — supersede with a new numbered ADR-NNN | decision.md | no |
 | plan | ephemeral | editable while live; archived after ttl_days past terminal status | plan.md | no |
 | research | ephemeral | editable while live; one session's saved research, no ttl and no archive | research.md | no |
+| brainstorm | ephemeral | editable while live; the layout of a multi-sprint effort, no ttl and no archive | brainstorm.md | no |
 | external | evergreen | rewrite in place; public-facing, non-code, skipped by the doc site | external.md | yes |
 
 Rules bind to the **lifecycle**, not the name: projects may rename categories in their

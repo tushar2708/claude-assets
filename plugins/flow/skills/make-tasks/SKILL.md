@@ -11,6 +11,8 @@ If the active host is neither Claude Code nor Codex, use the file tracker below 
 
 Read the approved plan. Before creating a work item, run every validation recorded by `plan-it`. On failure, stop, name the failed check and plan line, and create nothing.
 
+Check the open items of every spec in the plan's Sources, once per run. For each such spec, read its `status` and its `Open Questions` section. If the status is not `ready` and any row is `Open`, remind the user in the chat: name the spec and list each open item. Then ask through the host's question tool: "Resolve them first (Recommended)" and "Continue anyway". On the first, stop and create nothing, and tell the user to run `/flow:grill`. On the second, go on. This is a reminder, not a gate. Never refuse to continue.
+
 Read the shared plugin resource `assets/tracking/README.md` before selecting or updating any tracker.
 
 For each wave, create one temporary contract file at `${TMPDIR:-/tmp}/flow-make-tasks/<plan-name>/W<n>-contracts.md`. Copy every shared-contract plan section named by that wave into it, preserving its heading. The approved plan remains the source of truth.
@@ -30,7 +32,7 @@ Each work item must contain every plan field verbatim, followed by its contract-
 
 ## File tracker
 
-When the host has no native dependency-aware task tracker, create `docs/tasks/<plan filename>` beside the plan's `docs/specs/<plan filename without .md>/<plan filename>`. For example, `docs/specs/spec-42-search/spec-42-search.md` maps to `docs/tasks/spec-42-search.md`.
+When the host has no native dependency-aware task tracker, create `docs/tasks/<plan filename>` beside the plan's `docs/specs/<plan filename without .md>/<plan filename>`, or, for a sprint spec, beside `docs/specs/brainstorm-<NN>-<slug>/<plan filename without .md>/<plan filename>`. For example, `docs/specs/spec-42-search/spec-42-search.md` maps to `docs/tasks/spec-42-search.md`, and `docs/specs/brainstorm-03-notify/spec-03-01-queue/spec-03-01-queue.md` maps to `docs/tasks/spec-03-01-queue.md`.
 
 Create `docs/tasks/` in the project if necessary. Follow `assets/tracking/local/todo-file.md` and start from `assets/task-tracker.template.md`. Create one Epic table for every matching Epic section in `roadmap.md`; each roadmap row is a Story and each planned work item is that Story's Subtask. Replace every placeholder and create one table row and one linked Markdown section for every Story, planned task, verify task, close task, and final close task. Keep the table and section status, title, dependencies, and task text synchronized. The plan remains the source of design decisions.
 

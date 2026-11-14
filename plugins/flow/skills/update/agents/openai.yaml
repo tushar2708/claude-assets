@@ -1,0 +1,5 @@
+interface:
+  display_name: "Update Flow"
+  short_description: "Bring an existing Flow and docsmith install up to date"
+policy:
+  allow_implicit_invocation: false

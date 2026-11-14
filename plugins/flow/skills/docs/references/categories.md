@@ -10,6 +10,7 @@
 | [decision](#decision) | Record one decision immutably (ADR-NNN) |
 | [plan](#plan) | Drive work that is happening now; ephemeral |
 | [research](#research) | Saved research findings with sources, recommendations and decisions, or a record that research was declined; ephemeral |
+| [brainstorm](#brainstorm) | The layout of an effort split into sprints: high-level design, sprint dependencies, open questions and revisions; ephemeral |
 | [external](#external) | Public-facing, non-code content |
 
 Category names, `type_aliases`, `dir_patterns`, numbering, and TTLs all come from the
@@ -99,19 +100,22 @@ Defaults below are the engine defaults.
   with ❌/⚠️/✅ statuses, and mandatory review stages.
 - **Vs neighbors**: a plan is disposable by design; anything in it worth keeping forever
   should graduate into an evergreen doc or a decision record before the plan is archived.
-- **Frontmatter**: `type: plan` (default alias `Plan`); `status: draft` while live,
+- **Frontmatter**: `type: plan` (default alias `Plan`); `status: draft` while open items may
+  remain, `ready` when every open item is decided and nothing is built yet,
   `partially-implemented` when some but not all of its scope is built, then a terminal
   status (`implemented` fully built, `stable` executed-and-kept, `superseded`/`deprecated`
   replaced or abandoned). No `stale_after`.
 - **Lifecycle**: **ephemeral TTL + archive** — after the category's `ttl_days` (default 45)
   past terminal status, the file belongs in the category's `archive_dir` (default
   `docs/specs/archive/`). The validator's plan-ttl check warns on any live
-  (`draft`/`stable`/`partially-implemented`) plan whose last commit is older than the TTL:
+  (`draft`/`ready`/`stable`/`partially-implemented`) plan whose last commit is older than the TTL:
   finish it, move it to the archive, or mark it superseded.
 - **Naming — numbered prefix (apply without being asked)**: a spec (plan category) is saved as
   `docs/specs/spec-{NN}-{slug}/spec-{NN}-{slug}.md`. NN is the next-of-largest prefix among the
-  `spec-<NN>-*` folders in `docs/specs/`. Other numbered directories use a `{NN}-{slug}.md`
-  name. If the doc is to be created in plans/ todos/ or any similar directory that has
+  `spec-<NN>-*` folders in `docs/specs/`. A spec inside a brainstorm is saved as
+  `docs/specs/brainstorm-{NN}-{slug}/spec-{NN}-{MM}-{slug}/spec-{NN}-{MM}-{slug}.md`, where NN
+  is the brainstorm's number and MM is the next one-indexed, 2-digit number among that
+  brainstorm's spec folders. Other numbered directories use a `{NN}-{slug}.md` name. If the doc is to be created in plans/ todos/ or any similar directory that has
   numbered-prefixed files, always add your file with a prefix of next-of-largest existing
   prefix (eg. 01-<>.md, 07-<>.md, 11-<>.md, etc). Do it without asking, or being asked
   (unless explicitly asked not to do this).
@@ -133,6 +137,23 @@ Defaults below are the engine defaults.
   the only way a doc resolves to it.
 - **Lifecycle**: ephemeral snapshot — no `ttl_days`, no `archive_dir`.
 - **Naming**: `research-output.md` inside the spec folder `docs/specs/spec-{NN}-{slug}/`.
+
+## brainstorm
+
+- **Purpose**: the layout of an effort split into sprints. It holds the high-level design, the
+  dependencies between sprints, the open questions (the fog of war) and the revisions.
+- **Vs neighbors**: a plan drives the work of one sprint; a brainstorm holds the layout of
+  all the sprints and the questions not yet answered. Research is the external input to
+  either.
+- **Frontmatter**: `type: brainstorm` (default alias `Brainstorm`); `status: draft` while any
+  sprint is not finalized, `stable` when every sprint is finalized. No `stale_after`. The
+  category has no `dir_patterns` by default, so the frontmatter type is the only way a doc
+  resolves to it.
+- **Lifecycle**: ephemeral snapshot — no `ttl_days`, no `archive_dir`.
+- **Naming**: `docs/specs/brainstorm-{NN}-{slug}/brainstorm-{NN}-{slug}.md`. NN is the
+  next-of-largest numeric prefix among the `spec-<NN>-*` AND `brainstorm-<NN>-*` folders in
+  `docs/specs/` (one shared sequence). The research file and the sprint specs live inside
+  that folder.
 
 ## external
 

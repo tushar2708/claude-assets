@@ -80,8 +80,9 @@ _DECISION_SECTIONS = ["Status", "Context", "Options Considered", "Decision", "Co
 _SECONDS_PER_DAY = 86400
 
 # Frontmatter statuses whose docs are not drift-checked (a draft is work in
-# progress); overridable via validate.drift_skip_statuses.
-_DEFAULT_DRIFT_SKIP_STATUSES = ("draft",)
+# progress; a ready spec is fully decided but not built yet); overridable via
+# validate.drift_skip_statuses.
+_DEFAULT_DRIFT_SKIP_STATUSES = ("draft", "ready")
 
 
 # --- shared helpers ----------------------------------------------------------
@@ -402,8 +403,9 @@ def _check_drift(
     validate.path_drift_severity / validate.symbol_drift_severity. missing_path
     only ever applies to evergreen category docs; extra-gate files are always
     warning-level. Docs whose frontmatter status is listed in
-    validate.drift_skip_statuses (default ["draft"]) are not drift-checked; a
-    draft is work in progress and may cite files that do not exist yet."""
+    validate.drift_skip_statuses (default ["draft", "ready"]) are not
+    drift-checked; a draft is work in progress and a ready spec is not built
+    yet, so both may cite files that do not exist yet."""
     categories: dict[str, dict] = config.get("categories", {})
     skip_statuses = tuple(
         config.get("validate", {}).get(
@@ -522,8 +524,8 @@ def _check_plan_ttl(
     config: dict,
     cat_docs: "list[tuple[str, Optional[str]]]",
 ) -> None:
-    """V6: live ephemeral docs (status draft, stable or partially-implemented,
-    not archived) whose last commit is older than the category ttl_days get an
+    """V6: live ephemeral docs (status draft, ready, stable or
+    partially-implemented, not archived) whose last commit is older than the category ttl_days get an
     expiry warning. implemented, deprecated and superseded are terminal."""
     categories: dict[str, dict] = config.get("categories", {})
     now = time.time()
@@ -545,7 +547,7 @@ def _check_plan_ttl(
             continue
         fm, _ = frontmatter_spec.parse_frontmatter(text)
         status = fm.get("status") if fm else None
-        if status not in ("draft", "stable", "partially-implemented"):
+        if status not in ("draft", "ready", "stable", "partially-implemented"):
             continue
 
         commit_ts = gitinfo.last_commit_ts(root, rel_path)

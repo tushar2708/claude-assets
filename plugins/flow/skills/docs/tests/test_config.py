@@ -7,6 +7,7 @@ import pytest
 
 from docsmith_lib.config import (
     DEFAULT_CATEGORIES,
+    DEFAULT_CONFIG,
     PROFILES,
     ConfigNotFoundError,
     find_project_root,
@@ -183,8 +184,76 @@ def test_default_categories_plan_and_research(category, expected):
     assert DEFAULT_CATEGORIES[category] == expected
 
 
-def test_default_categories_order_puts_research_between_plan_and_external():
+def test_default_categories_order_puts_research_and_brainstorm_before_external():
     names = list(DEFAULT_CATEGORIES)
     assert names.index("plan") + 1 == names.index("research")
-    assert names.index("research") + 1 == names.index("external")
-    assert len(names) == 10
+    assert names.index("research") + 1 == names.index("brainstorm")
+    assert names.index("brainstorm") + 1 == names.index("external")
+    assert len(names) == 11
+
+
+@pytest.mark.parametrize(
+    "rel_path, fm_type, expected",
+    [
+        pytest.param(
+            "docs/anything.md", "brainstorm", "brainstorm", id="type-brainstorm"
+        ),
+        pytest.param(
+            "docs/anything.md", "Brainstorm", "brainstorm", id="alias-Brainstorm"
+        ),
+        pytest.param(
+            "docs/specs/brainstorm-01-x/brainstorm-01-x.md", "brainstorm", "brainstorm",
+            id="brainstorm-in-its-folder-resolves-by-type",
+        ),
+        pytest.param(
+            "docs/specs/brainstorm-01-x/spec-01-01-y/spec-01-01-y.md", None, "plan",
+            id="spec-inside-a-brainstorm-resolves-by-path",
+        ),
+        pytest.param(
+            "docs/specs/brainstorm-01-x/research-output.md", "research", "research",
+            id="research-inside-a-brainstorm-resolves-by-type",
+        ),
+        pytest.param(
+            "docs/specs/brainstorm-01-x/brainstorm-01-x.md", None, "plan",
+            id="untyped-brainstorm-falls-back-to-plan-by-path",
+        ),
+        pytest.param(
+            "docs/pipeline/brainstorm-01-x.md", None, None,
+            id="brainstorm-has-no-dir-pattern",
+        ),
+    ],
+)
+def test_resolve_category_brainstorm_on_defaults(
+    tmp_path, rel_path, fm_type, expected
+):
+    _write_config(tmp_path, {"docsmith_version": 1})
+    _, config = load_config(project_root=tmp_path)
+    assert resolve_category(rel_path, fm_type, config) == expected
+
+
+def test_default_category_brainstorm():
+    assert DEFAULT_CATEGORIES["brainstorm"] == {
+        "enabled": True,
+        "lifecycle": "ephemeral",
+        "dir_patterns": [],
+        "type_aliases": ["Brainstorm"],
+        "template": "brainstorm.md",
+        "site": {"include": True},
+    }
+
+
+def test_default_allowed_statuses_put_ready_right_after_draft():
+    assert DEFAULT_CONFIG["frontmatter"]["allowed_statuses"] == [
+        "draft",
+        "ready",
+        "stable",
+        "partially-implemented",
+        "implemented",
+        "deprecated",
+        "superseded",
+    ]
+
+
+@pytest.mark.parametrize("profile", sorted(PROFILES))
+def test_every_profile_skips_draft_and_ready_in_the_drift_check(profile):
+    assert PROFILES[profile]["validate"]["drift_skip_statuses"] == ["draft", "ready"]

@@ -151,6 +151,18 @@
         "include": true
       }
     },
+    "brainstorm": {
+      "enabled": true,
+      "lifecycle": "ephemeral",
+      "dir_patterns": [],
+      "type_aliases": [
+        "Brainstorm"
+      ],
+      "template": "brainstorm.md",
+      "site": {
+        "include": true
+      }
+    },
     "external": {
       "enabled": true,
       "lifecycle": "evergreen",
@@ -166,6 +178,7 @@
   "frontmatter": {
     "allowed_statuses": [
       "draft",
+      "ready",
       "stable",
       "partially-implemented",
       "implemented",

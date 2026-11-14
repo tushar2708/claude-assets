@@ -45,7 +45,7 @@ PROFILES: dict[str, dict[str, dict[str, Any]]] = {
             "decisions": True,
             "require_index_table": True,
             "symbol_drift_severity": "warning",
-            "drift_skip_statuses": ["draft"],
+            "drift_skip_statuses": ["draft", "ready"],
         },
         "freshness": {
             "threshold": 70,
@@ -62,7 +62,7 @@ PROFILES: dict[str, dict[str, dict[str, Any]]] = {
             "decisions": True,
             "require_index_table": False,
             "symbol_drift_severity": "warning",
-            "drift_skip_statuses": ["draft"],
+            "drift_skip_statuses": ["draft", "ready"],
         },
         "freshness": {
             "threshold": 70,
@@ -79,7 +79,7 @@ PROFILES: dict[str, dict[str, dict[str, Any]]] = {
             "decisions": False,
             "require_index_table": False,
             "symbol_drift_severity": "warning",
-            "drift_skip_statuses": ["draft"],
+            "drift_skip_statuses": ["draft", "ready"],
         },
         "freshness": {
             "threshold": 70,
@@ -88,7 +88,7 @@ PROFILES: dict[str, dict[str, dict[str, Any]]] = {
 }
 
 
-# The 10 built-in documentation categories. Dict order matters: dir_pattern
+# The 11 built-in documentation categories. Dict order matters: dir_pattern
 # resolution (resolve_category step 3) walks categories in this order.
 DEFAULT_CATEGORIES: dict[str, dict[str, Any]] = {
     "tutorial": {
@@ -172,6 +172,14 @@ DEFAULT_CATEGORIES: dict[str, dict[str, Any]] = {
         "template": "research.md",
         "site": {"include": True},
     },
+    "brainstorm": {
+        "enabled": True,
+        "lifecycle": "ephemeral",
+        "dir_patterns": [],
+        "type_aliases": ["Brainstorm"],
+        "template": "brainstorm.md",
+        "site": {"include": True},
+    },
     "external": {
         "enabled": True,
         "lifecycle": "evergreen",
@@ -200,6 +208,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "frontmatter": {
         "allowed_statuses": [
             "draft",
+            "ready",
             "stable",
             "partially-implemented",
             "implemented",

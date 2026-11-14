@@ -16,6 +16,7 @@ Read `references/wave-model.md` first. It defines every term and schema.
 
 1. Create a plan artifact and write at its top: "Re-read `references/wave-model.md` before steps 8 and 11, and `references/plan-validation.md` before step 11."
 2. Read the sources: session context, a spec file, or both.
+2a. **Check the open items.** For each spec file among the sources, read its `status` and its `Open Questions` section. If the status is not `ready` and any row is `Open`, remind the user in the chat: name the spec and list each open item. Then ask through the host's question tool: "Resolve them first (Recommended)" and "Continue anyway". On the first, stop, and tell the user to run `/flow:grill` on the spec's layout or feature. On the second, go on, and list the open items at the top of the plan artifact. This is a reminder, not a gate. Never refuse to continue.
 3. Set the sub-features. With a spec, keep its order. Split a sub-feature into `SF-<n>a`/`SF-<n>b` when it does not fit one wave. Never merge. Never reorder. Without a spec, derive the sub-features from the session context.
 4. Invoke each skill the user named.
 5. Scan each invoked skill for other skills it requires. Invoke those too. Repeat until no new skill appears. Skip none.

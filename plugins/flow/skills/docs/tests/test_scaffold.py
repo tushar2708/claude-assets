@@ -133,6 +133,7 @@ def test_fresh_scaffold_creates_everything(tmp_path):
         pytest.param("docs/specs/archive", True, id="specs-archive-dir-created"),
         pytest.param("docs/plans", False, id="old-plans-dir-not-created"),
         pytest.param("docs/research", False, id="research-has-no-dir"),
+        pytest.param("docs/brainstorm", False, id="brainstorm-has-no-dir"),
     ],
 )
 def test_fresh_scaffold_spec_and_research_dirs(tmp_path, rel, expect_gitkeep):
@@ -147,7 +148,7 @@ def test_fresh_scaffold_spec_and_research_dirs(tmp_path, rel, expect_gitkeep):
 
 def test_fresh_scaffold_docs_dirs_are_exactly_the_category_dirs(tmp_path):
     """Pins the full set of created directories: the plan category lives under
-    docs/specs, and the type-only categories (external, research) create none."""
+    docs/specs, and the type-only categories (external, research, brainstorm) create none."""
     root = _make_repo(tmp_path)
     proc = _scaffold(root)
     assert proc.returncode == 0, proc.stderr

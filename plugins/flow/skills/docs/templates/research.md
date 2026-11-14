@@ -11,7 +11,9 @@ tags:
 ---
 
 <!-- This doc is ephemeral and has no ttl_days: it is the saved output of the /grill web-research
-     phase, stored beside the spec it informed as docs/specs/spec-{NN}-{slug}/research-output.md.
+     phase (now the /flow:research skill), stored beside the spec it informed as
+     docs/specs/spec-{NN}-{slug}/research-output.md, or beside the layout of a brainstorm as
+     docs/specs/brainstorm-{NN}-{slug}/research-output.md.
      It resolves ONLY via `type: research` (it has no directory pattern). Live status: draft.
      Terminal statuses: stable (kept as the record behind the spec), superseded/deprecated.
      Write external names and URLs in *italics* or plain link syntax, never as backticked tokens
@@ -36,13 +38,15 @@ tags:
 | [Product](#product) | Product findings, sources, recommendations and decisions |
 | [UX](#ux) | UX findings, sources, recommendations and decisions |
 | [Technical / Architecture](#technical--architecture) | Technical findings, sources, recommendations and decisions |
+| [Codebase and sources](#codebase-and-sources) | Findings from this codebase, or from documents and repositories the developer named |
 | [References](#references) | Every source consulted and the findings it backs |
 
 ## Scope
 
-<!-- One short paragraph: the feature or use-case, then which of Business, Product, UX and
-     Technical / architecture were researched. Delete the sections of any domain that was not
-     researched, and delete its row in the index table. Keep the second paragraph below as is. -->
+<!-- One short paragraph: the feature or use-case, then which of Business, Product, UX,
+     Technical / architecture, and Codebase and sources were researched. Delete the sections of any
+     domain that was not researched, and delete its row in the index table. Keep the second
+     paragraph below as is. -->
 
 The Decision column starts empty. The interview fills it as each decision is final: `Adopted`, `Dropped`, or `Adopted — <comment>`.
 
@@ -80,6 +84,18 @@ The Decision column starts empty. The interview fills it as each decision is fin
 | ID | Type | Finding | Source | Recommendation | Decision |
 |----|------|---------|--------|----------------|----------|
 | TEC-1 | <Best practice or Pitfall> | <Finding> | [<source-domain>](<URL>) | <Recommendation> | |
+
+## Codebase and sources
+
+<!-- Findings from this codebase, or from documents and repositories the developer named, such as a
+     library that is being evaluated. Same columns. IDs run SRC-1, SRC-2, ...
+     Type is "Existing pattern", "Constraint", "Reuse candidate", or "Pitfall".
+     Source is a link or a repository path in plain text, with the line when it helps.
+     A repository path is written without backticks when it contains a slash. -->
+
+| ID | Type | Finding | Source | Recommendation | Decision |
+|----|------|---------|--------|----------------|----------|
+| SRC-1 | <Existing pattern, Constraint, Reuse candidate, or Pitfall> | <Finding> | <Link or path> | <Recommendation> | |
 
 ## References
 

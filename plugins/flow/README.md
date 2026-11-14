@@ -43,6 +43,8 @@ claude plugin install flow@claude-assets --scope user
 
 `/flow:spec` stops and asks you to run `/flow:init` when docsmith is not set up.
 
+After you update the plugin, run `/flow:update` in a project that is already set up. It compares the project's docsmith engine, `config.json`, `Makefile`, pre-commit hooks, and hook with what the plugin ships, and shows what is outdated. It then makes targeted edits after you confirm: it adds what is missing and changes one value or one block at a time. It never overwrites your `Makefile` or your other project files. `docsmith validate` also suggests it when it fails, in case a valid document is being flagged by an older install.
+
 ## The workflow
 
 ```mermaid
@@ -51,10 +53,10 @@ flowchart TD
 
     subgraph G["/flow:grill — research-backed interview"]
         direction TB
-        grill["Map the feature's concepts<br/>in four domains"]
-        domains["Architecture · Product · UI/UX · Business"]
-        research["Optional web research per chosen domain:<br/>best practices and pitfalls<br/>saved to research-output.md"]
-        rounds["Interview in rounds<br/>(up to 4 questions per round)"]
+        grill["/flow:research maps the feature's concepts<br/>in four domains"]
+        domains["Research domains: Architecture · Product · UI/UX · Business<br/>· Codebase and sources"]
+        research["Optional research per chosen domain:<br/>best practices and pitfalls<br/>saved to research-output.md"]
+        rounds["Interview in rounds<br/>(up to 4 questions per round)<br/>builds the glossary, offers ADRs"]
         open{"Open decisions<br/>left?"}
         converge["Shared understanding:<br/>decisions, adopted practices,<br/>avoided pitfalls, open risks"]
         grill --> domains --> research --> rounds --> open
@@ -88,6 +90,10 @@ flowchart TD
     %% Note bubble for the close task. Declared after the main path so it sits to the right.
     close -.- closenote["Runs only if the sub-feature has a Subtask,<br/>created by /flow:add-to-roadmap.<br/>The tracker is the one declared in roadmap.md<br/>(Jira, GitHub, Asana, or other).<br/>Posts a comment with what the wave built,<br/>then sets the Subtask to Done.<br/>If you skipped the verify gate, it asks first."]:::note
 
+    %% Big ideas. Declared late so the main path keeps its column.
+    idea -. too big for one spec .-> brainstorm["/flow:brainstorm<br/>Research, then 3-4 sprints saved as one layout file<br/>with the open questions of every sprint"]
+    brainstorm -. one sprint, or a few, per session .-> grill
+
     %% Optional branch. Declared last so it sits beside the main path.
     spec -. optional .-> roadmap["/flow:add-to-roadmap<br/>Story + one Subtask per sub-feature<br/>in your tracker"]
     roadmap -.-> tracker[("Tracker<br/>Jira · GitHub · Asana · other")]
@@ -104,8 +110,9 @@ Dashed arrows are optional. They need a declared tracker and a reachable MCP ser
 
 | Step | Command                | What it does                                                                                                                                                                                                                                                                                                                                      |
 | ---- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1    | `/flow:grill`          | Maps the feature's concepts across architecture, product, UI/UX, and business. Asks whether to research the web, and which domains. It saves each finding with its source, a recommendation and an empty decision column to `research-output.md` in the spec's folder, or records that you declined research. Then interviews you in rounds until no decision is open. Ends with a summary that you confirm.                                                                                                                |
-| 2    | `/flow:spec`           | Writes the discussion into a spec, with no new interview. The spec lists ordered sub-features (`SF-<n>`), each with behavior, user stories, dependencies, and done-when criteria. It is saved as `docs/specs/spec-NN-<use-case>/spec-NN-<use-case>.md` and validated by docsmith.                                                                                               |
+| 0    | `/flow:brainstorm`     | Optional, for an idea that is too big for one spec. Researches it, interviews you at a high level, and splits the work into 3 or 4 sprints. It saves one layout file: the high-level design, what each sprint passes to the next, and every open question. It writes no spec. |
+| 1    | `/flow:grill`          | Researches the feature through `/flow:research`: it maps the concepts across architecture, product, UI/UX, and business, asks which domains to research (including your codebase and sources you name), and saves each finding with its source, a recommendation and an empty decision column to `research-output.md`, or records that you declined research. Then interviews you in rounds until no decision is open, building the glossary and offering ADRs as decisions settle. Ends with a summary that you confirm. Run on a brainstorm layout, it closes the open questions of the sprints you choose. If the scope grows mid-session, it can promote the session to a brainstorm: the research and your decisions so far are kept, and a layout is written instead of a spec.                                                                                                                |
+| 2    | `/flow:spec`           | Writes the discussion into a spec, with no new interview. The spec lists ordered sub-features (`SF-<n>`), each with behavior, user stories, dependencies, and done-when criteria. It is saved as `docs/specs/spec-NN-<use-case>/spec-NN-<use-case>.md`, or inside the brainstorm folder as `spec-NN-MM-<use-case>` when it covers sprints of a layout, and validated by docsmith. It reminds you of open items. A spec stays `draft` until every open item is decided, then you can mark it `ready`.                                                                                               |
 | 2a   | `/flow:add-to-roadmap` | Optional. Creates one Story under an epic and one Subtask per sub-feature in your tracker, and records them in `roadmap.md`. `/flow:spec` offers to run it for you. Run without a spec, it creates one item.                                                                                                                                      |
 | 3    | `/flow:plan-it`        | In Plan Mode, turns the spec (or the session) into a wave plan: one wave per sub-feature, each with contract, test, and implementation stages, a verify gate, and a close task when the sub-feature has a tracker Subtask. It also invokes any planning skills you name, and the skills they require, and records how each of their rules is met. |
 | 4    | `/flow:make-tasks`     | Runs automatically after you approve the plan, or when you call it. Validates the plan, then creates the tasks in wave → stage → task order and wires their dependencies. It makes no design decision.                                                                                                                                            |
@@ -137,6 +144,7 @@ syncs status, and it never creates a duplicate.
 | Skill                   | Use it to                                                                                                                                   |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | `/flow:grilling`        | Stress-test a plan, decision, or idea in a quick interview, with no research phase. The model can also start it when you ask to be grilled. |
+| `/flow:research`        | Research a feature or idea on the web, in your codebase, or in documents and repositories you name, and save the findings with sources.     |
 | `/flow:prototype`       | Build a throwaway prototype to answer a design question about logic, state, or UI.                                                          |
 | `/flow:diagnosing-bugs` | Run a diagnosis loop for a hard bug or a performance regression.                                                                            |
 | `/flow:handoff`         | Compact the conversation into a handoff document for the next session.                                                                      |

@@ -11,6 +11,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional, Union
 
+# Printed after the summary line of a failed `validate`. The rules a project
+# validates against come from its vendored engine and its config.json, and an
+# install that predates a release can flag input that the newer rules accept.
+UPDATE_HINT = (
+    "If a valid document is being flagged, your docsmith install may be "
+    "outdated. Run /flow:update to refresh it."
+)
+
 
 class Report:
     """Accumulates findings for one docsmith command invocation."""
@@ -67,7 +75,8 @@ class Report:
 
     def to_human(self) -> str:
         """Human-readable rendering: findings grouped per check, followed by
-        a trailing 'FAILURES: n / WARNINGS: n' summary line."""
+        a 'FAILURES: n / WARNINGS: n' summary line. A `validate` run that has
+        failures adds UPDATE_HINT after the summary line."""
         lines: list[str] = []
         for check in dict.fromkeys(result["check"] for result in self._results):
             lines.append(f"{check}:")
@@ -80,6 +89,8 @@ class Report:
                     location = f"{location}:{result['line']}"
                 lines.append(f"  {tag} {location}: {result['message']}")
         lines.append(f"FAILURES: {self.errors} / WARNINGS: {self.warnings}")
+        if self.command == "validate" and self.errors:
+            lines.append(UPDATE_HINT)
         return "\n".join(lines)
 
     def exit_code(self, strict: bool = False) -> int:

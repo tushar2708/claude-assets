@@ -26,7 +26,7 @@ exact style reference — key order, quoting):
 ---
 type: <category key or alias>
 title: "<derived from the H1>"
-status: draft|stable|deprecated|superseded
+status: draft|ready|stable|deprecated|superseded
 tags:
   - <2-4 kebab-case tags>
 stale_after: <YYYY-MM-DD>   # evergreen categories only: today + categories.<cat>.stale_after_days
@@ -118,7 +118,7 @@ Fix, in order of preference:
    de-backticking when the token is genuinely meant to read as code (an env var + suffix).
 3. Never use `path_drift_severity`/`symbol_drift_severity` config overrides to silence these —
    that hides real drift for every doc, not just the false positive.
-   (`validate.drift_skip_statuses`, default `["draft"]`: docs with these statuses are not
+   (`validate.drift_skip_statuses`, default `["draft", "ready"]`: docs with these statuses are not
    checked for cited paths and symbols.)
 
 ## Coverage: dead glob

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Brainstorm a Multi-Sprint Effort"
+  short_description: "Split a big idea into sprints and save a layout file"
+policy:
+  allow_implicit_invocation: false

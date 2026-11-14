@@ -27,7 +27,7 @@ Run `git rev-parse --show-toplevel`; if it fails, use the current working direct
 The engine creates its own scaffold outputs; never hand-write them.
 
 1. Detect an existing documentation tree (`ROOT/docs/` or Markdown files with YAML frontmatter). Use `--adopt` for an initial scaffold when either exists.
-2. If `ROOT/.docsmith/config.json` exists, refresh the vendored engine with `--sync-engine` without replacing configuration or docmap. Otherwise scaffold the full profile, doc-site, pre-commit wiring, and category directories.
+2. If `ROOT/.docsmith/config.json` exists, refresh the vendored engine with `--sync-engine` without replacing configuration or docmap. That refresh leaves `config.json` and the project files as they are, so tell the developer that `/flow:update` brings those up to date too. Otherwise scaffold the full profile, doc-site, pre-commit wiring, and category directories.
 3. Ask one confirmation for the complete setup. Ask a follow-up only when the user requests customization; all components default to included.
 4. Write `/tmp/docsmith-scaffold-answers.json` with `profile: "full"`, `site_enabled: true`, `wire_precommit: true`, and `install_hook: true` only for Claude Code. Codex and fallback hosts use `install_hook: false`.
 5. Locate `../docs/scripts/docsmith.py` relative to this skill, then run its `scaffold` command with `--project-root "$ROOT" --non-interactive --answers /tmp/docsmith-scaffold-answers.json`, plus initial-scaffold `--adopt` or existing-project `--sync-engine` as applicable. Add `--force` only after explicit user approval.

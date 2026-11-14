@@ -139,15 +139,26 @@ def test_doc_flag_restricts_scored_set(git_project, run_cli):
         pytest.param(
             "docs/specs/spec-01-old-plan/research-output.md", id="research-is-ephemeral"
         ),
+        pytest.param(
+            "docs/specs/brainstorm-02-big-effort/brainstorm-02-big-effort.md",
+            id="brainstorm-is-ephemeral",
+        ),
     ],
 )
 def test_doc_flag_outside_scored_set_exits_2(git_project, run_cli, doc_rel):
-    # Plan and research docs are ephemeral, so they are never in the scored set.
-    research = git_project.root / "docs/specs/spec-01-old-plan/research-output.md"
-    research.write_text(
-        "---\ntype: research\ntitle: Research\nstatus: draft\n---\n\n# Research\n",
-        encoding="utf-8",
-    )
+    # Plan, research and brainstorm docs are ephemeral, so they are never in
+    # the scored set.
+    extra_docs = {
+        "docs/specs/spec-01-old-plan/research-output.md": "research",
+        "docs/specs/brainstorm-02-big-effort/brainstorm-02-big-effort.md": "brainstorm",
+    }
+    for extra_rel, fm_type in extra_docs.items():
+        extra = git_project.root / extra_rel
+        extra.parent.mkdir(parents=True, exist_ok=True)
+        extra.write_text(
+            f"---\ntype: {fm_type}\ntitle: Extra\nstatus: draft\n---\n\n# Extra\n",
+            encoding="utf-8",
+        )
     exit_code, _ = run_cli(
         git_project.root, "score", "--doc", doc_rel, expect_json=False
     )

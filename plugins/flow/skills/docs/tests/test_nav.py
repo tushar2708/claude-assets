@@ -5,6 +5,8 @@ builder."""
 import json
 from pathlib import Path
 
+import pytest
+
 from docsmith_lib import config as config_lib
 from docsmith_lib.site import engine
 
@@ -199,6 +201,45 @@ def test_research_doc_beside_spec_is_a_subsystem_doc_not_a_plan(fixture_project)
     assert research_path not in _leaf_paths(plans["nav_items"])
     specs = next(s for s in sections if s["title"] == "Specs")
     assert research_path in _leaf_paths(specs["nav_items"])
+
+
+@pytest.mark.parametrize("status", ["draft", "stable"])
+def test_brainstorm_doc_is_a_subsystem_doc_not_a_plan(fixture_project, status):
+    _enable_site(fixture_project)
+    _add_doc(
+        fixture_project,
+        "docs/specs/brainstorm-02-big-effort/brainstorm-02-big-effort.md",
+        "brainstorm",
+        "Big Effort",
+        status,
+    )
+    _ctx, entries, sections = _render(fixture_project)
+
+    brainstorm_path = "product/specs/brainstorm-02-big-effort/brainstorm-02-big-effort.md"
+    brainstorm = next(e for e in entries if e["output_path"] == brainstorm_path)
+    assert brainstorm["category"] == "brainstorm"
+
+    # A brainstorm is never dropped and never listed as a plan; it lands in the
+    # subsystem section of its folder.
+    plans = next(s for s in sections if s["title"] == "Plans")
+    assert brainstorm_path not in _leaf_paths(plans["nav_items"])
+    specs = next(s for s in sections if s["title"] == "Specs")
+    assert brainstorm_path in _leaf_paths(specs["nav_items"])
+
+
+@pytest.mark.parametrize("status", ["draft", "ready", "partially-implemented"])
+def test_spec_inside_a_brainstorm_is_listed_as_a_plan(fixture_project, status):
+    _enable_site(fixture_project)
+    spec_path = "docs/specs/brainstorm-02-big-effort/spec-02-01-first/spec-02-01-first.md"
+    _add_doc(fixture_project, spec_path, "plan", "First Sprint", status)
+    _ctx, entries, sections = _render(fixture_project)
+
+    output_path = "product/" + spec_path.removeprefix("docs/")
+    spec = next(e for e in entries if e["output_path"] == output_path)
+    assert spec["category"] == "plan"
+
+    plans = next(s for s in sections if s["title"] == "Plans")
+    assert output_path in _leaf_paths(plans["nav_items"])
 
 
 def test_section_order_pinning(fixture_project):

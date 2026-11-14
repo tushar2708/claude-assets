@@ -6,11 +6,18 @@ need git history (V6 plan-ttl) use git_project.
 
 import json
 import shutil
+import subprocess
+import sys
+from pathlib import Path
 
 import pytest
 
 from docsmith_lib import config as config_lib
 from docsmith_lib import validate as validate_lib
+from docsmith_lib.report import UPDATE_HINT, Report
+
+SKILL_DIR = Path(__file__).resolve().parent.parent
+CLI = SKILL_DIR / "scripts" / "docsmith.py"
 
 BROKEN = "docs/pipeline/broken.md"
 ADR = "docs/decisions/ADR-001-use-go.md"
@@ -175,11 +182,20 @@ def test_v3_drift_message_hints_italics_only_for_missing_path(
     "frontmatter_lines, skip_override, expect_drift",
     [
         pytest.param(["status: draft"], None, False, id="draft-is-skipped-by-default"),
+        pytest.param(["status: ready"], None, False, id="ready-is-skipped-by-default"),
         pytest.param(["status: stable"], None, True, id="stable-is-checked"),
+        pytest.param(["status: implemented"], None, True, id="implemented-is-checked"),
         pytest.param(["status: deprecated"], None, True, id="deprecated-is-checked"),
         pytest.param(["title: No Status"], None, True, id="no-status-key-is-checked"),
         pytest.param(
             ["status: draft"], [], True, id="empty-skip-list-checks-draft"
+        ),
+        pytest.param(
+            ["status: ready"], [], True, id="empty-skip-list-checks-ready"
+        ),
+        pytest.param(
+            ["status: ready"], ["draft"], True,
+            id="skip-list-without-ready-checks-ready",
         ),
         pytest.param(
             ["status: deprecated"], ["deprecated"], False,
@@ -208,6 +224,61 @@ def test_v3_drift_skips_docs_by_frontmatter_status(
     assert {r["severity"] for r in drift} == {"warning"}
     assert "src/gone.go" in messages
     assert "VanishedSymbol" in messages
+
+
+@pytest.mark.parametrize("profile", ["full", "standard", "minimal"])
+@pytest.mark.parametrize(
+    "status, expect_drift",
+    [
+        pytest.param("draft", False, id="draft-is-skipped"),
+        pytest.param("ready", False, id="ready-is-skipped"),
+        pytest.param("stable", True, id="stable-is-checked"),
+        pytest.param("implemented", True, id="implemented-is-checked"),
+        pytest.param("partially-implemented", True, id="partially-implemented-is-checked"),
+    ],
+)
+def test_v3_drift_skip_statuses_come_from_each_profile(
+    fixture_project, run_cli, profile, status, expect_drift
+):
+    # The fixture config sets no validate.drift_skip_statuses, so the profile's
+    # value applies. The minimal profile disables the drift check, so it is
+    # switched back on through the overrides to reach its skip list.
+    cfg_path = fixture_project / ".docsmith" / "config.json"
+    cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+    cfg["profile"] = profile
+    cfg["overrides"]["validate.drift"] = True
+    cfg_path.write_text(json.dumps(cfg), encoding="utf-8")
+    (fixture_project / "README.md").write_text(
+        f"---\nstatus: {status}\n---\n\nSee `src/gone.go`.\n", encoding="utf-8"
+    )
+
+    _, payload = run_cli(fixture_project, "validate", "--only", "drift")
+
+    drift = _results(payload, check="drift", path="README.md")
+    assert bool(drift) is expect_drift
+
+
+@pytest.mark.parametrize(
+    "status, expect_drift",
+    [
+        pytest.param("draft", False, id="draft-is-skipped"),
+        pytest.param("ready", False, id="ready-is-skipped"),
+        pytest.param("stable", True, id="stable-is-checked"),
+        pytest.param("implemented", True, id="implemented-is-checked"),
+    ],
+)
+def test_check_drift_falls_back_to_draft_and_ready_without_config(
+    tmp_path, status, expect_drift
+):
+    # No validate.drift_skip_statuses key: the engine default applies.
+    (tmp_path / "doc.md").write_text(
+        f"---\nstatus: {status}\n---\n\nSee `src/gone.go`.\n", encoding="utf-8"
+    )
+    report = Report("validate", tmp_path)
+
+    validate_lib._check_drift(report, tmp_path, {"categories": {}}, [], ["doc.md"])
+
+    assert bool(report.results) is expect_drift
 
 
 # --- extra-gate files: de-duplication by real path ----------------------------
@@ -520,6 +591,10 @@ _RESEARCH_FRONTMATTER = (
     "---\ntype: research\ntitle: Old Plan Research\nstatus: draft\ntags:\n  - research\n---\n\n"
     "# Old Plan Research\n"
 )
+_BRAINSTORM_FRONTMATTER = (
+    "---\ntype: brainstorm\ntitle: Big Effort\nstatus: {status}\n---\n\n"
+    "# Big Effort\n"
+)
 
 
 def test_plan_ttl_expired_warning(git_project, run_cli):
@@ -565,6 +640,103 @@ def test_plan_ttl_never_applies_to_old_research_docs(
     _, payload = run_cli(root, "validate", "--only", "plan-ttl")
 
     assert [r["path"] for r in _results(payload, check="plan-ttl")] == [_SPEC]
+
+
+@pytest.mark.parametrize(
+    "status, expect_warning",
+    [
+        pytest.param("draft", True, id="draft-expires"),
+        pytest.param("ready", True, id="ready-expires"),
+        pytest.param("stable", True, id="stable-expires"),
+        pytest.param("partially-implemented", True, id="partially-implemented-expires"),
+        pytest.param("implemented", False, id="implemented-is-terminal"),
+        pytest.param("superseded", False, id="superseded-is-terminal"),
+        pytest.param("deprecated", False, id="deprecated-is-terminal"),
+    ],
+)
+def test_plan_ttl_warns_by_status(git_project, run_cli, status, expect_warning):
+    root = git_project.root
+    (root / _SPEC).write_text(
+        f"---\ntype: plan\ntitle: Old Plan\nstatus: {status}\n---\n\n# Old Plan\n",
+        encoding="utf-8",
+    )
+    git_project.commit_at("2026-01-01T00:00:00", f"set the plan to {status}")
+
+    _, payload = run_cli(root, "validate", "--only", "plan-ttl")
+
+    warnings = _results(payload, check="plan-ttl", severity="warning")
+    assert [r["path"] for r in warnings] == ([_SPEC] if expect_warning else [])
+    if expect_warning:
+        assert "plan expired" in warnings[0]["message"]
+
+
+@pytest.mark.parametrize(
+    "brainstorm_rel",
+    [
+        pytest.param(
+            "docs/specs/brainstorm-02-big-effort/brainstorm-02-big-effort.md",
+            id="in-its-own-folder",
+        ),
+        pytest.param("docs/pipeline/brainstorm-02-big-effort.md", id="outside-docs-specs"),
+    ],
+)
+def test_plan_ttl_never_applies_to_old_brainstorm_docs(
+    git_project, run_cli, brainstorm_rel
+):
+    # brainstorm is ephemeral but has no ttl_days, so even a long-expired
+    # brainstorm yields no plan-ttl warning; only the plan itself does.
+    root = git_project.root
+    brainstorm = root / brainstorm_rel
+    brainstorm.parent.mkdir(parents=True, exist_ok=True)
+    brainstorm.write_text(_BRAINSTORM_FRONTMATTER.format(status="draft"), encoding="utf-8")
+    git_project.commit_at("2026-01-01T00:00:00", "add brainstorm")
+
+    _, payload = run_cli(root, "validate", "--only", "plan-ttl")
+
+    assert [r["path"] for r in _results(payload, check="plan-ttl")] == [_SPEC]
+
+
+# --- brainstorm docs ----------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "profile",
+    [
+        pytest.param("full", id="full-profile"),
+        pytest.param("standard", id="standard-profile"),
+    ],
+)
+@pytest.mark.parametrize("status", ["draft", "stable"])
+@pytest.mark.parametrize(
+    "brainstorm_rel",
+    [
+        pytest.param(
+            "docs/specs/brainstorm-02-big-effort/brainstorm-02-big-effort.md",
+            id="in-its-own-folder",
+        ),
+        pytest.param("docs/pipeline/brainstorm-02-big-effort.md", id="outside-docs-specs"),
+    ],
+)
+def test_brainstorm_doc_resolves_by_type_and_validates_clean(
+    fixture_project, run_cli, brainstorm_rel, status, profile
+):
+    # `outside-docs-specs` has no dir pattern to fall back on, so a clean run
+    # proves `type: brainstorm` alone resolves the category. The fixture's
+    # overrides force validate.require_index_table to true under either
+    # profile, so an evergreen doc without the table would warn.
+    cfg_path = fixture_project / ".docsmith" / "config.json"
+    cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+    cfg["profile"] = profile
+    cfg_path.write_text(json.dumps(cfg), encoding="utf-8")
+    brainstorm = fixture_project / brainstorm_rel
+    brainstorm.parent.mkdir(parents=True, exist_ok=True)
+    brainstorm.write_text(_BRAINSTORM_FRONTMATTER.format(status=status), encoding="utf-8")
+
+    exit_code, payload = run_cli(fixture_project, "validate", "--paths", brainstorm_rel)
+
+    assert exit_code == 0
+    assert payload["summary"]["checked"] == 1
+    assert _results(payload, path=brainstorm_rel) == []
 
 
 # --- research docs and category resolution -----------------------------------
@@ -698,3 +870,71 @@ def test_decisions_stable_missing_section_is_grandfathered_warning(
     warnings = _results(payload, check="decisions", severity="warning", path=ADR)
     assert len(warnings) == 1
     assert "'## Consequences'" in warnings[0]["message"]
+
+
+@pytest.mark.parametrize(
+    "command,errors,warnings,hint_expected",
+    [
+        pytest.param("validate", 1, 0, True, id="validate-one-failure"),
+        pytest.param("validate", 2, 3, True, id="validate-failures-and-warnings"),
+        pytest.param("validate", 0, 0, False, id="validate-clean"),
+        pytest.param("validate", 0, 2, False, id="validate-warnings-only"),
+        pytest.param("score", 1, 0, False, id="other-command-with-failure"),
+    ],
+)
+def test_human_report_adds_the_update_hint_only_after_a_failed_validate(
+    tmp_path, command, errors, warnings, hint_expected
+):
+    report = Report(command, tmp_path)
+    for index in range(errors):
+        report.add("frontmatter", "error", f"docs/e{index}.md", "bad")
+    for index in range(warnings):
+        report.add("drift", "warning", f"docs/w{index}.md", "stale")
+
+    lines = report.to_human().splitlines()
+
+    summary = f"FAILURES: {errors} / WARNINGS: {warnings}"
+    assert summary in lines
+    if hint_expected:
+        assert lines[-2:] == [summary, UPDATE_HINT]
+    else:
+        assert lines[-1] == summary
+        assert UPDATE_HINT not in lines
+
+
+@pytest.mark.parametrize(
+    "args,exit_code,hint_expected",
+    [
+        pytest.param([], 1, True, id="failing-run"),
+        pytest.param(["--only", "decisions"], 0, False, id="passing-run"),
+    ],
+)
+def test_cli_human_output_ends_with_the_update_hint_only_on_failure(
+    fixture_project, args, exit_code, hint_expected
+):
+    proc = subprocess.run(
+        [sys.executable, str(CLI), "--project-root", str(fixture_project), "validate", *args],
+        capture_output=True,
+        text=True,
+    )
+
+    assert proc.returncode == exit_code
+    lines = proc.stdout.rstrip("\n").splitlines()
+    if hint_expected:
+        assert lines[-1] == UPDATE_HINT
+        assert lines[-2].startswith("FAILURES: ")
+    else:
+        assert lines[-1].startswith("FAILURES: 0")
+        assert UPDATE_HINT not in lines
+
+
+def test_cli_json_output_never_carries_the_update_hint(fixture_project):
+    proc = subprocess.run(
+        [sys.executable, str(CLI), "--project-root", str(fixture_project), "--json", "validate"],
+        capture_output=True,
+        text=True,
+    )
+
+    assert proc.returncode == 1
+    assert UPDATE_HINT not in proc.stdout
+    assert json.loads(proc.stdout)["summary"]["errors"] > 0

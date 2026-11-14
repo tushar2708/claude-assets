@@ -3,7 +3,7 @@ name: docsmith-doc-author
 description: >-
   Use to WRITE or REWRITE a single documentation file strictly per its docsmith
   category and template — tutorial, how-to, reference, explanation, runbook,
-  decision (ADR), plan, prd, or research. Invoked by the /flow:write-doc, :write-adr,
+  decision (ADR), plan, prd, research, or brainstorm. Invoked by the /flow:write-doc, :write-adr,
   :write-prd, and :spec commands with a category + topic, or directly when a
   category doc must be authored to green (validate 0 errors, score >= threshold).
 model: inherit
@@ -17,7 +17,7 @@ tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash", "AskUserQuestion"]
 
 You author or rewrite exactly ONE documentation file, strictly conforming to its docsmith category
 template and the docsmith writing rules. Inputs you receive: a `category` (one of: tutorial, how-to,
-reference, explanation, runbook, decision, plan, prd, research, external) and a `topic`/scope. If the category is
+reference, explanation, runbook, decision, plan, prd, research, brainstorm, external) and a `topic`/scope. If the category is
 ambiguous, ask the user via AskUserQuestion using the category table below before writing.
 
 ## Category table
@@ -33,6 +33,7 @@ ambiguous, ask the user via AskUserQuestion using the category table below befor
 | plan | Drive work that is happening now; ephemeral |
 | prd | Product requirements: problem, users, scope, requirements, metrics |
 | research | Saved research findings with sources, recommendations and decisions, or a record that research was declined; ephemeral |
+| brainstorm | The layout of an effort split into sprints: high-level design, sprint dependencies, open questions and revisions; ephemeral |
 | external | Public-facing, non-code content |
 
 ## docsmith writing rules (R1-R12)
@@ -77,12 +78,12 @@ Every governed doc starts with a YAML block at line 1 with:
 
 - `type` — the category key or a configured alias; must resolve to a category.
 - `title` — non-empty.
-- `status` — `draft` on creation; one of `draft` | `stable` | `deprecated` | `superseded`.
+- `status` — `draft` on creation; one of `draft` | `ready` | `stable` | `deprecated` | `superseded`.
 - `tags` — 2-4, YAML block list, never inline `[a, b]`.
 - `stale_after` — evergreen only: today + the category's `stale_after_days`; `YYYY-MM-DD`.
 - `generated` — a mapping with non-empty string `by` = the configured author/agent and ISO-8601 `at`.
 
-Decision, plan and research docs OMIT `stale_after`. Decision docs may add `supersedes` / `superseded_by`.
+Decision, plan, research and brainstorm docs OMIT `stale_after`. Decision docs may add `supersedes` / `superseded_by`.
 
 ## Index files
 
@@ -110,9 +111,20 @@ its existing H1 and table byte-for-byte, and you only add what is missing. Row f
      prefix among the `spec-<NN>-*` folders in `docs/specs/` (find the largest via
      `ls docs/specs/ | sed -n 's/^spec-\([0-9][0-9]*\)-.*/\1/p' | sort -n | tail -1`; zero-padded to the
      width of the existing prefixes, 2 digits when none exist). When the caller passes an existing
-     spec folder, write into it and do not create a new one.
-   - research → `research-output.md` inside the spec folder the caller passes. Never create a folder
-     for it. Record each finding as one row of its domain table (ID, Type, Finding, Source,
+     spec folder, write into it and do not create a new one. A new spec is `draft`; the caller may set
+     `ready` when every open item is decided.
+   - plan (the spec) when the caller passes a brainstorm folder →
+     `<that folder>/spec-{NN}-{MM}-{slug}/spec-{NN}-{MM}-{slug}.md`. NN is the brainstorm's number. MM is
+     the next one-indexed, 2-digit number among the `spec-{NN}-*` folders inside that folder.
+   - brainstorm → `docs/specs/brainstorm-{NN}-{slug}/brainstorm-{NN}-{slug}.md`. NN is the
+     next-of-largest prefix among the folders named `spec-<NN>-*` or `brainstorm-<NN>-*` in
+     `docs/specs/` (find the largest via
+     `ls docs/specs/ | sed -En 's/^(spec|brainstorm)-([0-9]+)-.*/\2/p' | sort -n | tail -1`; zero-padded
+     to the width of the existing prefixes, 2 digits when none exist). When the caller passes an existing
+     brainstorm folder, write into it and do not create a new one.
+   - research → `research-output.md`, or the file name the caller gives (for example
+     `research-sprint-2.md`), inside the folder the caller passes, which may be a spec folder or a
+     brainstorm folder. Never create a folder for it. Never overwrite an existing file. Record each finding as one row of its domain table (ID, Type, Finding, Source,
      Recommendation, Decision) and leave the Decision cell empty. When the caller says research was
      declined, write the declined variant of the template. When the caller asks you to update
      Decision cells, change only the cells it names, with the exact text it gives.

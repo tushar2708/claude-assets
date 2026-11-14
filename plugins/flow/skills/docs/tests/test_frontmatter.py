@@ -3,6 +3,8 @@
 import copy
 import datetime
 
+import pytest
+
 from docsmith_lib.config import DEFAULT_CONFIG
 from docsmith_lib.frontmatter_spec import check_fields, has_index_table, parse_frontmatter
 
@@ -61,6 +63,32 @@ def test_bad_status_is_error():
     fm = {"type": "how-to", "title": "T", "status": "bogus"}
     findings = check_fields(fm, _config(), "how-to")
     assert any("status" in message for message in _messages(findings, "error"))
+
+
+@pytest.mark.parametrize(
+    "status, expect_error",
+    [
+        pytest.param("draft", False, id="draft"),
+        pytest.param("ready", False, id="ready"),
+        pytest.param("partially-implemented", False, id="partially-implemented"),
+        pytest.param("implemented", False, id="implemented"),
+        pytest.param("superseded", False, id="superseded"),
+        pytest.param("Ready", True, id="status-is-case-sensitive"),
+        pytest.param("ready ", True, id="trailing-space-is-not-ready"),
+        pytest.param("approved", True, id="unknown-status"),
+    ],
+)
+def test_plan_status_is_checked_against_the_allowed_list(status, expect_error):
+    fm = {"type": "plan", "title": "T", "status": status}
+    findings = check_fields(fm, _config(), "plan")
+    status_errors = [m for m in _messages(findings, "error") if "status" in m]
+    assert bool(status_errors) is expect_error
+
+
+@pytest.mark.parametrize("status", ["draft", "stable"])
+def test_brainstorm_doc_with_a_valid_status_is_clean(status):
+    fm = {"type": "brainstorm", "title": "T", "status": status}
+    assert check_fields(fm, _config(), "brainstorm") == []
 
 
 def test_tags_must_be_list():

@@ -9,12 +9,16 @@ Run approved work items in wave, stage, and task order. Make no design decision.
 
 ## Resolve the task source
 
-1. Identify the approved plan at `docs/specs/<plan filename without .md>/<plan filename>`.
+1. Identify the approved plan at `docs/specs/<plan filename without .md>/<plan filename>`, or, for a sprint spec, at `docs/specs/brainstorm-<NN>-<slug>/<plan filename without .md>/<plan filename>`.
 2. Read the shared plugin resource `assets/tracking/README.md` and resolve exactly one local tracker plus every configured cloud tracker.
 3. In Claude Code, read the native Flow work items with `TaskGet` and update them with the native task operations.
 4. In Codex, or any host without a native dependency-aware task tracker, read `docs/tasks/<plan filename>`. Stop and ask the user to run `make-tasks` if the file does not exist.
 5. For the file tracker, treat the Epic tables as the execution queue and the linked Wave sections as the authoritative item descriptions. Update both the table row and section status after every state transition: `⏳` while waiting, `🔄` while in progress, `✅` when complete, and `⛔` when blocked.
 6. When a task depends on table rows 1 and 4, write its status exactly as `⛔ #blocked by #1, #4` in both places. Do not execute it until every listed serial-number dependency is `✅`; then change it back to `⏳`.
+
+## Check the spec's open items
+
+Do this once per run, before the first item. Read the spec named in the plan's Sources: its `status` and its `Open Questions` section. If the status is not `ready` and any row is `Open`, remind the user in the chat: name the spec and list each open item. Then ask through the host's question tool: "Resolve them first (Recommended)" and "Continue anyway". On the first, stop and execute nothing, and tell the user to run `/flow:grill`. On the second, go on. This is a reminder, not a gate. Never refuse to continue.
 
 ## Procedure
 
