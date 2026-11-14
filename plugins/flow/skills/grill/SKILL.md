@@ -1,6 +1,6 @@
 ---
 name: grill
-description: A research-backed, relentless interview to sharpen a feature. Map its concepts, research best practices and pitfalls, then reach a shared understanding with the developer.
+description: A research-backed, relentless interview to sharpen a feature. Map its concepts, research best practices and pitfalls, then reach a shared understanding with the developer, while building the project's glossary and offering ADRs as decisions settle.
 disable-model-invocation: true
 ---
 
@@ -11,7 +11,7 @@ If the active host is neither Claude Code nor Codex, tell the user this skill ha
 
 ## Strict SOP
 
-Run a grilling session that is grounded in research, not just intuition. Move through five phases in order. Do not skip a phase. Do not start writing or implementing anything until the developer confirms a shared understanding at the end.
+Run a grilling session that is grounded in research, not just intuition. Move through five phases in order. Do not skip a phase. Do not start writing or implementing anything until the developer confirms a shared understanding at the end. Two kinds of file are the exception: `research-output.md` (see "Save the research") and the glossary files, which Phase 4 updates as each term is resolved.
 
 The unit of work is the **feature** the developer wants to build or the decision they want to make. Everything below serves one goal: expose every hidden assumption before a line of code is written.
 
@@ -31,6 +31,7 @@ Rules for this phase:
 1. Find facts yourself. Never ask the developer for a fact you can look up. When a concept needs a fact from this repo (a schema, an existing endpoint, a convention), dispatch a sub-agent to read the codebase and report. Explore in parallel where you can.
 2. Write a short, labelled list of the concepts you found, grouped by the four domains. This list drives the research gate in Phase 2 and the research in Phase 3.
 3. If the feature is not about software, keep the four domains but adapt them (for a business decision, "technical" becomes "operational", and so on). This skill works on any idea, not only code.
+4. Find the project's glossary files (`GLOSSARY-MAP.md` and every `GLOSSARY.md`) and read them. Use the glossary's words in the concept list. If there is no glossary, use the words the code already uses. Phase 4 creates the glossary when the first term is resolved.
 
 ## Phase 2 — Ask whether to research, and which domains (mandatory gate)
 
@@ -87,8 +88,11 @@ Phase 4 does not start until `research-output.md` is saved and validated. This s
 
 ## Phase 4 — Interrogate the developer
 
-Call the Skill tool with `grilling`. It runs the interview, so ask no question yourself in this phase. If its text is no longer in your context (for example after a compaction), call it again. Give it what this session built: the concepts from Phase 1, the research briefs from Phase 3, and the path of `research-output.md`.
+Call the Skill tool twice: first with `grilling`, then with `domain-design`. If the text of either skill is no longer in your context (for example after a compaction), call it again.
+
+- `grilling` runs the interview, so ask no question yourself in this phase. Give it what this session built: the concepts from Phase 1, the research briefs from Phase 3, and the path of `research-output.md`.
+- `domain-design` runs in its "Session mode". Tell it so. In that mode it adds six duties to the interview: challenge terms against the glossary, sharpen fuzzy words, test relationships with concrete scenarios, check the user's statements against the code, update the glossary as each term is resolved, and offer ADRs. Give it the concepts from Phase 1. It does not run the design procedure and writes no code.
 
 ## Phase 5 — Converge
 
-The `grilling` skill runs this phase too: the summary, the developer's confirmation, and the offer of `/flow:spec`. Add nothing of your own.
+The `grilling` skill runs this phase: the summary, the developer's confirmation, and the offer of `/flow:spec`. The `domain-design` skill's Session mode adds the glossary changes, the settled scenarios, the contradictions found in the code, and the ADR topics to that summary. Add nothing of your own.

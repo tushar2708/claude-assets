@@ -1,0 +1,3 @@
+interface:
+  display_name: "Domain Design"
+  short_description: "Design or refactor a feature into a domain-driven structure"
