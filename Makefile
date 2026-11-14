@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 DOCSMITH := uv run .docsmith/engine/docsmith.py
 
-.PHONY: help setup validate score docs-render docs-build docs-serve precommit clean test test-flow test-myhooks
+.PHONY: help setup validate score docs-render docs-build docs-serve precommit clean test test-flow test-myhooks test-install
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -31,10 +31,13 @@ precommit:  ## Run all pre-commit hooks across the repo
 clean:  ## Remove the built site output
 	@rm -rf .docsmith/site/site
 
-test: test-flow test-myhooks  ## Run every plugin test suite
+test: test-flow test-myhooks test-install  ## Run every test suite
 
 test-flow:  ## Run the docsmith pytest suite (flow plugin)
 	@bash plugins/flow/skills/docs/scripts/run_tests.sh
 
 test-myhooks:  ## Run the myhooks rule tests (pytest)
 	@cd plugins/myhooks/hooks && uv run --with pytest --with ruff python -m pytest tests/
+
+test-install:  ## Run the install.sh end-to-end tests (pytest)
+	@uv run --with pytest python -m pytest tests/install

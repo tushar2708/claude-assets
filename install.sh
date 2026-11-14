@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install or uninstall every claude-assets plugin and standalone skill. Install is idempotent: run it again to update.
+# Install or uninstall every claude-assets plugin and standalone skill. Install is a clean reinstall: run it again to update.
 #
 #   curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --claude
 #   curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/install.sh | bash -s -- --codex
@@ -31,10 +31,13 @@ require() {
   command -v "$1" >/dev/null 2>&1 || die "'$1' is not installed or not on PATH."
 }
 
+# The clone is a mirror, never a working copy. Match the remote exactly, so a rewritten upstream history cannot block a run.
 sync_clone() {
   if [ -d "$CLONE_DIR/.git" ]; then
-    log "Updating $CLONE_DIR"
-    run git -C "$CLONE_DIR" pull --ff-only --quiet
+    log "Resetting $CLONE_DIR to $REPO main"
+    run git -C "$CLONE_DIR" fetch --quiet "$REPO_URL" main
+    run git -C "$CLONE_DIR" checkout --quiet --force -B main FETCH_HEAD
+    run git -C "$CLONE_DIR" clean --quiet -fdx
   elif [ -e "$CLONE_DIR" ]; then
     die "$CLONE_DIR exists and is not a git clone. Move it or set CLAUDE_ASSETS_DIR."
   else
@@ -50,19 +53,28 @@ plugin_names() {
   grep -o '"\./plugins/[^"]*"' "$manifest" | sed -e 's|"\./plugins/||' -e 's|"$||'
 }
 
-# Idempotent: safe on a fresh machine, on an existing install, and when new plugins were added upstream.
+# Remove every plugin and the marketplace. An optional flag, such as --keep-data, is passed to `plugin uninstall`.
+remove_claude_plugins() {
+  local name
+  for name in $(plugin_names); do
+    log "Uninstalling plugin $name"
+    run claude plugin uninstall "$name@$MARKETPLACE" --scope user ${1:+"$1"} || true
+  done
+  run claude plugin marketplace remove "$MARKETPLACE" || true
+}
+
+# A clean reinstall: safe on a fresh machine, on an existing install, and when new plugins were added upstream.
 install_plugins() {
   local name
   if [ "$HOST" = "--claude" ]; then
-    # Update in place so installed plugins keep their saved data; add only on the first install.
-    log "Refreshing marketplace $MARKETPLACE"
-    run claude plugin marketplace update "$MARKETPLACE" || run claude plugin marketplace add "$REPO"
+    # Remove, then add: a fresh marketplace clone cannot be broken by a rewritten upstream history.
+    # --keep-data keeps each plugin's saved data in ~/.claude/plugins/data.
+    remove_claude_plugins --keep-data
+    log "Adding marketplace $MARKETPLACE"
+    run claude plugin marketplace add "$REPO"
     for name in $(plugin_names); do
       log "Installing plugin $name"
-      # `install` leaves an installed plugin alone and installs a missing one, so `update` always has a target.
       run claude plugin install "$name@$MARKETPLACE" --scope user
-      log "Updating plugin $name"
-      run claude plugin update "$name@$MARKETPLACE"
     done
   else
     # Remove, then add: Codex refuses to add a marketplace that exists from another source.
@@ -80,11 +92,7 @@ install_plugins() {
 uninstall_plugins() {
   local name
   if [ "$HOST" = "--claude" ]; then
-    for name in $(plugin_names); do
-      log "Uninstalling plugin $name"
-      run claude plugin uninstall "$name@$MARKETPLACE" --scope user || true
-    done
-    run claude plugin marketplace remove "$MARKETPLACE" || true
+    remove_claude_plugins
   else
     for name in $(plugin_names); do
       log "Uninstalling Codex plugin $name"
@@ -111,23 +119,6 @@ link_skills() {
       log "Linking skill $name"
       run ln -s "$src" "$target"
     fi
-  done
-}
-
-# Remove links whose skill was deleted upstream.
-prune_skills() {
-  local link dest
-  for link in "$SKILLS_DIR"/*; do
-    [ -L "$link" ] || continue
-    dest="$(readlink "$link")"
-    case "$dest" in
-      "$CLONE_DIR"/skills/*)
-        if [ ! -e "$dest" ]; then
-          log "Removing stale skill link $(basename "$link")"
-          run rm "$link"
-        fi
-        ;;
-    esac
   done
 }
 
@@ -172,8 +163,8 @@ main() {
     return 0
   fi
   install_plugins
+  unlink_skills
   link_skills
-  prune_skills
 
   if [ "$HOST" = "--claude" ]; then
     log "Done. Restart Claude Code, or run /reload-plugins in a session."

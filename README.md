@@ -45,12 +45,13 @@ curl -fsSL https://raw.githubusercontent.com/tushar2708/claude-assets/main/insta
 ## Notes
 
 - Uninstall keeps the local clone at `~/.claude-assets`. Delete that folder yourself if you no longer need it.
-- Plugins carry no version number. Every commit is a new version, so re-run the installer to update in place.
+- Plugins carry no version number. Every commit is a new version, so re-run the installer to update.
+- On Claude Code, the installer does a clean reinstall. It removes the plugins and the marketplace, then adds them again. Each plugin's saved data in `~/.claude/plugins/data` is kept.
 
 | Detail | Value |
 |---|---|
 | Needs | `git` and the selected `claude` or `codex` CLI on `PATH`. |
-| Clone path | `~/.claude-assets`. Set `CLAUDE_ASSETS_DIR` to change it. |
+| Clone path | `~/.claude-assets`. Set `CLAUDE_ASSETS_DIR` to change it. Every run resets it to the remote `main`, so do not keep edits there. |
 | Claude skills | Linked from `~/.claude/skills/<name>`. An existing folder is never overwritten. |
 | Codex skills | Linked from `~/.codex/skills/<name>`. An existing folder is never overwritten. |
 | Preview | Set `DRY_RUN=1` to print the steps only. |
