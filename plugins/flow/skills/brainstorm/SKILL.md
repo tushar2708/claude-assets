@@ -28,7 +28,7 @@ Read `references/layout-format.md` in full before Phase 4. It defines the layout
 
 | Term | Meaning | Example |
 |---|---|---|
-| **Layout** | The one file that holds the shape of the effort | `brainstorm-03-notifications.md` |
+| **Layout** | The one file that holds the shape of the effort | `brainstorm-200-notifications.md` |
 | **Sprint** | One chunk of the effort that a person can finish and check. Its type is research, POC, or implementation | "Sprint 2: POC of the delivery queue" |
 | **Open question** | A decision in scope that is not yet made. It belongs to one sprint | "Q-4: Do failed messages retry, and how often?" |
 | **Finalized** | A sprint with zero open questions and a ready spec | |

@@ -16,8 +16,10 @@ tags:
      partially-implemented (some of the scope is built). Terminal statuses:
      implemented (fully built), stable (executed, kept as record), superseded/deprecated
      (replaced/abandoned).
-     The spec is saved as docs/specs/spec-{NN}-{slug}/spec-{NN}-{slug}.md; NN is the next-of-largest
-     numeric prefix among the spec-<NN>-* folders in docs/specs/, zero-padded. -->
+     The spec is saved as docs/specs/spec-{NN}-{slug}/spec-{NN}-{slug}.md; NN is the largest
+     leading number of every entry in docs/specs/, plus one, zero-padded. A sprint spec is saved
+     as docs/specs/brainstorm-{NN}-{slug}/spec-{NN}-{MM}-{slug}/spec-{NN}-{MM}-{slug}.md, where MM is
+     the sprint number. -->
 
 # Plan: <Title>
 

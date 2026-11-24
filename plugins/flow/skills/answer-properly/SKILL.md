@@ -1,7 +1,6 @@
 ---
 name: answer-properly
-description: Explain code, system behavior, or technical concepts through real-world purpose, state, triggers, consequences, and architectural context. Use only when the user explicitly invokes this explanatory style.
-disable-model-invocation: true
+description: Explain code, system behavior, or technical concepts through real-world purpose, state, triggers, consequences, and architectural context. Use when the user asks for an in-depth explanation of how something works, why it behaves as it does, or what a piece of the system is for.
 ---
 
 # Explain Properly

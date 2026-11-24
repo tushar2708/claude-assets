@@ -111,11 +111,11 @@ Defaults below are the engine defaults.
   (`draft`/`ready`/`stable`/`partially-implemented`) plan whose last commit is older than the TTL:
   finish it, move it to the archive, or mark it superseded.
 - **Naming — numbered prefix (apply without being asked)**: a spec (plan category) is saved as
-  `docs/specs/spec-{NN}-{slug}/spec-{NN}-{slug}.md`. NN is the next-of-largest prefix among the
-  `spec-<NN>-*` folders in `docs/specs/`. A spec inside a brainstorm is saved as
+  `docs/specs/spec-{NN}-{slug}/spec-{NN}-{slug}.md`. NN is the largest leading
+  number of every entry in `docs/specs/`, plus one. Count files and folders, with or without a
+  `spec-` or `brainstorm-` prefix. A spec inside a brainstorm is saved as
   `docs/specs/brainstorm-{NN}-{slug}/spec-{NN}-{MM}-{slug}/spec-{NN}-{MM}-{slug}.md`, where NN
-  is the brainstorm's number and MM is the next one-indexed, 2-digit number among that
-  brainstorm's spec folders. Other numbered directories use a `{NN}-{slug}.md` name. If the doc is to be created in plans/ todos/ or any similar directory that has
+  is the brainstorm's number and MM is the sprint number, 2 digits (sprint 0 gives `00`). Other numbered directories use a `{NN}-{slug}.md` name. If the doc is to be created in plans/ todos/ or any similar directory that has
   numbered-prefixed files, always add your file with a prefix of next-of-largest existing
   prefix (eg. 01-<>.md, 07-<>.md, 11-<>.md, etc). Do it without asking, or being asked
   (unless explicitly asked not to do this).
@@ -151,8 +151,8 @@ Defaults below are the engine defaults.
   resolves to it.
 - **Lifecycle**: ephemeral snapshot — no `ttl_days`, no `archive_dir`.
 - **Naming**: `docs/specs/brainstorm-{NN}-{slug}/brainstorm-{NN}-{slug}.md`. NN is the
-  next-of-largest numeric prefix among the `spec-<NN>-*` AND `brainstorm-<NN>-*` folders in
-  `docs/specs/` (one shared sequence). The research file and the sprint specs live inside
+  largest leading number of every entry in `docs/specs/`, plus one (one shared sequence for
+  specs, brainstorms and numbered plan files). The research file and the sprint specs live inside
   that folder.
 
 ## external

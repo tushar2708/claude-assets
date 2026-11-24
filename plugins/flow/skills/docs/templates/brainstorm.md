@@ -13,8 +13,8 @@ tags:
 <!-- This doc is the layout of an effort that is split into sprints. It is written by the
      /flow:brainstorm skill and kept current by later grill and spec sessions. It is saved as
      docs/specs/brainstorm-{NN}-{slug}/brainstorm-{NN}-{slug}.md, beside research-output.md and the
-     sprint specs. NN is the next-of-largest numeric prefix among the spec-<NN>-* and
-     brainstorm-<NN>-* folders in docs/specs/, zero-padded.
+     sprint specs. NN is the largest leading number of every entry in docs/specs/, plus one,
+     zero-padded. Each sprint spec is spec-{NN}-{MM}-{slug}, where MM is the sprint number.
      It resolves ONLY via `type: brainstorm` (it has no directory pattern). Live status: draft.
      Terminal statuses: stable (every sprint finalized, kept as the record), superseded/deprecated.
      The rules for sections, sprint states, open questions and revisions are in the brainstorm

@@ -107,20 +107,20 @@ its existing H1 and table byte-for-byte, and you only add what is missing. Row f
    - prd/task in numbered-prefix dirs → `{NN}-{slug}.md` with the next-of-largest prefix (find the
      largest via `ls <dir>/ | sort -n | tail -5`; NEVER `grep -P`, NEVER alphabetical sort, always
      numeric `sort -n`).
-   - plan (the spec) → `docs/specs/spec-{NN}-{slug}/spec-{NN}-{slug}.md`. NN is the next-of-largest
-     prefix among the `spec-<NN>-*` folders in `docs/specs/` (find the largest via
-     `ls docs/specs/ | sed -n 's/^spec-\([0-9][0-9]*\)-.*/\1/p' | sort -n | tail -1`; zero-padded to the
-     width of the existing prefixes, 2 digits when none exist). When the caller passes an existing
+   - plan (the spec) → `docs/specs/spec-{NN}-{slug}/spec-{NN}-{slug}.md`. NN is the largest
+     leading number of every entry in `docs/specs/`, plus one. Count files and folders, with or without a
+     `spec-` or `brainstorm-` prefix (find it via
+     `ls docs/specs/ | sed -En 's/^(spec-|brainstorm-)?([0-9]+)-.*/\2/p' | sort -n | tail -1`; zero-padded to
+     the widest existing prefix, 2 digits when none exist). When the caller passes an existing
      spec folder, write into it and do not create a new one. A new spec is `draft`; the caller may set
      `ready` when every open item is decided.
    - plan (the spec) when the caller passes a brainstorm folder →
      `<that folder>/spec-{NN}-{MM}-{slug}/spec-{NN}-{MM}-{slug}.md`. NN is the brainstorm's number. MM is
-     the next one-indexed, 2-digit number among the `spec-{NN}-*` folders inside that folder.
-   - brainstorm → `docs/specs/brainstorm-{NN}-{slug}/brainstorm-{NN}-{slug}.md`. NN is the
-     next-of-largest prefix among the folders named `spec-<NN>-*` or `brainstorm-<NN>-*` in
-     `docs/specs/` (find the largest via
-     `ls docs/specs/ | sed -En 's/^(spec|brainstorm)-([0-9]+)-.*/\2/p' | sort -n | tail -1`; zero-padded
-     to the width of the existing prefixes, 2 digits when none exist). When the caller passes an existing
+     the sprint number, 2 digits (sprint 0 gives `00`). The caller gives the sprint number. Never count
+     the existing spec folders.
+   - brainstorm → `docs/specs/brainstorm-{NN}-{slug}/brainstorm-{NN}-{slug}.md`. NN is the largest
+     leading number of every entry in `docs/specs/`, plus one, by the same rule as for a spec (one shared
+     sequence). When the caller passes an existing
      brainstorm folder, write into it and do not create a new one.
    - research → `research-output.md`, or the file name the caller gives (for example
      `research-sprint-2.md`), inside the folder the caller passes, which may be a spec folder or a

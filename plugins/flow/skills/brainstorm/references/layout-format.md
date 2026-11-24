@@ -8,17 +8,22 @@ Read this whole file before you write or change a layout.
 
 ```
 docs/specs/
-└── brainstorm-03-<slug>/
-    ├── brainstorm-03-<slug>.md                      the layout
+└── brainstorm-200-<slug>/
+    ├── brainstorm-200-<slug>.md                     the layout
     ├── research-output.md                           the research for the whole effort
     ├── research-sprint-2.md                         extra research for one sprint, added later (optional)
-    ├── spec-03-01-<slug>/spec-03-01-<slug>.md       a sprint spec
-    └── spec-03-02-<slug>/spec-03-02-<slug>.md       another sprint spec, added later
+    ├── spec-200-01-<slug>/spec-200-01-<slug>.md     the spec of sprint 1
+    └── spec-200-02-<slug>/spec-200-02-<slug>.md     the spec of sprint 2, added later
 ```
 
-- **`NN`** is the brainstorm's number. Take the largest numeric prefix among the folders in `docs/specs/` named `spec-<NN>-*` or `brainstorm-<NN>-*`, add one, and zero-pad to the width of the existing prefixes (2 digits when none exist). Standalone specs and brainstorms share this one sequence, so no two folders get the same `NN`.
-- **`MM`** is the number of the spec inside its brainstorm, counted from `01`. Take the largest `MM` among that brainstorm's spec folders and add one. Never reuse an `MM`. A sprint added later takes the next `MM`, so you can add sprints to a brainstorm at any time, and two brainstorms never collide.
-- A spec that covers sprints 2 and 3 takes one `MM`. Both sprint rows link to it.
+- **`NN`** is the brainstorm's number. It comes from the one number sequence of `docs/specs/`.
+  - Take the largest leading number of every entry there. Count files and folders, with or without a `spec-` or `brainstorm-` prefix.
+  - Add one. Zero-pad to the widest existing prefix (2 digits when none exist).
+  - Count archived specs too, so a number is never reused.
+  - Find it with `ls docs/specs/ | sed -En 's/^(spec-|brainstorm-)?([0-9]+)-.*/\2/p' | sort -n | tail -1`.
+  - Standalone specs, brainstorms and numbered plan files share this sequence.
+- **`MM`** is the sprint number, zero-padded to 2 digits. Sprint 0 gives `00`. Sprint 12 gives `12`. Never count specs to get it.
+- A spec that covers several sprints takes the lowest sprint number of its group as `MM`. Every sprint row of the group links to it.
 - A layout that comes from a promoted grilling session reuses the `NN` of the session's spec folder. The folder `spec-NN-<slug>` is renamed to `brainstorm-NN-<slug>`, and its research file stays in it. See `promote.md`.
 
 ## Sprints

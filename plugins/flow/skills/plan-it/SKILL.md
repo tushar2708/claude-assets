@@ -10,6 +10,13 @@ If the active host is neither Claude Code nor Codex, tell the user this skill ha
 
 Write a plan in the wave model, ready for `make-tasks` (`/flow:make-tasks` in Claude Code).
 
+## The planner's mandate (read first, applies to every step)
+
+- It is YOUR job, the planner, to read and understand every file the plan will change. Never guess; read the code.
+- A plan is not the intent or the "what". It is the exact "how": the precise edits, symbols, signatures, returns, and call-sites.
+- Assume the implementer is a different, inferior agent that follows the plan literally and cannot infer anything.
+- Anything you leave underspecified or open to interpretation, it WILL get wrong. Close every gap in the plan, never in the implementer's head.
+
 Read `references/wave-model.md` first. It defines every term and schema.
 
 ## Procedure
@@ -17,15 +24,16 @@ Read `references/wave-model.md` first. It defines every term and schema.
 1. Create a plan artifact and write at its top: "Re-read `references/wave-model.md` before steps 8 and 11, and `references/plan-validation.md` before step 11."
 2. Read the sources: session context, a spec file, or both.
 2a. **Check the open items.** For each spec file among the sources, read its `status` and its `Open Questions` section. If the status is not `ready` and any row is `Open`, remind the user in the chat: name the spec and list each open item. Then ask through the host's question tool: "Resolve them first (Recommended)" and "Continue anyway". On the first, stop, and tell the user to run `/flow:grill` on the spec's layout or feature. On the second, go on, and list the open items at the top of the plan artifact. This is a reminder, not a gate. Never refuse to continue.
+2b. **Read the change sites.** Before writing a wave, open every file that wave's tasks will change, and write a **change-site reading ledger** in the plan: one row per file — path → read? → the symbols, signatures, returns and call-sites the change depends on. Never plan a change to code you have not read.
 3. Set the sub-features. With a spec, keep its order. Split a sub-feature into `SF-<n>a`/`SF-<n>b` when it does not fit one wave. Never merge. Never reorder. Without a spec, derive the sub-features from the session context.
 4. Invoke each skill the user named.
 5. Scan each invoked skill for other skills it requires. Invoke those too. Repeat until no new skill appears. Skip none.
 6. Translate every rule that asks for one wave per TDD phase into stages S1/S2/S3 of the sub-feature wave. This plan's tasks satisfy any rule that defers task creation.
 7. Write the compliance ledger: each MUST rule of each invoked skill → where it is satisfied, or N/A with a reason.
-8. Write the waves, stages, and tasks per the reference. Apply the ownership rule. Apply the sub-stage split rule. Add each wave's close task per the reference.
+8. Write the waves, stages, and tasks per the reference. Apply the ownership rule. Apply the sub-stage split rule. Add each wave's close task per the reference. Each task's `Changes` states the algorithm and the exact symbols, signatures and returns it edits — never only the shape, never a decision left to the implementer.
 9. Set the agent for each task from the agent table.
 10. Plan each wave so that it ends compiling, testing green, and passing pre-commit.
-11. After the plan is written, run every check of `references/plan-validation.md`. Fix each failure and repeat until all pass.
+11. **Review, then validate.** Re-read the whole plan top to bottom; confirm each task is executable with no further decision and every file it names is in the change-site reading ledger. Then run every check of `references/plan-validation.md`. Fix each failure and repeat until all pass.
 12. Obtain the user's approval, then call the Skill tool with `make-tasks`.
 
 ## Rules
@@ -44,3 +52,6 @@ Read `references/wave-model.md` first. It defines every term and schema.
 | P10 | Write each finished step and skill result to the plan file at once. Never hold decisions in context. | The plan file holds every finished part. |
 | P11 | Validate the plan with `references/plan-validation.md` only. | Step 11 ran every check of that file and all pass. |
 | P12 | Every wave with a Subtask key has one close task. | One `W<n>.close` per such wave, after `W<n>.verify`. |
+| P13 | Read every file a wave will change before writing it; record each in the change-site reading ledger. | Every file in a task's `Files` has a ledger row with the facts its `Changes` uses. |
+| P14 | Every `Changes` gives the algorithm and exact symbols/signatures; it leaves zero implementer decisions. | No shape-only `Changes`; no "etc."/"decide later"; no divergence between two implementers. |
+| P15 | Re-read the full plan and confirm each task is decision-free before asking for approval. | A pre-finalize review ran; V12–V14 pass. |

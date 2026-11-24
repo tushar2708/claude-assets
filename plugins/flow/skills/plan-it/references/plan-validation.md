@@ -24,10 +24,13 @@ Exception: for `make-tasks`, a missing close task (V11) is no failure. Its rule 
 | V9 | Owner reminders, doc tasks, and feedback are post-wave tasks. Feedback is the last task. | One of them is inside a wave, or feedback is not last. |
 | V10 | Every plan section that a wave's shared contracts name exists in the plan file. | A named section does not exist. |
 | V11 | Each wave with a Subtask key has one `W<n>.close` per "Close Task". | A close task is missing, duplicated, or in a non-last split wave. |
+| V12 | Every file named in any task's `Files` appears in the change-site reading ledger with the concrete facts (symbols, signatures, returns, call-sites) its `Changes` relies on. | A task's file is absent from the ledger, or the ledger lacks the facts its `Changes` depends on. |
+| V13 | Every task's `Changes` gives the algorithm and the exact symbols/signatures/returns it edits, leaving no implementer decision. | A `Changes` is shape-only, says "etc."/"as needed"/"decide later", or two implementers could diverge. |
+| V14 | Every symbol, return shape, or consumer a `Changes` touches is defined in the plan or recorded (verified against source) in the reading ledger. | A referenced symbol, return, or consumer is neither defined nor verified. |
 
 ## Procedure
 
 1. List every task of the plan, verify and post-wave tasks included.
-2. Run V1 to V11 in order.
+2. Run V1 to V14 in order.
 3. For each check, record PASS or FAIL with the plan line of each failure.
 4. Act on a failure as the caller row says.
