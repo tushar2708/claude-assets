@@ -27,6 +27,7 @@ Your goal is a document that is **accurate** and **easy to understand**, not a d
 - **Define before use.** Every term gets a definition the first time it appears, and a source line.
 - **One concept, one word.** Pick one word per concept and keep it. When you must introduce a second word (often because the code's variable name differs), link the two in the same sentence.
 - **Do the whole-document read.** Before you show anything, read the finished document end to end as a stranger would, and run every gate. Do not outsource proofreading to the user.
+- **Explain, do not inventory.** A newcomer must learn the real problem, the mechanism chosen to solve it, its guarantee, and its trade-off or failure boundary. Read `references/educational-contract.md` before writing; it defines the required Explanation Brief and page contract.
 
 If you catch yourself writing a sentence you cannot back with a file:line, stop and go read the code.
 
@@ -53,6 +54,7 @@ Example shape for one run:
    7.1  Verification gate   7.2  Vagueness gate   7.3  Personification gate
    7.4  Term-consistency gate   7.5  Undefined-term gate   7.6  Continuity gate   7.7  Attribution gate
    7.8  Link-integrity gate
+   7.9  Educational-explanation gate
 ```
 
 Create sub-tasks for Phases 4, 5, and 6 too — one per section of the document, so each section is tracked through writing and the consistency pass.
@@ -63,14 +65,15 @@ Create sub-tasks for Phases 4, 5, and 6 too — one per section of the document,
 
 **Goal:** know exactly what you are explaining and set up the two artifacts the later phases depend on.
 
-1. Pin the scope with the user if unclear: a single feature/function, one subsystem, the whole repository, or a **branching process** (one entry that forks into parallel paths — e.g. a deploy flow that splits by target). One feature → a single page; whole-repo or branching process → a multi-page site. Both use the same shell.
+1. Read `references/educational-contract.md`. Pin the scope with the user if unclear: a single feature/function, one subsystem, the whole repository, or a **branching process** (one entry that forks into parallel paths — e.g. a deploy flow that splits by target). One feature → a single page; whole-repo or branching process → a multi-page site. Both use the same shell.
 2. Choose **one running example** drawn from the repo's own data (a real request, a real test input, a real record) or, for a process, **one concrete run** (one real deploy, one real job, with its real ids/hosts/values). You will thread this one example through every section so the reader follows concrete values, not abstractions.
-3. Create two working artifacts you will fill as you go (keep them in your scratch space, not in the output):
+3. Create three working artifacts you will fill as you go (keep them in your scratch space, not in the output):
    - a **Term Ledger** (the vocabulary source of truth) — see `references/term-ledger.md`.
    - a **Verification Log** — a flat list of `claim → file:line`.
+   - an **Explanation Brief**: reader/workload context, example lineage, per-layer problem→mechanism→guarantee→boundary map, evidence classes, and diagram plan — see `references/educational-contract.md`.
 4. Decide the output location. Default: a `docs/<topic>/` folder in the repo (multi-page) or one `<topic>.html` (single feature). Copy the shared shell from `assets/` (see Phase 4).
 
-**Exit condition:** scope, running example, output location fixed; both artifacts created (empty is fine).
+**Exit condition:** scope, running example, output location fixed; the Explanation Brief is complete enough to show why every planned section exists; all three artifacts created.
 
 ## Phase 2 — Build the Term Ledger
 
@@ -101,7 +104,7 @@ Read `references/writing-rules.md` first (it defines what counts as a verified c
 
 1. List the sections. Order them so each section uses only terms defined in an earlier section or the ledger. A good default order: orientation/basics → the concrete objects the system keeps → each object's exact shape → the flow(s) step by step → the algorithms/maths → any claims the project makes about itself.
 2. Copy the shared shell from `assets/` (`style.css`, the page template, the index template). Never invent a new look — consistency across pages and across runs comes from reusing this shell.
-3. Write the **skeleton only**: every section heading plus a one-line statement of intent, no content. For the whole-repo site, also write the landing page with navigation cards to each section and (if the flow is non-trivial) one end-to-end pipeline diagram placeholder.
+3. Write the **skeleton only**: every section heading plus its reader question, the problem it solves, and the running example's state-in/state-out from the Explanation Brief. For the whole-repo site, also write the landing page with product/workload orientation, navigation cards to each section, and (if the flow is non-trivial) one end-to-end pipeline diagram placeholder.
 4. Read the skeleton top to bottom and confirm the order reads right.
 
 **Exit condition:** all section headings exist with intents; the shell is in place; order verified.
@@ -110,14 +113,14 @@ Read `references/writing-rules.md` first (it defines what counts as a verified c
 
 **Goal:** write each section so it is concrete, verified, and flows.
 
-Fill one section at a time (track each as a sub-task). Within a section go **abstract (accurate) → concrete objects → exact data → code**: open with one true plain-language paragraph, then drop immediately to exact data.
+Fill one section at a time (track each as a sub-task). Follow the page contract in `references/educational-contract.md`: explain why the layer or stage exists; show the running example entering and leaving it; then go **abstract (accurate) → concrete objects → exact data → code**; state the guarantee and trade-off/failure boundary; and name the handoff to the next stage.
 
 Every sentence must satisfy both rules from `references/writing-rules.md`:
 
 - **Content contract:** name the *actor* that acts, the *data structure* it acts on, the *concrete value or operation*, and the *source line*. Give a verb only to an actor that can perform it.
 - **Continuity (given → new):** begin each sentence from something already introduced and add exactly one new fact; the output of one step is the subject of the next; never introduce a noun that the previous sentence did not set up.
 
-Use the shared diagram grammar in `references/diagram-grammar.md`: hand-authored inline SVG (not a diagram library), fixed colors/shapes per node kind, every stage box clickable to its section or detail page, and **real values shown, never placeholders alone**. Pick the diagram type by what you are explaining: a **pipeline/flow** (with branch, parallel, and external-service nodes for control flow), a **sequence/collaboration** diagram for numbered runtime interactions across actors, or a **state-transition table** for retries, idempotency, and resume. Thread the running example through text and diagrams.
+Use the shared diagram grammar in `references/diagram-grammar.md` and the diagram contract in `references/educational-contract.md`: hand-authored inline SVG (not a diagram library), fixed colors/shapes per node kind, every stage box clickable to its section or detail page, and **real values shown, never placeholders alone**. A diagram must teach a transformation, decision, state transition, or collaboration—not merely list components. Pick the diagram type by what you are explaining: a **pipeline/flow** (with branch, parallel, and external-service nodes for control flow), a **sequence/collaboration** diagram for numbered runtime interactions across actors, or a **state-transition table** for retries, idempotency, and resume. Thread the running example through text and diagrams.
 
 **Exit condition:** every section filled; every factual sentence maps to a Verification Log line; the running example appears throughout.
 
@@ -130,7 +133,8 @@ Read the **entire finished document** top to bottom, as a reader with no prior c
 1. Confirm every term is **defined before it is used** — its first appearance in the document is its definition, not a use.
 2. Confirm only the **canonical** term appears in prose; every alias either sits in a code block or carries a bridge clause linking it to the canonical term.
 3. Confirm the **continuity** holds across sentence and section boundaries: the first noun of each sentence is already known to the reader; the subject of each step is the output of the previous one.
-4. Fix every break here, as a set — not one line when the user points at it.
+4. Confirm every section still satisfies the Explanation Brief: problem → mechanism → guarantee → trade-off/failure boundary, with the example advancing to the next state.
+5. Fix every break here, as a set — not one line when the user points at it.
 
 **Exit condition:** one coherent lexicon end to end; no term used before definition; no silent word-switch; flow unbroken.
 
@@ -146,6 +150,7 @@ Read the **entire finished document** top to bottom, as a reader with no prior c
 6. **Continuity gate** — spot-read: every sentence picks up from the previous one.
 7. **Attribution gate** — each action is credited to the actor that performs it (the code vs an LLM vs the graph library vs the store).
 8. **Link-integrity gate** — every clickable node, breadcrumb, and nav link resolves to a page that exists and an anchor that exists in it.
+9. **Educational-explanation gate** — run the reader acceptance test in `references/educational-contract.md`; a factual code index that cannot explain purpose, lineage, guarantees, and boundaries fails.
 
 **Exit condition:** all eight gates pass. Only now do you show the user the file path and a one-line summary.
 
@@ -165,6 +170,7 @@ Keep the structure, sentence style, diagram grammar, and look-and-feel identical
 - `references/term-ledger.md` — the Term Ledger template and how to build it. Read in Phase 2.
 - `references/gates.md` — the eight gates with exact grep commands and pass/fail criteria. Read in Phase 7.
 - `references/diagram-grammar.md` — the inline-SVG diagram grammar (colors, shapes, control-flow and sequence and state types, clickable stages, real values). Read in Phase 4–5.
+- `references/educational-contract.md` — the mandatory prewriting Explanation Brief, first-principles page contract, evidence labels, diagram meaning contract, and final reader acceptance test. Read in Phase 1; apply in Phases 4–7.
 
 ## Assets (the shared shell — copy, do not reinvent)
 

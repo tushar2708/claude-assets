@@ -93,6 +93,14 @@ grep -rhoE 'href="[^"]+"' "$DOCS" | sed -E 's/href="//; s/"$//' | sort -u
 
 **Pass:** every internal link resolves to an existing page and, where present, an existing anchor; no `href` points at a missing file or `#id`.
 
+## Gate 7.9 — Educational explanation
+
+Read and run the **Educational acceptance test** in `educational-contract.md` after Gates 7.1–7.8 pass.
+
+This gate catches a failure that source verification cannot: a document can cite every implementation fact correctly while still teaching no newcomer why the system exists, why each layer exists, or what its contracts mean.
+
+**Pass:** every section has a clear problem → mechanism → guarantee → trade-off/failure boundary; the running example advances through each appropriate section with concrete state; diagrams teach transformations or decisions using real values; and code, external evidence, illustrative examples, and inferences are visibly distinguished.
+
 ---
 
 ## After all eight pass

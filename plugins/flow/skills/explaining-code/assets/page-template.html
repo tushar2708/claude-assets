@@ -24,6 +24,12 @@
 <p class="lead">ONE true plain-language sentence that orients a newcomer — the accurate abstract.</p>
 <p class="muted">Entry point <code>ENTRY_FUNCTION()</code> (<span class="src">FILE:LINE</span>).</p>
 
+<!-- Required teaching contract: identify the problem before introducing the mechanism. -->
+<div class="card cmp">
+<span class="boxlabel cmp">Why this layer exists</span>
+<p>STATE THE READER'S PROBLEM. Explain what would be slow, unsafe, impossible, or operationally costly without this layer. Then name the mechanism this page explains.</p>
+</div>
+
 <!-- Vocabulary: pin every term this page uses, with its kind and any code alias. -->
 <div class="card def">
 <span class="boxlabel def">Vocabulary</span>
@@ -42,6 +48,7 @@
   <!-- stage boxes top-to-bottom; each links to its explanation; each shows a real value + file:line -->
 </svg>
 </div>
+<p>State the lesson of this diagram: which concrete value, decision, or state changes, and why that change matters to the running example.</p>
 
 <!-- The exact steps, with the running example carried through. -->
 <h2>Step by step (worked on EXAMPLE_NAME)</h2>
@@ -50,6 +57,16 @@
 <tr><th>#</th><th>What happens, on EXAMPLE_NAME</th><th>Source</th></tr>
 <tr><td>1</td><td>ACTOR does OPERATION on DATA_STRUCTURE, producing CONCRETE_RESULT.</td><td>FILE:LINE</td></tr>
 </table>
+</div>
+
+<div class="card warn">
+<span class="boxlabel warn">Guarantee and boundary</span>
+<p>STATE WHAT THIS LAYER MAKES TRUE FOR THE RUNNING EXAMPLE, THEN WHAT IT DOES NOT GUARANTEE OR WHICH FAILURE CAN STILL OCCUR.</p>
+</div>
+
+<div class="card def">
+<span class="boxlabel def">Carry forward</span>
+<p>NAME THE CONCRETE OUTPUT HANDED TO THE NEXT LAYER AND WHY THE NEXT LAYER IS STILL REQUIRED.</p>
 </div>
 
 <!-- Optional: one comparison that places this against a more familiar approach. -->
