@@ -45,6 +45,8 @@ There are five research domains. The tool allows 2 to 4 options in a question, s
 - "Yes — let me choose the research domains (Recommended)"
 - "No — skip research"
 
+This question is single-select, so give each option a `preview`. On "Yes", show the five domains, one line each, with what it would research for this feature. On "No", show what the declined research file will record. Keep the question text to one sentence.
+
 If the developer chooses "No", skip Phase 3, run "Save the research" in its declined form, and return to the caller.
 
 **Step 2: the domain picker, only if Step 1 was "Yes".** Ask two questions together, each with `multiSelect: true`, with **no option pre-selected**:

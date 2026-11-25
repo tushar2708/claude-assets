@@ -50,7 +50,7 @@ Example, with a batch size of 4 with 7 questions to ask at any level of grilling
 
 Rules for every question:
 
-Rules 1 to 4 and 6 describe the question tool. In the chat fallback, use the chat format above instead. Rules 1, 5 and 7 apply in both modes; in chat, give the best practice or the pitfall from rule 1 in the explanation that rule 7 requires. When this skill runs from `/flow:grill` or `/flow:brainstorm`, "the concepts" and "the research" below are what the caller built: the concept list and the saved research files. In any other session, ground the questions in the concepts you have mapped and in your own reasoning.
+Rules 1 to 4, 6 and 8 describe the question tool. In the chat fallback, use the chat format above instead. Rules 1, 5 and 7 apply in both modes; in chat, give the best practice or the pitfall from rule 1 in the explanation that rule 7 requires, and show the block from rule 8 under each option. When this skill runs from `/flow:grill` or `/flow:brainstorm`, "the concepts" and "the research" below are what the caller built: the concept list and the saved research files. In any other session, ground the questions in the concepts you have mapped and in your own reasoning.
 
 1. Ground the question in the concepts and the research. If the developer skipped a domain (or all research), ground those questions in the concepts and your own reasoning instead. State the best practice or the pitfall that makes the question matter, inside the option descriptions.
 2. Give each question 2 to 4 options. Put your **recommended option first** and add "(Recommended)" to the end of its label. Explain the trade-off of each option in its description, and reference the research (for example: "NN/g warns this pattern causes error blindness").
@@ -59,6 +59,35 @@ Rules 1 to 4 and 6 describe the question tool. In the chat fallback, use the cha
 5. Keep asking decisions, not facts. If a question turns out to need a fact, stop before asking that question. Look up the codebase to find the fact, and find similar examples to what you are trying to do. Then ask the question. Finding _facts_ is your job, never the user's. When a frontier question needs a fact from the environment (filesystem, tools, etc.), dispatch a sub-agent with a fresh context window to find it; don't ask the user for anything you could look up yourself. Don't block on it: a running exploration is an unsettled prerequisite, so only the questions downstream of it wait for the sub-agent to report; ask the rest of the frontier now. The _decisions_ are the user's: put each to them and wait.
 6. Keep each `header` short (the tool caps it near 12 characters).
 7. Explain before you ask. Before every set of questions, write an explanation in the chat for each question in it: what the question is about, and why it matters. Write it in the chat, never in the question body. Do this for all questions, including the first set. If the user asks you a question about one of your questions, answer it in the chat before you ask the next set of questions.
+8. Show, do not only tell: put the concrete detail in each option's `preview`, and keep the question text short. The `preview` field shows a monospace block beside the option list, so the user compares the options side by side. It is the difference between a bland question and a rich one.
+   - **Question text:** one or two sentences, only the decision. Put the explanation in the chat (rule 7) and the trade-off in a sentence in the `description`.
+   - **What goes in a preview:** the artifact the option would produce or do, in about 10 short lines: the exact wording of a message or output, a file or folder layout, a config or schema snippet, a before and after, the list of checks or steps that will run, a small table of consequences, or the evidence behind the option (`file:line`). Use the same shape in every option, so the differences stand out.
+   - **No repeats:** a preview shows the artifact. It does not restate the description or the chat explanation.
+   - **Always give one:** every option of a single-select question gets a preview. When an option has no artifact to show, such as a plain preference or a yes or no, show the smallest true thing: two or three lines on what the project looks like after that choice. Never pad a preview.
+   - **Single-select only:** the tool does not support previews on a multi-select question. For one, keep the descriptions short and give the concrete detail in the chat explanation. If previews matter more than selecting several at once, split it into single-select questions.
+   - **Notes:** the user can add notes to an option. Read the notes that come back with the answer, and treat them as part of the answer. They can change the decision. If an "Other" answer clearly refers to one of your options, treat it as that option plus a note.
+   - **Hosts:** use `preview` where the host's question tool has such a field. Where it has none, put the same block in the chat explanation, under the option's name.
+
+   Example, abbreviated to the fields that matter:
+
+   ```
+   question: "Where should the run log live?"
+   options:
+     - label: "One file in the plan's folder (Recommended)"
+       description: "One read for the status skill. Plain text."
+       preview: |
+         docs/specs/spec-04-import/
+           spec-04-import.md
+           run-log.txt          <- new
+         W1 import: Imports run end to end.
+         W1 detour (your choice): verify skipped.
+     - label: "A note on every task"
+       description: "Notes sit beside the work, but one read per task."
+       preview: |
+         W1.S3.T1  note: parses the file
+         W1.S3.T2  note: writes the rows
+         W1.S3.T3  note: ...
+   ```
 
 **Research document.** When the session has a research document (the caller names it, for example `docs/specs/spec-NN-<use-case>/research-output.md`), it holds one row per research finding. Each row has a recommendation and an empty Decision column. Keep this file current for the whole session:
 

@@ -54,6 +54,7 @@ This repository follows the Flow development workflow.
 Use `/flow:init` for onboarding, `/flow:add-to-roadmap` for tracked work, and `/flow:sync-issues` for reconciliation.
 Use `/flow:write-doc`, `/flow:write-adr`, `/flow:write-prd`, and `/flow:update-docs` for documentation.
 Documentation authoring uses the configured documentation-author role; never use a generic writer when that role is available.
+When you ask the user a question with `AskUserQuestion` in Claude Code, always give every option of a single-select question a `preview`: a few short lines that show what choosing it does, with any detail that does not fit in the question. The user can then add notes to the option they pick instead of choosing "Other". Read those notes as part of the answer. If an "Other" answer clearly refers to one of your options, treat it as that option plus a note. A multi-select question cannot have previews: keep its descriptions short and give the detail in your message.
 <!-- END flow:pattern -->
 ```
 
