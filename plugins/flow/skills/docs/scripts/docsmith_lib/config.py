@@ -251,6 +251,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
             "swagger_ui": False,
             "git_revision_date": True,
             "minify": True,
+            "minify_html": False,
         },
         "nav": {
             "style": "subsystem-first",

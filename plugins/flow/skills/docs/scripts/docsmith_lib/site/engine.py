@@ -332,6 +332,7 @@ def render_mkdocs_config(ctx: SiteContext, navigation_sections: list[dict]) -> P
         "enable_swagger_ui": plugins_config.get("swagger_ui", False),
         "enable_git_revision_date": plugins_config.get("git_revision_date", True),
         "enable_minify": plugins_config.get("minify", True),
+        "enable_minify_html": plugins_config.get("minify_html", False),
     }
 
     environment = Environment(loader=FileSystemLoader(str(_TEMPLATES_DIR)))

@@ -37,6 +37,23 @@ Do this once per run, before the first item. Read the spec named in the plan's S
 - For a user decision, owner-run verification, or cloud-tracker failure, use `⛔ — <reason>` and state the reason in the linked section.
 - Do not mark a parent item complete while any child or dependency remains open.
 
+## Status questions
+
+When the developer asks for the status or progress of the run, or where it stands, call the Skill tool with `execution-status` and answer from it. Do not answer from memory, and do not answer from the item you are working on.
+
+## Run log
+
+Keep a plain text file `run-log.txt` in the plan's folder, which is the folder that holds the plan file from step 1 of "Resolve the task source". Create it at the first write. It is a quick status record that `execution-status` reads. It is not documentation. Write it yourself, without asking the developer, and keep every line short.
+
+- **When a wave is built** (every stage task of the wave is complete), append one line: `W<n> <wave name>: <what the wave achieved, in one sentence>.`
+- **When a wave departs from the plan**, append a detour line: `W<n> detour (<tag>): <what happened and why, in one sentence>.` For a detour that belongs to no wave, write `plan detour (<tag>): …`. The tags are:
+  - `blocked`: a stop with a cause other than the developer, such as a failed cloud-tracker update or a failed review;
+  - `needs you`: a stop that waits for the developer's decision or an owner-run test;
+  - `your choice`: the developer chose to run or skip a verify task, leave a close task open, or continue with open spec items;
+  - `off plan`: an outcome that differs from the item's done-when, work outside the planned files, or a stage run again.
+- **When a stop is resolved**, add `— resolved: <how>` to the end of its line.
+- **Keep to two lines per wave.** Use a third line only when the information matters. Do not log task-by-task progress or self-check retries.
+
 ## Rules
 
 | ID | Requirement |
@@ -53,3 +70,6 @@ Do this once per run, before the first item. Read the spec named in the plan's S
 | E16 | Do not complete an item awaiting an owner-run test. |
 | E17 | Do not complete a parent while a child is open. |
 | E18 | Keep the task source synchronized with completed work. |
+| E19 | Write the run log as the "Run log" section says, and never ask the developer about it. |
+| E20 | Keep each run log line to one sentence, and no more than two lines per wave unless the information matters. |
+| E21 | Answer a status question through `execution-status`, never from memory. |

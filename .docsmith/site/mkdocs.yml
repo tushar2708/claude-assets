@@ -16,6 +16,15 @@ strict: true
 nav:
   - Home: index.md
 
+  - "Specs":
+
+
+    - "Overview": "_hubs/specs/index.md"
+
+
+    - "Execution Status Skill Research": "specs/spec-01-execution-status/research-output.md"
+
+
 
 theme:
   name: material

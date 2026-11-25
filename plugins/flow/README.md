@@ -80,8 +80,11 @@ flowchart TD
         verify{"Verify gate<br/>(you choose: run or skip)"}
         close["Close task (only with a tracker)<br/>Comment on the sub-feature's Subtask<br/>and mark it Done"]
         next{"More waves?"}
+        status["/flow:execution-status<br/>Ask for the status at any time:<br/>goal, waves built, verified and closed,<br/>what is left, detours"]
         execute --> verify --> close --> next
         next -- yes --> execute
+        execute -. "ask for status, as often as you like" .-> status
+        status -. "the run goes on" .-> execute
     end
 
     next -- no --> review["/flow:review<br/>Read-only review of the implementation<br/>against the plan's skills"]
@@ -116,7 +119,7 @@ Dashed arrows are optional. They need a declared tracker and a reachable MCP ser
 | 2a   | `/flow:add-to-roadmap` | Optional. Creates one Story under an epic and one Subtask per sub-feature in your tracker, and records them in `roadmap.md`. `/flow:spec` offers to run it for you. Run without a spec, it creates one item.                                                                                                                                      |
 | 3    | `/flow:plan-it`        | In Plan Mode, turns the spec (or the session) into a wave plan: one wave per sub-feature, each with contract, test, and implementation stages, a verify gate, and a close task when the sub-feature has a tracker Subtask. It also invokes any planning skills you name, and the skills they require, and records how each of their rules is met. |
 | 4    | `/flow:make-tasks`     | Runs automatically after you approve the plan, or when you call it. Validates the plan, then creates the tasks in wave → stage → task order and wires their dependencies. It makes no design decision.                                                                                                                                            |
-| 5    | `/flow:execute`        | Runs the tasks stage by stage with each task's planned agent, and checks every changed file. After each wave it asks whether to run the verify gate. When a wave's sub-feature has a tracker Subtask, it comments on it and moves it to Done. A Subtask that needs a test result from you stays open until you report it.                         |
+| 5    | `/flow:execute`        | Runs the tasks stage by stage with each task's planned agent, and checks every changed file. After each wave it asks whether to run the verify gate. When a wave's sub-feature has a tracker Subtask, it comments on it and moves it to Done. A Subtask that needs a test result from you stays open until you report it. It keeps a short `run-log.txt` in the plan's folder, with one line per wave and one per detour, and it answers status questions through `/flow:execution-status`.                         |
 | 6    | `/flow:review`         | Reviews the implementation read-only. It first finds the skill that created the plan and checks the work against it, then reviews the code.                                                                                                                                                                                                       |
 
 
@@ -145,6 +148,7 @@ syncs status, and it never creates a duplicate.
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | `/flow:grilling`        | Stress-test a plan, decision, or idea in a quick interview, with no research phase. The model can also start it when you ask to be grilled. |
 | `/flow:research`        | Research a feature or idea on the web, in your codebase, or in documents and repositories you name, and save the findings with sources.     |
+| `/flow:execution-status` | Report where a running plan stands, like a stakeholder update: the goal, which waves are built, verified and closed, what is left, and any detours. It checks the tracker against the code and offers to fix the tracker when they disagree. The model uses it when you ask for the status. |
 | `/flow:prototype`       | Build a throwaway prototype to answer a design question about logic, state, or UI.                                                          |
 | `/flow:diagnosing-bugs` | Run a diagnosis loop for a hard bug or a performance regression.                                                                            |
 | `/flow:handoff`         | Compact the conversation into a handoff document for the next session.                                                                      |

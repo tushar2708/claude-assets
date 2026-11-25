@@ -113,11 +113,18 @@ plugins:
 {% endif %}
 {%- if enable_minify %}
   - minify:
-      minify_html: true
+      # HTML minification is OFF by default. The htmlmin2 parser raises
+      # OpenTagNotFoundError on page HTML in which a raw <body>, <head> or
+      # <html> tag appears inside the page content (for example in prose or a
+      # table cell), which fails the whole build. Enable it with
+      # site.plugins.minify_html only when every page is known to render clean.
+      minify_html: {{ 'true' if enable_minify_html else 'false' }}
       minify_js: true
       minify_css: true
+{%- if enable_minify_html %}
       htmlmin_opts:
         remove_comments: true
+{%- endif %}
 {% endif %}
 
 markdown_extensions:

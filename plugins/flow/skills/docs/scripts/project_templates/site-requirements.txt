@@ -1,8 +1,16 @@
 # Doc-site Python dependencies for docsmith's mkdocs pipeline.
 # Installed by `.docsmith/setup.sh` into the site venv (.docsmith/site/.venv),
-# which `docsmith collect build/serve` uses. These are ordinary Python
-# dependencies — pin versions here if you want reproducible site builds.
-mkdocs-material
-mkdocs-mermaid2-plugin
-mkdocs-minify-plugin
-mkdocs-git-revision-date-localized-plugin
+# which `docsmith collect build/serve` uses. Every version is pinned so a
+# fresh install gives the same site build on every machine. Raise a pin only
+# after a full site build passes with the new version.
+mkdocs==1.6.1
+mkdocs-material==9.7.7
+mkdocs-mermaid2-plugin==1.2.3
+mkdocs-minify-plugin==0.8.0
+mkdocs-git-revision-date-localized-plugin==1.5.3
+# Transitive packages that decide how page HTML is rendered and minified.
+pymdown-extensions==11.0.1
+markdown==3.10.2
+pygments==2.20.0
+backrefs==8.0
+htmlmin2==0.1.13
